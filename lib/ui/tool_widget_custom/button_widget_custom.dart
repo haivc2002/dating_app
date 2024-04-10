@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../theme/theme_color.dart';
 
@@ -28,8 +27,8 @@ class ButtonWidgetCustom extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: symetric,
-      height: height?.h,
-      width: width?.w,
+      height: height,
+      width: width,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(radius ?? 0)
       ),

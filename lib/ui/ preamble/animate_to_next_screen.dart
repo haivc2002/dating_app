@@ -1,5 +1,7 @@
+import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/ui/%20preamble/slider_screen.dart';
+import 'package:dating/ui/tool_widget_custom/scale_screen_animated.dart';
 import 'package:flutter/material.dart';
 
 class AnimateToNextScreen extends StatefulWidget {
@@ -30,29 +32,7 @@ class _AnimateToNextScreenState extends State<AnimateToNextScreen> with TickerPr
         filterBlur = false;
       });
     });
-    if (_animationPlayed == true) {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        controller.forward();
-      });
-    } else {
-      controller.dispose();
-    }
   }
-
-  late final AnimationController controller = AnimationController(
-    duration: const Duration(milliseconds: 500),
-    vsync: this,
-  );
-
-  late final Animation<double> animation = CurvedAnimation(
-    parent: controller,
-    curve: Curves.fastOutSlowIn,
-  ).drive(Tween<double>(
-    begin: 0.7,
-    end: 1.0,
-  ));
-
-  bool _animationPlayed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -62,31 +42,26 @@ class _AnimateToNextScreenState extends State<AnimateToNextScreen> with TickerPr
           backgroundColor: const Color(0xFF2B2B2B),
           body: Stack(
             children: [
-              Center(
-                child: AnimatedBuilder(
-                  animation: animation,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: animation.value,
-                      child: child,
-                    );
-                  },
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    child: ClipRRect(
+              ScaleScreenAnimated(
+                play: true,
+                delay: const Duration(milliseconds: 300),
+                zomScreen: true,
+                child: SizedBox(
+                  height: heightScreen(context),
+                  width: widthScreen(context),
+                  child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: const SliderScreen()
-                    ),
                   ),
                 ),
               ),
+
               Visibility(
                 visible: filterBlur,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 500),
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
+                  height: heightScreen(context),
+                  width: widthScreen(context),
                   color: Colors.black.withOpacity(fadeColor),
                 ),
               ),
@@ -94,7 +69,7 @@ class _AnimateToNextScreenState extends State<AnimateToNextScreen> with TickerPr
                 children: [
                   AnimatedContainer(
                     height: containerHeight,
-                    width: MediaQuery.of(context).size.width,
+                    width: widthScreen(context),
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOut,
                   ),
@@ -105,7 +80,7 @@ class _AnimateToNextScreenState extends State<AnimateToNextScreen> with TickerPr
                         Visibility(
                           visible: lineFade,
                           child: Container(
-                            height: MediaQuery.of(context).size.height * 0.1,
+                            height: heightScreen(context) * 0.1,
                             decoration: BoxDecoration(
                                 gradient: LinearGradient(
                               colors: [
@@ -119,7 +94,7 @@ class _AnimateToNextScreenState extends State<AnimateToNextScreen> with TickerPr
                         ),
                         Container(
                           color: ThemeColor.pinkColor,
-                          height: MediaQuery.of(context).size.height,
+                          height: heightScreen(context),
                         ),
                       ],
                     ),
@@ -129,11 +104,5 @@ class _AnimateToNextScreenState extends State<AnimateToNextScreen> with TickerPr
             ],
           ),
         ));
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
   }
 }

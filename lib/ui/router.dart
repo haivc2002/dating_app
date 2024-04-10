@@ -7,7 +7,7 @@ class AppRouter {
     switch (settings.name) {
 
       case LoginScreen.routeName:
-        return CupertinoPageRoute(builder: (_) => const LoginScreen());
+        return CupertinoPageRoute(builder: (_) => LoginScreen());
 
       default:
         return null;
