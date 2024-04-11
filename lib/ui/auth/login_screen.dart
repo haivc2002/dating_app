@@ -1,10 +1,7 @@
-import 'dart:ui';
-
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_image.dart';
 import 'package:dating/ui/tool_widget_custom/button_widget_custom.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -20,9 +17,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
-
-
   late final AnimationService animationService;
+  bool shrink = true;
+
   @override
   void initState() {
     super.initState();
@@ -35,12 +32,45 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     super.dispose();
   }
 
+  void showBottom() {
+    setState(() {
+      shrink = true;
+    });
+    animationService.controller.forward(from: 0.0);
+    showModalBottomSheet(
+      isDismissible: false,
+      context: context,
+      barrierColor: ThemeColor.blackColor.withOpacity(0.3),
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: () {
+            hideBottom();
+          },
+          child: Container(
+            color: Colors.white,
+            height: MediaQuery.of(context).size.height * 0.9,
+          ),
+        );
+      },
+    );
+  }
+
+  void hideBottom() {
+    setState(() {
+      shrink = false;
+    });
+    animationService.controllerBack.forward(from: 0.0);
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeColor.backgroundScaffold,
       resizeToAvoidBottomInset: false,
       body: EventScaleScreen(
+        shrink: shrink,
         animationService: animationService,
         child : ClipRRect(
           borderRadius: BorderRadius.circular(10),
@@ -69,13 +99,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                   ),
                 ),
               ),
-              // Visibility(
-              //   visible: animation.value == 0.85 ? true : false,
-              //   child: BackdropFilter(
-              //     filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              //     child: const SizedBox(),
-              //   )
-              // ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: Column(
@@ -91,7 +114,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       textButton: 'I already have an account',
                       height: 40.h,
                       onTap: () {
-                        animationService.controller.forward(from: 0.0);
+                        // animationService.controller.forward(from: 0.0);
+                        showBottom();
+                        // hideBottom();
                       },
                     ),
                     SizedBox(height: 20.h),
@@ -116,4 +141,5 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       )
     );
   }
+
 }
