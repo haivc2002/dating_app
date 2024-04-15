@@ -1,4 +1,6 @@
+import 'package:dating/common/scale_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../theme/theme_color.dart';
 
@@ -13,6 +15,29 @@ class EventScaleScreen extends StatefulWidget {
     this.shrink,
   }) : super(key: key);
 
+  static void showBottomSheet(BuildContext context, AnimationService animationService, Function(bool) setShrink, Widget widget) {
+    final animationController = animationService.controller;
+    final animationControllerBack = animationService.controllerBack;
+    setShrink(true);
+    animationController.forward(from: 0.0);
+    showModalBottomSheet(
+      isDismissible: false,
+      context: context,
+      barrierColor: ThemeColor.blackColor.withOpacity(0.3),
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return ContentBottomSheet(
+          widget: widget,
+        );
+      },
+    );
+  }
+
+  // animationControllerBack.forward(from: 0.0);
+  // Navigator.pop(context);
+
+
+
   @override
   State<EventScaleScreen> createState() => _EventScaleScreenState();
 }
@@ -24,6 +49,7 @@ class _EventScaleScreenState extends State<EventScaleScreen> with TickerProvider
   @override
   void initState() {
     super.initState();
+    // animationService = AnimationService(this);
     animationService = widget.animationService;
   }
 
@@ -32,30 +58,6 @@ class _EventScaleScreenState extends State<EventScaleScreen> with TickerProvider
     animationService.dispose();
     super.dispose();
   }
-
-  // void showBottom(bool? shrink) {
-  //   setState(() {
-  //     shrink = true;
-  //   });
-  //   animationService.controller.forward(from: 0.0);
-  //   showModalBottomSheet(
-  //     isDismissible: false,
-  //     context: context,
-  //     barrierColor: ThemeColor.blackColor.withOpacity(0.3),
-  //     isScrollControlled: true,
-  //     builder: (BuildContext context) {
-  //       return GestureDetector(
-  //         onTap: () {
-  //           hideBottom();
-  //         },
-  //         child: Container(
-  //           color: Colors.white,
-  //           height: MediaQuery.of(context).size.height * 0.9,
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
 
 
   @override
@@ -72,6 +74,41 @@ class _EventScaleScreenState extends State<EventScaleScreen> with TickerProvider
         },
         child: widget.child,
       ),
+    );
+  }
+
+
+  // void showBottomSheet(BuildContext context, Function(bool) setShrink, Widget widget) {
+  //   setShrink(true);
+  //   animationService.controller.forward(from: 0.0);
+  //   showModalBottomSheet(
+  //     isDismissible: false,
+  //     context: context,
+  //     barrierColor: ThemeColor.blackColor.withOpacity(0.3),
+  //     isScrollControlled: true,
+  //     builder: (BuildContext context) {
+  //       return ContentBottomSheet(
+  //         widget: widget,
+  //       );
+  //     },
+  //   );
+  // }
+
+  static void showBottomSheet(BuildContext context, AnimationService animationService, Function(bool) setShrink, Widget widget) {
+    final animationController = animationService.controller;
+    final animationControllerBack = animationService.controllerBack;
+    setShrink(true);
+    animationController.forward(from: 0.0);
+    showModalBottomSheet(
+      isDismissible: false,
+      context: context,
+      barrierColor: ThemeColor.blackColor.withOpacity(0.3),
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return ContentBottomSheet(
+          widget: widget,
+        );
+      },
     );
   }
 }
@@ -113,5 +150,47 @@ class AnimationService {
   void dispose() {
     controller.dispose();
     controllerBack.dispose();
+  }
+}
+
+class ContentBottomSheet extends StatelessWidget {
+  final Widget? widget;
+  const ContentBottomSheet({Key? key, this.widget}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(15),
+        topRight: Radius.circular(15)
+      ),
+      child: Material(
+        child: Container(
+          color: ThemeColor.whiteColor,
+          height: heightScreen(context) * 0.9,
+          width: widthScreen(context),
+          child: Column(
+            children: [
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 10.h),
+                height: 4.h,
+                width: 50.w,
+                decoration: BoxDecoration(
+                  color: ThemeColor.greyColor,
+                  borderRadius: BorderRadius.circular(100)
+                ),
+              ),
+              widget ?? const SizedBox(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TestHelper {
+  static void printSample(BuildContext context, AnimationService animationService, Function(bool) setShrink, Widget widget) {
+    _EventScaleScreenState.showBottomSheet(context, animationService, setShrink, widget);
   }
 }

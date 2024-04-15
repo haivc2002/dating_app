@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   late final AnimationService animationService;
   bool shrink = true;
 
+
   @override
   void initState() {
     super.initState();
@@ -32,37 +33,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     super.dispose();
   }
 
-  void showBottom() {
-    setState(() {
-      shrink = true;
-    });
-    animationService.controller.forward(from: 0.0);
-    showModalBottomSheet(
-      isDismissible: false,
-      context: context,
-      barrierColor: ThemeColor.blackColor.withOpacity(0.3),
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return GestureDetector(
-          onTap: () {
-            hideBottom();
-          },
-          child: Container(
-            color: Colors.white,
-            height: MediaQuery.of(context).size.height * 0.9,
-          ),
-        );
-      },
-    );
-  }
-
-  void hideBottom() {
-    setState(() {
-      shrink = false;
-    });
-    animationService.controllerBack.forward(from: 0.0);
-    Navigator.pop(context);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +73,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: Column(
                   children: [
+
                     const Spacer(),
                     ButtonWidgetCustom(
                       styleText: TextStyle(
@@ -114,9 +85,16 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       textButton: 'I already have an account',
                       height: 40.h,
                       onTap: () {
-                        // animationService.controller.forward(from: 0.0);
-                        showBottom();
-                        // hideBottom();
+                        TestHelper.printSample(
+                          context,
+                          animationService,
+                          (value) {
+                            setState(() {
+                              shrink = value;
+                            });
+                          },
+                          Container()
+                        );
                       },
                     ),
                     SizedBox(height: 20.h),

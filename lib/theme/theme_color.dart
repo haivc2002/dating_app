@@ -5,6 +5,7 @@ class ThemeColor {
   static const Color blackColor = Color(0xFF000000);
   static const Color pinkColor = Color(0xFFF28F9E);
   static const Color backgroundScaffold = Color(0xFF2B2B2B);
+  static const Color greyColor = Color(0xFF9C9C9C);
 }
 
 class ColorPaletteProvider extends InheritedWidget {
