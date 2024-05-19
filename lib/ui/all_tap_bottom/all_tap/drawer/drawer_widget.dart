@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:dating/ui/all_tap_bottom/all_tap/profile/edit_profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -50,7 +51,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           child: Stack(
             children: [
               BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
                 child: Container(),
               ),
               Container(
@@ -68,7 +69,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     Container(
                       height: 100,
                     ),
-                    itemDrawer(CupertinoIcons.profile_circled, 'Personal information'),
+                    itemDrawer(CupertinoIcons.profile_circled, 'Edit Personal information'),
                     itemDrawer(Icons.settings,'Setting'),
                     itemDrawer(Icons.logout,'Sign Out'),
                   ],
@@ -97,6 +98,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
       trailing: Icon(Icons.arrow_forward_ios, size: 11.sp, color: ThemeColor.greyColor,),
       onTap: () {
         Navigator.pop(context);
+        Navigator.pushNamed(context, EditProfileScreen.routeName);
         setState(() {
           widget.animationController?.reverse();
         });

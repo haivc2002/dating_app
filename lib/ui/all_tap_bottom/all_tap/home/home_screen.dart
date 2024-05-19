@@ -1,12 +1,23 @@
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:swipable_stack/swipable_stack.dart';
 
+import '../../../extension/textstyles.dart';
+
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final void Function(BuildContext) openDrawer;
+  final BuildContext buildContext;
+  final AnimationController animationController;
+  const HomeScreen({
+    Key? key,
+    required this.openDrawer,
+    required this.buildContext,
+    required this.animationController
+  }) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -16,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late final SwipableStackController _controller;
   void _listenController() => setState(() {});
-  List<Color> _images = [
+  final List<Color> _images = [
     ThemeColor.redColor,
     Colors.black,
     ThemeColor.pinkColor,
@@ -41,50 +52,68 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: ThemeColor.backgroundScaffold,
       body: SafeArea(
         top: false,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: SwipableStack(
-                  detectableSwipeDirections: const {
-                    SwipeDirection.right,
-                    SwipeDirection.left,
-                  },
-                  controller: _controller,
-                  stackClipBehaviour: Clip.none,
-                  onSwipeCompleted: (index, direction) {
-                    if (kDebugMode) {
-                      print('$index, $direction');
-                    }
-                  },
-                  horizontalSwipeThreshold: 0.8,
-                  verticalSwipeThreshold: 0.8,
-                  builder: (context, properties) {
-                    final itemIndex = properties.index % _images.length;
-
-                    return Center(
-                      child: Stack(
-                        children: [
-                          Container(
-                            height: heightScreen(context),
-                            width: widthScreen(context),
-                            color: _images[itemIndex],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+        child: AppBarCustom(
+          title: 'Dash Date',
+          leadingIcon: GestureDetector(
+            onTap: () {
+              widget.openDrawer(widget.buildContext);
+              setState(() {
+                widget.animationController.forward();
+              });
+            },
+            child: Container(
+              color: Colors.white,
+              child: const Center(
+                child: Icon(Icons.menu),
               ),
             ),
-            // BottomButtonsRow(
-            //   onSwipe: (direction) {
-            //     _controller.next(swipeDirection: direction);
-            //   },
-            //   onRewindTap: _controller.rewind,
-            //   canRewind: _controller.canRewind,
-            // ),
+          ),
+          scrollPhysics: const NeverScrollableScrollPhysics(),
+          textStyle: TextStyles.defaultStyle.bold.setColor(ThemeColor.pinkColor).setTextSize(18.sp),
+          bodyListWidget: [
+            SizedBox(
+              height: heightScreen(context)*0.8,
+              width: widthScreen(context),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: SwipableStack(
+                        detectableSwipeDirections: const {
+                          SwipeDirection.right,
+                          SwipeDirection.left,
+                        },
+                        controller: _controller,
+                        stackClipBehaviour: Clip.none,
+                        onSwipeCompleted: (index, direction) {
+                          if (kDebugMode) {
+                            print('$index, $direction');
+                          }
+                        },
+                        horizontalSwipeThreshold: 0.8,
+                        verticalSwipeThreshold: 0.8,
+                        builder: (context, properties) {
+                          final itemIndex = properties.index % _images.length;
+                          return Center(
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10.w),
+                                  child: Container(
+                                    color: _images[itemIndex],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),

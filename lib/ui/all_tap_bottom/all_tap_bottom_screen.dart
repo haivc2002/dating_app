@@ -1,18 +1,19 @@
 
+import 'dart:ui';
+
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_icon.dart';
 import 'package:dating/ui/all_tap_bottom/all_tap/home/home_screen.dart';
 import 'package:dating/ui/all_tap_bottom/all_tap_controller/all_tap_controller.dart';
 import 'package:dating/ui/all_tap_bottom/bloc/all_tap_bloc.dart';
-import 'package:dating/ui/extension/textstyles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../tool_widget_custom/appbar_custom.dart';
 import 'all_tap/drawer/drawer_widget.dart';
 import 'all_tap/premium/premium_screen.dart';
+import 'all_tap/profile/profile_screen.dart';
 
 
 class AllTapBottomScreen extends StatefulWidget {
@@ -62,9 +63,14 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
   @override
   void dispose() {
     super.dispose();
+    animationController.dispose();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       drawerStatus == false;
     });
+  }
+
+  void openDrawer(BuildContext context) {
+    Scaffold.of(context).openDrawer();
   }
 
   updateDrawerStatus(bool status) {
@@ -100,13 +106,12 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
                       physics: const NeverScrollableScrollPhysics(),
                       controller: controller.pageController,
                       children: [
-                        const HomeScreen(),
-                        PremiumScreen(animationController: animationController),
+                        HomeScreen(animationController: animationController, openDrawer: openDrawer, buildContext: context),
+                        const PremiumScreen(),
                         SizedBox(),
-                        SizedBox(),
+                        const ProfileScreen(),
                       ],
                     ),
-                    // appbar(),
                     bottom(),
                   ],
                 ),
@@ -118,31 +123,6 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
     );
   }
 
-  Widget appbar() {
-    return AppBarCustom(
-      title: 'Dash Date',
-      leadingIcon: Builder(
-          builder: (context) {
-            return GestureDetector(
-              onTap: () {
-                Scaffold.of(context).openDrawer();
-                setState(() {
-                  animationController.forward();
-                });
-              },
-              child: Container(
-                color: Colors.white,
-                child: const Center(
-                  child: Icon(Icons.menu),
-                ),
-              ),
-            );
-          }
-      ),
-      textStyle: TextStyles.defaultStyle.bold.setColor(ThemeColor.pinkColor).setTextSize(18.sp),
-    );
-  }
-
   Widget bottom() {
     return Positioned(
       left: 40.w,
@@ -150,7 +130,7 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
       bottom: 30.w,
       child: Container(
         decoration: BoxDecoration(
-          color: ThemeColor.blackColor.withOpacity(0.8),
+          color: ThemeColor.blackColor.withOpacity(0.9),
           borderRadius: BorderRadius.circular(10.w),
           border: Border.all(
             color: ThemeColor.whiteColor.withOpacity(0.2),
@@ -159,89 +139,89 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
         ),
         height: 55.w,
         child: BlocBuilder<AllTapBloc, AllTapState>(
-          builder: (context, state) {
-            return Row(
-              children: [
-                buttonBottom(
-                  state,
-                  Container(
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: state.selectedIndex != 0 ? Colors.transparent : Colors.red,
-                          blurRadius: 25.w
-                        )
-                      ]
-                    ),
-                    child: Icon(
-                      state.selectedIndex == 0 ? Icons.favorite : Icons.favorite_border_outlined,
-                      color: state.selectedIndex == 0 ? ThemeColor.redColor: ThemeColor.whiteColor,
-                    ),
+            builder: (context, state) {
+              return Row(
+                children: [
+                  buttonBottom(
+                      state,
+                      Container(
+                        decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                  color: state.selectedIndex != 0 ? Colors.transparent : Colors.red,
+                                  blurRadius: 25.w
+                              )
+                            ]
+                        ),
+                        child: Icon(
+                          state.selectedIndex == 0 ? Icons.favorite : Icons.favorite_border_outlined,
+                          color: state.selectedIndex == 0 ? ThemeColor.redColor: ThemeColor.whiteColor,
+                        ),
+                      ),
+                          () {
+                        controller.onItemTapped(0);
+                      }
                   ),
-                  () {
-                    controller.onItemTapped(0);
-                  }
-                ),
-                buttonBottom(
-                  state,
-                  Container(
-                    decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                              color: state.selectedIndex != 1 ? Colors.transparent : Colors.yellow,
-                              blurRadius: 25.w
-                          )
-                        ]
+                  buttonBottom(
+                    state,
+                    Container(
+                      decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                                color: state.selectedIndex != 1 ? Colors.transparent : Colors.yellow,
+                                blurRadius: 25.w
+                            )
+                          ]
+                      ),
+                      child: Image.asset(
+                        state.selectedIndex == 1 ? ThemeIcon.starBoldIcon : ThemeIcon.starLineIcon,
+                        height: 22.w,
+                        color: state.selectedIndex == 1 ? null : Colors.white,
+                      ),
                     ),
-                    child: Image.asset(
-                      state.selectedIndex == 1 ? ThemeIcon.starBoldIcon : ThemeIcon.starLineIcon,
-                      height: 22.w,
-                      color: state.selectedIndex == 1 ? null : Colors.white,
-                    ),
+                        () => controller.onItemTapped(1),
                   ),
-                  () => controller.onItemTapped(1),
-                ),
-                buttonBottom(
-                  state,
-                  Container(
-                    decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                              color: state.selectedIndex != 2 ? Colors.transparent : Colors.blue,
-                              blurRadius: 25.w
-                          )
-                        ]
+                  buttonBottom(
+                    state,
+                    Container(
+                      decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                                color: state.selectedIndex != 2 ? Colors.transparent : Colors.blue,
+                                blurRadius: 25.w
+                            )
+                          ]
+                      ),
+                      child: Image.asset(
+                        state.selectedIndex == 2 ? ThemeIcon.messageBoldIcon : ThemeIcon.messageLineIcon,
+                        height: 15.w,
+                        color: state.selectedIndex == 2 ? null : Colors.white,
+                      ),
                     ),
-                    child: Image.asset(
-                      state.selectedIndex == 2 ? ThemeIcon.messageBoldIcon : ThemeIcon.messageLineIcon,
-                      height: 15.w,
-                      color: state.selectedIndex == 2 ? null : Colors.white,
-                    ),
+                        () => controller.onItemTapped(2),
                   ),
-                  () => controller.onItemTapped(2),
-                ),
-                buttonBottom(
-                  state,
-                  Container(
-                    decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                              color: state.selectedIndex != 3 ? Colors.transparent : ThemeColor.pinkColor,
-                              blurRadius: 25.w
-                          )
-                        ]
+                  buttonBottom(
+                    state,
+                    Container(
+                      decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                                color: state.selectedIndex != 3 ? Colors.transparent : ThemeColor.pinkColor,
+                                blurRadius: 25.w
+                            )
+                          ]
+                      ),
+                      child: Icon(
+                        state.selectedIndex == 3 ? Icons.person : Icons.person_outline,
+                        color: state.selectedIndex == 3 ? ThemeColor.pinkColor : ThemeColor.whiteColor,
+                      ),
                     ),
-                    child: Icon(
-                      state.selectedIndex == 3 ? Icons.person : Icons.person_outline,
-                      color: state.selectedIndex == 3 ? ThemeColor.pinkColor : ThemeColor.whiteColor,
-                    ),
+                        () => controller.onItemTapped(3),
                   ),
-                  () => controller.onItemTapped(3),
-                ),
-              ],
-            );
-          }
-        )
+                ],
+              );
+            }
+        ),
       ),
     );
   }
