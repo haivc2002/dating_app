@@ -37,6 +37,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_screenutil: ^5.9.0
   rive: ^0.13.1
+  hidden_drawer_menu: ^3.0.1
+  flutter_bloc: ^8.1.5
+  swipable_stack: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -63,7 +66,9 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/
+    - assets/icon/
     - assets/background.png
+    - assets/icon/message.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

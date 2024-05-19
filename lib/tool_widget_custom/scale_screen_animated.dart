@@ -23,18 +23,18 @@ import 'package:flutter/material.dart';
 //     super.initState();
 //     if (widget.play == true) {
 //       Future.delayed(widget.delay ?? const Duration(milliseconds: 300), () {
-//         controller.forward();
+//         all_tap_controller.forward();
 //       });
 //     }
 //   }
 //
-//   late final AnimationController controller = AnimationController(
+//   late final AnimationController all_tap_controller = AnimationController(
 //     duration: const Duration(milliseconds: 500),
 //     vsync: this,
 //   );
 //
 //   late final Animation<double> animation = CurvedAnimation(
-//     parent: controller,
+//     parent: all_tap_controller,
 //     curve: Curves.fastOutSlowIn,
 //   ).drive(Tween<double>(
 //     begin: widget.zomScreen == true ? 0.7 : 1,
