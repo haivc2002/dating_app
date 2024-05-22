@@ -1,8 +1,12 @@
 import 'package:dating/common/scale_screen.dart';
+import 'package:dating/extension/gradient.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
+import 'package:dating/tool_widget_custom/icon_button_custom.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:swipable_stack/swipable_stack.dart';
 
@@ -38,6 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _controller = SwipableStackController()..addListener(_listenController);
   }
+
+  bool test = true;
 
   @override
   void dispose() {
@@ -96,20 +102,29 @@ class _HomeScreenState extends State<HomeScreen> {
                         builder: (context, properties) {
                           final itemIndex = properties.index % _images.length;
                           return Center(
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10.w),
-                                  child: Container(
-                                    color: _images[itemIndex],
-                                  ),
-                                ),
-                              ],
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.w),
+                              child: Container(
+                                color: _images[itemIndex],
+                              ),
                             ),
                           );
                         },
                       ),
                     ),
+                  ),
+                  Column(
+                    children: [
+                      const Spacer(),
+                      SizedBox(
+                        height: 100.w,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                          ],
+                        ),
+                      )
+                    ],
                   ),
                 ],
               ),
@@ -119,4 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+
+
 }

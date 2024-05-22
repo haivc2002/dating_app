@@ -30,6 +30,10 @@ extension ExtendedTextStyle on TextStyle {
     return copyWith(fontWeight: FontWeight.w700);
   }
 
+  TextStyle get appbarTitle {
+    return copyWith(fontSize: 18.sp, color: ThemeColor.pinkColor);
+  }
+
   TextStyle get italic {
     return copyWith(
       fontWeight: FontWeight.normal,
@@ -44,4 +48,6 @@ extension ExtendedTextStyle on TextStyle {
   TextStyle setTextSize(double size) {
     return copyWith(fontSize: size);
   }
+
+
 }

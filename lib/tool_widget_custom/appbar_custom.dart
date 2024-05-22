@@ -38,7 +38,8 @@ class AppBarCustom extends StatelessWidget {
                 height: 100.w,
                 width: widthScreen(context),
               ),
-              if (bodyListWidget != null) ...bodyListWidget!
+              if (bodyListWidget != null) ...bodyListWidget!,
+              SizedBox(height: 100.w)
             ],
           ),
         ),
