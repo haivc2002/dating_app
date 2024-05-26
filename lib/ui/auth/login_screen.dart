@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ThemeColor.backgroundScaffold,
+      backgroundColor: ThemeColor.themeDarkSystem,
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [

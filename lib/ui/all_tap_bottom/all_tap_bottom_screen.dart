@@ -88,7 +88,7 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
   Widget build(BuildContext context) {
     return Scaffold(
       drawerEnableOpenDragGesture: false,
-      backgroundColor: ThemeColor.backgroundScaffold,
+      backgroundColor: ThemeColor.themeDarkSystem,
       drawer: DrawerWidget(updateDrawerStatus: updateDrawerStatus, animationController: animationController),
       body: AnimatedBuilder(
           animation: animation,

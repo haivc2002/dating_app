@@ -13,7 +13,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ThemeColor.backgroundScaffold,
+      backgroundColor: ThemeColor.themeDarkSystem,
       body: Container()
     );
   }

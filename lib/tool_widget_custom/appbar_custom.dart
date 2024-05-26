@@ -58,7 +58,7 @@ class AppBarCustom extends StatelessWidget {
           width: widthScreen(context),
           decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [ThemeColor.backgroundScaffold, ThemeColor.backgroundScaffold.withOpacity(0.5)],
+                  colors: [ThemeColor.themeDarkSystem, ThemeColor.themeDarkSystem.withOpacity(0.5)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 )

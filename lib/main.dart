@@ -4,9 +4,12 @@ import 'package:dating/ui/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'common/global.dart';
 import 'multibloc.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Global.load();
   runApp(
       const MultiBloc(child: MyApp())
   );

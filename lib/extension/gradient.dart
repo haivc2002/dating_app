@@ -6,7 +6,7 @@ extension GradientColor on LinearGradient {
 
   static LinearGradient get backgroundScaffoldGradient {
     return LinearGradient(
-        colors: [ThemeColor.backgroundScaffold.withOpacity(0.5), ThemeColor.backgroundScaffold],
+        colors: [ThemeColor.themeDarkSystem.withOpacity(0.5), ThemeColor.themeDarkSystem],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter
     );

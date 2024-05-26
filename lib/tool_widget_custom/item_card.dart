@@ -1,3 +1,5 @@
+import 'package:dating/common/scale_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -8,6 +10,7 @@ class ItemCard extends StatelessWidget {
   final String? titleCard;
   final double? fontSize, paddingBottom;
   final Widget? iconTitle;
+  final IconData? iconRight;
   final List<Widget>? listWidget;
   const ItemCard({
     Key? key,
@@ -18,6 +21,7 @@ class ItemCard extends StatelessWidget {
     this.iconTitle,
     this.paddingBottom,
     this.listWidget,
+    this.iconRight,
   }) : super(key: key);
 
   @override
@@ -27,23 +31,33 @@ class ItemCard extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10.w),
         child: Material(
-          color: colorCard ?? ThemeColor.fadeScaffold,
+          color: colorCard ?? ThemeColor.themeDarkFadeSystem,
           child: Padding(
             padding: EdgeInsets.all(20.w),
-            child: Column(
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    iconTitle ?? const SizedBox.shrink(),
-                    iconTitle != null ? SizedBox(width: 20.w) : const SizedBox.shrink(),
-                    Text(titleCard ?? '', style: TextStyle(
-                      fontSize: fontSize ?? 13.sp,
-                      fontWeight: FontWeight.bold,
-                      color: titleColor ?? ThemeColor.whiteColor
-                    ))
-                  ],
+                SizedBox(
+                  width: widthScreen(context)*0.7,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          iconTitle ?? const SizedBox.shrink(),
+                          iconTitle != null ? SizedBox(width: 10.w) : const SizedBox.shrink(),
+                          Text(titleCard ?? '', style: TextStyle(
+                            fontSize: fontSize ?? 13.sp,
+                            fontWeight: FontWeight.bold,
+                            color: titleColor ?? ThemeColor.whiteColor
+                          ))
+                        ],
+                      ),
+                      if (listWidget != null) ...listWidget! else const SizedBox()
+                    ],
+                  ),
                 ),
-                if (listWidget != null) ...listWidget! else const SizedBox()
+                const Spacer(),
+                iconRight != null ? Icon(iconRight!, color: ThemeColor.greyColor.withOpacity(0.7), size: 17.sp,) : const SizedBox.shrink()
               ],
             ),
           ),

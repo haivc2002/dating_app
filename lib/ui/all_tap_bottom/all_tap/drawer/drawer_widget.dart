@@ -1,6 +1,8 @@
 import 'dart:ui';
 
+import 'package:dating/ui/all_tap_bottom/all_tap/drawer/time_now.dart';
 import 'package:dating/ui/all_tap_bottom/all_tap/profile/edit_profile_screen.dart';
+import 'package:dating/common/textstyles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -67,7 +69,13 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   padding: EdgeInsets.zero,
                   children: [
                     Container(
-                      height: 100,
+                      height: 100.w,
+                    ),
+                    ListTile(
+                      leading: CircleAvatar(),
+                      title: Text(TimeNow.helloDate(), style: TextStyles.defaultStyle.whiteText.setTextSize(16.sp)),
+                      subtitle: Text('Thanh Hải', style: TextStyles.defaultStyle.setColor(ThemeColor.greyColor)),
+                      trailing: TimeNow.iconDate(),
                     ),
                     itemDrawer(CupertinoIcons.profile_circled, 'Edit Personal information'),
                     itemDrawer(Icons.settings,'Setting'),

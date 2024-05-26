@@ -10,7 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:swipable_stack/swipable_stack.dart';
 
-import '../../../extension/textstyles.dart';
+import '../../../../common/textstyles.dart';
 
 class HomeScreen extends StatefulWidget {
   final void Function(BuildContext) openDrawer;
@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ThemeColor.backgroundScaffold,
+      backgroundColor: ThemeColor.themeDarkSystem,
       body: SafeArea(
         top: false,
         child: AppBarCustom(

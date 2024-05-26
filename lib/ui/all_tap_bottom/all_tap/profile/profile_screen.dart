@@ -3,7 +3,8 @@ import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_image.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:dating/ui/all_tap_bottom/all_tap/profile/edit_profile_screen.dart';
-import 'package:dating/ui/extension/textstyles.dart';
+import 'package:dating/common/textstyles.dart';
+import 'package:dating/ui/setting/setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -20,25 +21,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ThemeColor.backgroundScaffold,
+      backgroundColor: ThemeColor.themeDarkSystem,
       body: AppBarCustom(
         showLeading: false,
         title: 'My profile',
         textStyle: TextStyles.defaultStyle.bold.setColor(ThemeColor.pinkColor).setTextSize(18.sp),
         trailing: GestureDetector(
+          onTap: () => Navigator.pushNamed(context, SettingScreen.routeName),
           child: const Icon(Icons.settings, color: ThemeColor.whiteColor),
         ),
         bodyListWidget: [
           Container(
             height: heightScreen(context)*0.4,
             width: widthScreen(context),
-            color: ThemeColor.fadeScaffold,
+            color: ThemeColor.themeDarkFadeSystem,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 80.w,
-                  backgroundImage: AssetImage(ThemeImage.backgroundLogin),
+                Hero(tag: 'keyAVT',
+                  child: CircleAvatar(
+                    radius: 80.w,
+                    backgroundImage: AssetImage(ThemeImage.backgroundLogin),
+                  )
                 ),
                 SizedBox(height: 30.w),
                 Text('Name')
@@ -53,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const Spacer(),
                 Container(
                   decoration: BoxDecoration(
-                    color: ThemeColor.backgroundScaffold,
+                    color: ThemeColor.themeDarkSystem,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(

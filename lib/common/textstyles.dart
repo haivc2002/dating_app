@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../theme/theme_color.dart';
+import '../theme/theme_color.dart';
 
 class TextStyles {
   TextStyles(this.context);
@@ -32,6 +32,10 @@ extension ExtendedTextStyle on TextStyle {
 
   TextStyle get appbarTitle {
     return copyWith(fontSize: 18.sp, color: ThemeColor.pinkColor);
+  }
+
+  TextStyle get whiteText {
+    return copyWith(color: ThemeColor.whiteColor);
   }
 
   TextStyle get italic {
