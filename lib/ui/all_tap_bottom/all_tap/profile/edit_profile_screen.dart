@@ -33,7 +33,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     accessPhotoGallery = AccessPhotoGallery(context);
   }
-  List<String> data = ['1', '2', '3'];
 
   @override
   Widget build(BuildContext context) {

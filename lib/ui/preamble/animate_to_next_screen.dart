@@ -1,6 +1,6 @@
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
-import 'package:dating/ui/%20preamble/slider_screen.dart';
+import 'package:dating/ui/preamble/slider_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../tool_widget_custom/scale_screen_animated.dart';

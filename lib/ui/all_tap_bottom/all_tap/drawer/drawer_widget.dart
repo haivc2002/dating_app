@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:dating/ui/all_tap_bottom/all_tap/drawer/time_now.dart';
 import 'package:dating/ui/all_tap_bottom/all_tap/profile/edit_profile_screen.dart';
 import 'package:dating/common/textstyles.dart';
+import 'package:dating/ui/setting/setting_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -77,9 +78,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       subtitle: Text('Thanh Hải', style: TextStyles.defaultStyle.setColor(ThemeColor.greyColor)),
                       trailing: TimeNow.iconDate(),
                     ),
-                    itemDrawer(CupertinoIcons.profile_circled, 'Edit Personal information'),
-                    itemDrawer(Icons.settings,'Setting'),
-                    itemDrawer(Icons.logout,'Sign Out'),
+                    itemDrawer(CupertinoIcons.profile_circled, 'Edit Personal information', () {Navigator.pushNamed(context, EditProfileScreen.routeName);}),
+                    itemDrawer(Icons.settings,'Setting', () {Navigator.pushNamed(context, SettingScreen.routeName);}),
+                    itemDrawer(Icons.logout,'Sign Out', () {}),
                   ],
                 ),
               )
@@ -99,14 +100,14 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     );
   }
 
-  Widget itemDrawer(IconData iconData, String titleItem) {
+  Widget itemDrawer(IconData iconData, String titleItem, Function() onTap) {
     return ListTile(
       leading: Icon(iconData, color: ThemeColor.whiteColor),
       title: Text(titleItem, style: const TextStyle(color: ThemeColor.whiteColor)),
       trailing: Icon(Icons.arrow_forward_ios, size: 11.sp, color: ThemeColor.greyColor,),
       onTap: () {
         Navigator.pop(context);
-        Navigator.pushNamed(context, EditProfileScreen.routeName);
+        onTap();
         setState(() {
           widget.animationController?.reverse();
         });

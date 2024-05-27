@@ -1,3 +1,4 @@
+import 'package:dating/ui/about_app/about_app_screen.dart';
 import 'package:dating/ui/all_tap_bottom/all_tap/profile/edit_profile_screen.dart';
 import 'package:dating/ui/setting/setting_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,6 +31,9 @@ class AppRouter {
 
       case SettingScreen.routeName:
         return CupertinoPageRoute(builder: (_) => const SettingScreen());
+
+      case AboutAppScreen.routeName:
+        return CupertinoPageRoute(builder: (_) => const AboutAppScreen());
 
       default:
         return null;
