@@ -47,8 +47,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 import '../theme/theme_color.dart';
+import '../theme/theme_notifier.dart';
 
 class ItemAddImage extends StatelessWidget {
   final double? size;
@@ -63,6 +65,7 @@ class ItemAddImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.w),
       child: GestureDetector(
@@ -71,7 +74,7 @@ class ItemAddImage extends StatelessWidget {
           height: size ?? 80.w,
           width: size ?? 80.w,
           decoration: BoxDecoration(
-            color: ThemeColor.themeDarkSystem,
+            color: themeNotifier.systemTheme,
             image: backgroundUpload != null
                 ? DecorationImage(
               image: FileImage(backgroundUpload!),

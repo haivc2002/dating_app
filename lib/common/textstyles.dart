@@ -1,16 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 import '../theme/theme_color.dart';
+import '../theme/theme_notifier.dart';
 
 class TextStyles {
   TextStyles(this.context);
+
   BuildContext? context;
   static TextStyle defaultStyle = TextStyle(
     fontSize: 12.sp,
     color: ThemeColor.blackColor,
     fontWeight: FontWeight.w400,
   );
+
 }
 
 extension ExtendedTextStyle on TextStyle {
@@ -35,6 +39,10 @@ extension ExtendedTextStyle on TextStyle {
   }
 
   TextStyle get whiteText {
+    return copyWith(color: ThemeColor.whiteColor);
+  }
+
+  TextStyle get systemColor {
     return copyWith(color: ThemeColor.whiteColor);
   }
 

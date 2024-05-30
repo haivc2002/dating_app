@@ -8,11 +8,11 @@ class TimeNow {
     int hour = now.hour;
 
     if (hour < 12) {
-      return 'Chào buổi sáng';
+      return 'Good morning';
     } else if (hour < 18) {
-      return 'Chào buổi chiều';
+      return 'Good afternoon';
     } else {
-      return 'Chào buổi tối';
+      return 'Good evening';
     }
   }
   

@@ -54,12 +54,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           child: Stack(
             children: [
               BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
                 child: Container(),
               ),
               Container(
                 decoration: BoxDecoration(
-                    color: ThemeColor.whiteColor.withOpacity(0.1),
+                    color: ThemeColor.blackNotAbsolute.withOpacity(0.3),
                     border: Border(
                         right: BorderSide(
                             color: ThemeColor.greyColor.withOpacity(0.1)

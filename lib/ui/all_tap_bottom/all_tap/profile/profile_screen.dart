@@ -7,7 +7,9 @@ import 'package:dating/common/textstyles.dart';
 import 'package:dating/ui/setting/setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../theme/theme_notifier.dart';
 import '../../../../tool_widget_custom/item_card.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -20,21 +22,22 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
-      backgroundColor: ThemeColor.themeDarkSystem,
+      backgroundColor: themeNotifier.systemTheme,
       body: AppBarCustom(
         showLeading: false,
         title: 'My profile',
         textStyle: TextStyles.defaultStyle.bold.setColor(ThemeColor.pinkColor).setTextSize(18.sp),
         trailing: GestureDetector(
           onTap: () => Navigator.pushNamed(context, SettingScreen.routeName),
-          child: const Icon(Icons.settings, color: ThemeColor.whiteColor),
+          child: Icon(Icons.settings, color: themeNotifier.systemText),
         ),
         bodyListWidget: [
           Container(
             height: heightScreen(context)*0.4,
             width: widthScreen(context),
-            color: ThemeColor.themeDarkFadeSystem,
+            color: themeNotifier.systemThemeFade,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -53,7 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: EdgeInsets.symmetric(horizontal:  20.w, vertical: 10.w),
             child: Row(
               children: [
-                Text('about me', style: TextStyles.defaultStyle.bold.setTextSize(18.sp).setColor(ThemeColor.whiteColor)),
+                Text('about me', style: TextStyles.defaultStyle.bold.setTextSize(18.sp).setColor(themeNotifier.systemText)),
                 const Spacer(),
                 Container(
                   decoration: BoxDecoration(

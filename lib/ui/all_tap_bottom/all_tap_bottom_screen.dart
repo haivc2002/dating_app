@@ -10,7 +10,9 @@ import 'package:dating/ui/all_tap_bottom/bloc/all_tap_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
+import '../../theme/theme_notifier.dart';
 import 'all_tap/drawer/drawer_widget.dart';
 import 'all_tap/premium/premium_screen.dart';
 import 'all_tap/profile/profile_screen.dart';
@@ -28,6 +30,7 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
 
   late AnimationController animationController;
   late Animation<double> animation;
+  late ThemeNotifier themeNotifier;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   late AllTapController controller = AllTapController(context);
   bool drawerStatus = false;
@@ -46,6 +49,7 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    themeNotifier = Provider.of<ThemeNotifier>(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (scaffoldKey.currentState != null) {
         if (scaffoldKey.currentState!.isDrawerOpen) {
@@ -88,7 +92,7 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
   Widget build(BuildContext context) {
     return Scaffold(
       drawerEnableOpenDragGesture: false,
-      backgroundColor: ThemeColor.themeDarkSystem,
+      backgroundColor: themeNotifier.systemThemeFade,
       drawer: DrawerWidget(updateDrawerStatus: updateDrawerStatus, animationController: animationController),
       body: AnimatedBuilder(
           animation: animation,

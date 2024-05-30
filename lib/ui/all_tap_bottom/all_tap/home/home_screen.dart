@@ -1,16 +1,14 @@
 import 'package:dating/common/scale_screen.dart';
-import 'package:dating/extension/gradient.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
-import 'package:dating/tool_widget_custom/icon_button_custom.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:swipable_stack/swipable_stack.dart';
 
 import '../../../../common/textstyles.dart';
+import '../../../../theme/theme_notifier.dart';
 
 class HomeScreen extends StatefulWidget {
   final void Function(BuildContext) openDrawer;
@@ -54,8 +52,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
-      backgroundColor: ThemeColor.themeDarkSystem,
+      backgroundColor: themeNotifier.systemThemeFade,
       body: SafeArea(
         top: false,
         child: AppBarCustom(
@@ -68,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
             child: Container(
-              color: Colors.white,
+              color: ThemeColor.whiteColor,
               child: const Center(
                 child: Icon(Icons.menu),
               ),

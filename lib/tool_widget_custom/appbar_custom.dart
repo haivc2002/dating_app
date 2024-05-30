@@ -4,6 +4,9 @@ import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+
+import '../theme/theme_notifier.dart';
 
 class AppBarCustom extends StatelessWidget {
   final String? title;
@@ -28,6 +31,7 @@ class AppBarCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Stack(
       children: [
         SingleChildScrollView(
@@ -58,7 +62,8 @@ class AppBarCustom extends StatelessWidget {
           width: widthScreen(context),
           decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [ThemeColor.themeDarkSystem, ThemeColor.themeDarkSystem.withOpacity(0.5)],
+                  // colors: [ThemeColor.themeDarkSystem, ThemeColor.themeDarkSystem.withOpacity(0.5)],
+                  colors: [themeNotifier.systemTheme, themeNotifier.systemTheme.withOpacity(0.5)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 )
@@ -91,7 +96,7 @@ class AppBarCustom extends StatelessWidget {
                                       child: Icon(
                                           Icons.arrow_back_ios_new,
                                           size: 17.sp,
-                                          color: ThemeColor.whiteColor
+                                          color: themeNotifier.systemText
                                       ),
                                     ),
                                   ),
@@ -109,7 +114,8 @@ class AppBarCustom extends StatelessWidget {
                       width: 30.w,
                       child: Container(
                         decoration: BoxDecoration(
-                            color: ThemeColor.whiteColor.withOpacity(0.1),
+                            // color: ThemeColor.whiteColor.withOpacity(0.1),
+                            color: themeNotifier.highlight.withOpacity(0.2),
                             shape: BoxShape.circle
                         ),
                         child: Center(

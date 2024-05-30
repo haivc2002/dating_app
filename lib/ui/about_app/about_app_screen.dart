@@ -52,7 +52,7 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text('DASH DATE', style: TextStyles.defaultStyle.bold.setTextSize(25.sp).setColor(ThemeColor.deepRedColor)),
-                            Text('phiên bản: 6.2418.0', style: TextStyles.defaultStyle)
+                            Text('version: 6.2418.0', style: TextStyles.defaultStyle)
                           ],
                         ),
                       ),

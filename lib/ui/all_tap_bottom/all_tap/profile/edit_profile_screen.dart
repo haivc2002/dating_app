@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
-import 'package:dating/theme/theme_system.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:dating/tool_widget_custom/item_add_image.dart';
 import 'package:dating/tool_widget_custom/item_card.dart';
@@ -15,6 +14,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../theme/theme_notifier.dart';
 
 class EditProfileScreen extends StatefulWidget {
   static const String routeName = 'editProfileScreen';
@@ -36,8 +38,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
-      backgroundColor: ThemeSystem.systemTheme,
+      backgroundColor: themeNotifier.systemTheme,
       body: AppBarCustom(
         title: 'Edit profile',
         textStyle: TextStyles.defaultStyle.bold.appbarTitle,
@@ -46,7 +49,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             height: widthScreen(context),
             width: widthScreen(context),
             padding: EdgeInsets.all(10.w),
-            color: ThemeColor.themeDarkFadeSystem,
+            color: themeNotifier.systemThemeFade,
             child: Column(
               children: [
                 Expanded(
