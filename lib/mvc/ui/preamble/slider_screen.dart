@@ -1,10 +1,11 @@
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
-import 'package:dating/ui/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../tool_widget_custom/button_widget_custom.dart';
+import '../../../tool_widget_custom/button_widget_custom.dart';
+import '../auth/login_screen.dart';
+
 
 class SliderScreen extends StatefulWidget {
   const SliderScreen({Key? key}) : super(key: key);

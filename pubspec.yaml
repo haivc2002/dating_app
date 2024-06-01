@@ -46,6 +46,9 @@ dependencies:
   font_awesome_flutter: ^10.7.0
   shared_preferences: ^2.2.3
   provider: ^6.1.2
+  local_hero: ^0.3.0
+  animations: ^2.0.0
+
 
 
 dev_dependencies:

@@ -4,9 +4,9 @@ import 'package:dating/theme/theme_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../tool_widget_custom/bottom_form_widget.dart';
-import '../../tool_widget_custom/button_widget_custom.dart';
-import '../../tool_widget_custom/input_custom.dart';
+import '../../../tool_widget_custom/bottom_form_widget.dart';
+import '../../../tool_widget_custom/button_widget_custom.dart';
+import '../../../tool_widget_custom/input_custom.dart';
 import '../all_tap_bottom/all_tap_bottom_screen.dart';
 
 

@@ -1,13 +1,13 @@
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/theme/theme_color.dart';
-import 'package:dating/ui/about_app/about_app_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import '../../common/global.dart';
-import '../../theme/theme_notifier.dart';
+import '../../../common/global.dart';
+import '../../../theme/theme_notifier.dart';
+import '../about_app/about_app_screen.dart';
 
 class SettingScreen extends StatefulWidget {
   static const String routeName = 'settingScreen';
@@ -33,14 +33,6 @@ class _SettingScreenState extends State<SettingScreen> {
     themeNotifier = Provider.of<ThemeNotifier>(context);
   }
 
-  // void toggleTheme() {
-  //   setState(() {
-  //     isDarkMode = !isDarkMode;
-  //     Global.setBool('theme', isDarkMode);
-  //     ThemeSystem.updateTheme();
-  //     themeNotifier.toggleTheme();
-  //   });
-  // }
   void toggleTheme() {
     setState(() {
       isDarkMode = !isDarkMode;
@@ -131,6 +123,11 @@ class _SettingScreenState extends State<SettingScreen> {
             const Text('About application'),
             Icon(Icons.arrow_forward_ios, size: 15.sp, color: themeNotifier.systemText),
                 () => Navigator.pushNamed(context, AboutAppScreen.routeName),
+          ),
+          cartAnimate(
+            const Text('I need to find'),
+            Text('woman', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
+                () {},
           ),
         ],
       ),

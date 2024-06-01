@@ -1,8 +1,10 @@
-import 'package:dating/ui/about_app/about_app_screen.dart';
-import 'package:dating/ui/all_tap_bottom/all_tap/profile/edit_profile_screen.dart';
-import 'package:dating/ui/setting/setting_screen.dart';
+import 'package:dating/mvc/ui/all_tap_bottom/all_tap/profile/select_height_person.dart';
+import 'package:dating/mvc/ui/setting/setting_screen.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'about_app/about_app_screen.dart';
+import 'all_tap_bottom/all_tap/profile/edit_more_info_screen.dart';
+import 'all_tap_bottom/all_tap/profile/edit_profile_screen.dart';
 import 'all_tap_bottom/all_tap_bottom_screen.dart';
 import 'auth/login_screen.dart';
 
@@ -26,6 +28,25 @@ class AppRouter {
               opacity: animation,
               child: child,
             );
+          },
+        );
+
+      case EditMoreInfoScreen.routeName:
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => const EditMoreInfoScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        );
+
+      case SelectHeightPerson.routeName:
+        return PageRouteBuilder(
+          opaque: false,
+          pageBuilder: (BuildContext context, _, __) {
+            return const SelectHeightPerson();
           },
         );
 

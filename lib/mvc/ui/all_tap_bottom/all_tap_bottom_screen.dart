@@ -1,21 +1,18 @@
 
-import 'dart:ui';
-
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_icon.dart';
-import 'package:dating/ui/all_tap_bottom/all_tap/home/home_screen.dart';
-import 'package:dating/ui/all_tap_bottom/all_tap_controller/all_tap_controller.dart';
-import 'package:dating/ui/all_tap_bottom/bloc/all_tap_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-
-import '../../theme/theme_notifier.dart';
+import '../../../theme/theme_notifier.dart';
 import 'all_tap/drawer/drawer_widget.dart';
+import 'all_tap/home/home_screen.dart';
 import 'all_tap/premium/premium_screen.dart';
 import 'all_tap/profile/profile_screen.dart';
+import 'all_tap_controller/all_tap_controller.dart';
+import 'bloc/all_tap_bloc.dart';
 
 
 class AllTapBottomScreen extends StatefulWidget {

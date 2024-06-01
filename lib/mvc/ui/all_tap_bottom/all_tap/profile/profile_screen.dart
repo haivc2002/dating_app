@@ -2,15 +2,15 @@ import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_image.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
-import 'package:dating/ui/all_tap_bottom/all_tap/profile/edit_profile_screen.dart';
 import 'package:dating/common/textstyles.dart';
-import 'package:dating/ui/setting/setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../theme/theme_notifier.dart';
-import '../../../../tool_widget_custom/item_card.dart';
+import '../../../../../theme/theme_notifier.dart';
+import '../../../../../tool_widget_custom/item_card.dart';
+import '../../../setting/setting_screen.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);

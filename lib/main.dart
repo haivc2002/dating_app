@@ -1,13 +1,13 @@
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_notifier.dart';
-import 'package:dating/ui/all_tap_bottom/all_tap_bottom_screen.dart';
-import 'package:dating/ui/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import 'common/global.dart';
 import 'multibloc.dart';
+import 'mvc/ui/all_tap_bottom/all_tap_bottom_screen.dart';
+import 'mvc/ui/router.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();

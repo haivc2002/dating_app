@@ -1,6 +1,7 @@
-import 'package:dating/ui/preamble/animate_to_next_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
+
+import 'animate_to_next_screen.dart';
 
 class HelloScreen extends StatefulWidget {
   const HelloScreen({Key? key}) : super(key: key);

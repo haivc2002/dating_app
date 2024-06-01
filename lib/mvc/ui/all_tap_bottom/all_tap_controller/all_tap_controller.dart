@@ -1,6 +1,7 @@
-import 'package:dating/ui/all_tap_bottom/bloc/all_tap_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/all_tap_bloc.dart';
 
 class AllTapController {
   BuildContext context;

@@ -5,10 +5,10 @@ import 'dart:io';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
+import 'package:dating/tool_widget_custom/hero_custom.dart';
 import 'package:dating/tool_widget_custom/item_add_image.dart';
 import 'package:dating/tool_widget_custom/item_card.dart';
-import 'package:dating/ui/all_tap_bottom/all_tap/profile/service/access_photo_gallery.dart';
-import 'package:dating/ui/all_tap_bottom/all_tap/profile/service/bloc/upload_image_bloc.dart';
+import 'package:dating/service/access_photo_gallery.dart';
 import 'package:dating/common/textstyles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../theme/theme_notifier.dart';
+import '../../../../../theme/theme_notifier.dart';
+import 'bloc/upload_image_bloc.dart';
+import 'edit_more_info_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
   static const String routeName = 'editProfileScreen';
@@ -101,7 +103,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             )
           ),
           itemInfo(),
-          itemInfoMore()
+          itemInfoMore(themeNotifier)
         ],
       ),
     );
@@ -126,6 +128,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget itemInfo() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Padding(
       padding: EdgeInsets.all(20.w),
       child: Column(
@@ -134,32 +137,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ItemCard(
             titleCard: 'Bùi Thanh Hải',
             listWidget: [
-              Text('Hà nội', style: TextStyles.defaultStyle.whiteText,),
+              Text('Hà nội', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),),
             ],
             iconRight: Icons.arrow_forward_ios,
           ),
           ItemCard(
-            iconTitle: Icon(Icons.work_outline, color: ThemeColor.whiteColor.withOpacity(0.4)),
+            iconTitle: Icon(Icons.work_outline, color: themeNotifier.systemText.withOpacity(0.4)),
             titleCard: 'Work',
-            listWidget: [Text('data', style: TextStyles.defaultStyle.whiteText)],
+            listWidget: [Text('data', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
             iconRight: Icons.arrow_forward_ios,
           ),
           ItemCard(
-            iconTitle: Icon(Icons.home_work_outlined, color: ThemeColor.whiteColor.withOpacity(0.4)),
+            iconTitle: Icon(Icons.home_work_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
             titleCard: 'Education',
-            listWidget: [Text('đại học', style: TextStyles.defaultStyle.whiteText)],
+            listWidget: [Text('đại học', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
             iconRight: Icons.arrow_forward_ios,
           ),
           ItemCard(
-            iconTitle: Icon(CupertinoIcons.square_stack_3d_up, color: ThemeColor.whiteColor.withOpacity(0.4)),
+            iconTitle: Icon(CupertinoIcons.square_stack_3d_up, color: themeNotifier.systemText.withOpacity(0.4)),
             titleCard: 'Why are you here?',
-            listWidget: [Text('Hẹn hò', style: TextStyles.defaultStyle.whiteText)],
+            listWidget: [Text('Hẹn hò', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
             iconRight: Icons.arrow_forward_ios,
           ),
           ItemCard(
-            iconTitle: Icon(Icons.edit_outlined, color: ThemeColor.whiteColor.withOpacity(0.4)),
+            iconTitle: Icon(Icons.edit_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
             titleCard: 'A little about yourself',
-            listWidget: [Text('làgweiufgiwe', style: TextStyles.defaultStyle.whiteText)],
+            listWidget: [Text('làgweiufgiwe', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
             iconRight: Icons.arrow_forward_ios,
           ),
           Text('More information about me', style: TextStyles.defaultStyle.bold.setTextSize(17.sp).setColor(ThemeColor.pinkColor))
@@ -168,39 +171,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget itemInfoMore() {
-    return Container(
-      color: ThemeColor.themeDarkFadeSystem,
-      child: Padding(
-        padding: EdgeInsets.all(20.w),
+  Widget itemInfoMore(ThemeNotifier themeNotifier) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, EditMoreInfoScreen.routeName);
+      },
+      child: Container(
+        color: themeNotifier.systemThemeFade,
         child: Column(
           children: [
-            itemComponentInfoMore(Icons.height, 'height', '180cm'),
-            itemComponentInfoMore(Icons.wine_bar, 'wine', 'không uống rựu'),
-            itemComponentInfoMore(Icons.language, 'language', 'Tiếng việt'),
-            itemComponentInfoMore(Icons.smoking_rooms, 'smoking', 'Không thuốc lá'),
-            itemComponentInfoMore(Icons.ac_unit_sharp, 'Zodiac', 'nhân mã'),
-            itemComponentInfoMore(Icons.account_balance, 'Religion', 'vô thần'),
-            itemComponentInfoMore(Icons.person, 'Character', 'hướng nội'),
+            itemComponentInfoMore(Icons.height, 'height', '180cm', 1),
+            itemComponentInfoMore(Icons.wine_bar, 'wine', 'không uống rựu', 2),
+            itemComponentInfoMore(Icons.smoking_rooms, 'smoking', 'Không thuốc lá', 4),
+            itemComponentInfoMore(Icons.ac_unit_sharp, 'Zodiac', 'nhân mã', 5),
+            itemComponentInfoMore(Icons.account_balance, 'Religion', 'vô thần', 6),
+            itemComponentInfoMore(Icons.person, 'Character', 'hướng nội', 7),
+            itemComponentInfoMore(Icons.home, 'Hometown', 'Thái bình', 8),
           ],
         ),
       ),
     );
   }
 
-  Widget itemComponentInfoMore(IconData iconData, String title, String data) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 20.w),
-      child: Row(
-        children: [
-          Icon(iconData, color: ThemeColor.whiteColor.withOpacity(0.4)),
-          SizedBox(width: 10.w),
-          Text(title, style: TextStyles.defaultStyle.whiteText.bold),
-          const Spacer(),
-          Text(data, style: TextStyles.defaultStyle.whiteText,),
-          SizedBox(width: 20.w)
-        ],
-      ),
+  Widget itemComponentInfoMore(IconData iconData, String title, String data, int key) {
+    return HeroCustom(
+      title: title,
+      iconLeading: iconData,
+      data: data,
+      keyHero: key,
     );
   }
 }

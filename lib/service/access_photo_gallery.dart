@@ -8,8 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../../../../theme/theme_color.dart';
-import 'bloc/upload_image_bloc.dart';
+import '../mvc/ui/all_tap_bottom/all_tap/profile/bloc/upload_image_bloc.dart';
+import '../theme/theme_color.dart';
 
 class AccessPhotoGallery {
   BuildContext context;
@@ -66,7 +66,6 @@ class AccessPhotoGallery {
       }
     }
   }
-
 
   Future<bool> _requestPermission(Permission permission) async {
     if (await permission.isGranted) {
