@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../theme/theme_color.dart';
 
@@ -7,7 +8,7 @@ class ButtonWidgetCustom extends StatelessWidget {
   final Color? color;
   final String textButton;
   final double? height, width, radius;
-  final EdgeInsetsGeometry? symetric;
+  final EdgeInsetsGeometry? symmetric, padding;
   final TextStyle? styleText;
 
   const ButtonWidgetCustom({
@@ -18,14 +19,15 @@ class ButtonWidgetCustom extends StatelessWidget {
     this.radius,
     this.height,
     this.width,
-    this.symetric,
-    this.styleText
+    this.symmetric,
+    this.styleText,
+    this.padding
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: symetric,
+      margin: symmetric,
       height: height,
       width: width,
       decoration: BoxDecoration(
@@ -37,7 +39,12 @@ class ButtonWidgetCustom extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(radius ?? 0),
           onTap: onTap,
-          child: Center(child: Text(textButton, style: styleText),),
+          child: Center(
+            child: Padding(
+              padding: padding ?? EdgeInsets.symmetric(vertical: 10.w),
+              child: Text(textButton, style: styleText),
+            ),
+          ),
         ),
       ),
     );

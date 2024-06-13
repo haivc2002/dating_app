@@ -1,7 +1,10 @@
+import 'package:dating/common/textstyles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 import '../../theme/theme_color.dart';
+import '../theme/theme_notifier.dart';
 
 class InputCustom extends StatelessWidget {
   final TextEditingController? controller;
@@ -12,6 +15,8 @@ class InputCustom extends StatelessWidget {
   final TextInputType? keyboardType;
   final bool? areaCode;
   final bool? hidePass;
+  final FocusNode? focusNode;
+  final Function(String)? onChanged;
   const InputCustom({
     Key? key,
     this.controller,
@@ -23,10 +28,13 @@ class InputCustom extends StatelessWidget {
     this.keyboardType,
     this.areaCode,
     this.hidePass,
+    this.focusNode,
+    this.onChanged,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Material(
         color: Colors.transparent,
         child: ClipRRect(
@@ -35,6 +43,8 @@ class InputCustom extends StatelessWidget {
             children: [
               Container(height: 10.h, color: colorInput ?? Colors.transparent),
               TextField(
+                onChanged: onChanged,
+                focusNode: focusNode,
                 obscureText: hidePass == true ? true: false,
                 onTap: onTap,
                 controller: controller,
@@ -82,7 +92,7 @@ class InputCustom extends StatelessWidget {
                     ),
                   ),
                 ),
-                style: TextStyle(color: ThemeColor.whiteColor.withOpacity(0.5)),
+                style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),
                 keyboardType: keyboardType,
                 // textInputAction: TextInputAction.done,
                 cursorColor: ThemeColor.pinkColor,

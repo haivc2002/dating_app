@@ -7,13 +7,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class BottomSheetCustom {
   final Widget? child;
   final Color? backgroundColor;
+  final double? height;
   const BottomSheetCustom({
     Key? key,
     this.child,
     this.backgroundColor,
+    this.height,
   });
 
-  static void showCustomBottomSheet(BuildContext context, Widget child) {
+  static void showCustomBottomSheet(BuildContext context, Widget child, {double? height, Color? backgroundColor}) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -27,7 +29,7 @@ class BottomSheetCustom {
             child: Stack(
               children: [
                 SizedBox(
-                  height: heightScreen(context)*0.9,
+                  height: height ?? heightScreen(context)*0.9,
                   child: ClipRect(
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaY: 30, sigmaX: 30),
@@ -35,15 +37,16 @@ class BottomSheetCustom {
                     ),
                   ),
                 ),
-                SizedBox(
-                    height: heightScreen(context)*0.9,
-                    width: widthScreen(context),
-                    child: Column(
+                Container(
+                  color: backgroundColor,
+                  height: height ?? heightScreen(context)*0.9,
+                  width: widthScreen(context),
+                  child: Column(
                       children: [
                         Container(
                           height: 5.h,
                           width: 50.w,
-                          margin: EdgeInsets.symmetric(vertical: 7.h),
+                          margin: EdgeInsets.symmetric(vertical: 10.h),
                           decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.5),
                               borderRadius: BorderRadius.circular(100)
