@@ -6,11 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:rive/rive.dart';
 
 import '../../../../../../theme/theme_notifier.dart';
 import '../../../../../../tool_widget_custom/popup_type_hero.dart';
-import '../../../../../controller/search_autocomplete/search_autocomplete_controller.dart';
-import '../../../../../model/search_autocomplete_model/search_autocomplete_model.dart';
+import '../../../../../controller/location_controller/search_autocomplete_controller.dart';
+import '../../../../../model/location_model/search_autocomplete_model.dart';
 
 class SetHomeTown extends StatefulWidget {
   static const String routeName = 'setHomeTown';

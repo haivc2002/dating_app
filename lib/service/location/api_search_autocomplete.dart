@@ -1,4 +1,4 @@
-import 'package:dating/model/search_autocomplete_model/search_autocomplete_model.dart';
+import 'package:dating/model/location_model/search_autocomplete_model.dart';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 

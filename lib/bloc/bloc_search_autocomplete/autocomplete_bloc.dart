@@ -1,6 +1,6 @@
 
 
-import 'package:dating/model/search_autocomplete_model/search_autocomplete_model.dart';
+import 'package:dating/model/location_model/search_autocomplete_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'autocomplete_event.dart';

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
+import 'bloc/bloc_all_tap/get_location_bloc.dart';
 import 'bloc/bloc_profile/edit_more_bloc.dart';
 import 'bloc/bloc_profile/upload_image_bloc.dart';
 import 'bloc/bloc_search_autocomplete/autocomplete_bloc.dart';
@@ -21,6 +22,7 @@ class MultiBloc extends StatelessWidget {
         BlocProvider(create: (context) => UploadImageBloc(), lazy: true),
         BlocProvider(create: (context) => EditMoreBloc(), lazy: true),
         BlocProvider(create: (context) => AutocompleteBloc(), lazy: true),
+        BlocProvider(create: (context) => GetLocationBloc(), lazy: true),
       ] ,
       child: ChangeNotifierProvider(
         create: (_) => ThemeNotifier(),

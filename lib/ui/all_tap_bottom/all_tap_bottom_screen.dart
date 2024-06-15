@@ -1,4 +1,5 @@
 
+import 'package:dating/bloc/bloc_all_tap/get_location_bloc.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_icon.dart';
@@ -42,7 +43,9 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
       duration: const Duration(milliseconds: 200),
     );
     animation = Tween<double>(begin: 1.0, end: 0.9).animate(animationController);
+    controller.getData();
   }
+
 
   @override
   void didChangeDependencies() {
@@ -100,17 +103,24 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
                 height: heightScreen(context),
                 child: Stack(
                   children: [
-                    PageView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      controller: controller.pageController,
-                      children: [
-                        HomeScreen(animationController: animationController, openDrawer: controller.openDrawer, buildContext: context),
-                        const PremiumScreen(),
-                        SizedBox(),
-                        const ProfileScreen(),
-                      ],
-
-                    ),
+                    BlocBuilder<GetLocationBloc, GetLocationState>(builder: (context, state) {
+                      if(state is LoadGetLocationState) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if(state is SuccessGetLocationState) {
+                        return PageView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          controller: controller.pageController,
+                          children: [
+                            HomeScreen(animationController: animationController, openDrawer: controller.openDrawer, buildContext: context),
+                            const PremiumScreen(),
+                            SizedBox(),
+                            const ProfileScreen(),
+                          ],
+                        );
+                      } else {
+                        return const Text('Could not find address');
+                      }
+                    }),
                     bottom(),
                   ],
                 ),
