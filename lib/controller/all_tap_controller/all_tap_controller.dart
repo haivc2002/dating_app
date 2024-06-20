@@ -3,11 +3,9 @@ import 'package:dating/service/location/api_location_current.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../bloc/bloc_all_tap/all_tap_bloc.dart';
 import '../../model/location_model/location_current_model.dart';
-import '../../tool_widget_custom/popup_custom.dart';
 
 class AllTapController {
   BuildContext context;
@@ -15,8 +13,6 @@ class AllTapController {
   PageController pageController= PageController();
   ApiLocationCurrent apiLocation = ApiLocationCurrent();
   AllTapController(this.context);
-  double lat = 0;
-  double lot = 0;
 
   void onItemTapped(int index) {
     selectedIndex = index;

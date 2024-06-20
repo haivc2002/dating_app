@@ -8,7 +8,8 @@ import '../theme/theme_notifier.dart';
 
 class InputCustom extends StatelessWidget {
   final TextEditingController? controller;
-  final Color? colorInput;
+  final Color? colorInput, colorText;
+  final int? maxLines, maxLength;
   final String? labelText;
   final double? topRadius, bottomRadius;
   final VoidCallback? onTap;
@@ -30,6 +31,9 @@ class InputCustom extends StatelessWidget {
     this.hidePass,
     this.focusNode,
     this.onChanged,
+    this.maxLines,
+    this.maxLength,
+    this.colorText,
   }) : super(key: key);
 
   @override
@@ -43,14 +47,15 @@ class InputCustom extends StatelessWidget {
             children: [
               Container(height: 10.h, color: colorInput ?? Colors.transparent),
               TextField(
+                maxLength: maxLength,
+                maxLines: maxLines,
                 onChanged: onChanged,
                 focusNode: focusNode,
                 obscureText: hidePass == true ? true: false,
                 onTap: onTap,
                 controller: controller,
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 8.h, horizontal: 20.w),
+                  contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 20.w),
                   filled: true,
                   fillColor: colorInput ?? Colors.transparent,
                   labelText: labelText,
@@ -92,7 +97,7 @@ class InputCustom extends StatelessWidget {
                     ),
                   ),
                 ),
-                style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),
+                style: TextStyles.defaultStyle.setColor(colorText ?? themeNotifier.systemText),
                 keyboardType: keyboardType,
                 // textInputAction: TextInputAction.done,
                 cursorColor: ThemeColor.pinkColor,

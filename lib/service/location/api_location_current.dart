@@ -33,7 +33,7 @@ class ApiLocationCurrent {
         if (permission != LocationPermission.whileInUse &&
             permission != LocationPermission.always) {
           if(context.mounted) {
-            PopupCustom.showPopup(context, textContent: "Permission denied, go to settings?", () async {
+            PopupCustom.showPopup(context, textContent: "Permission denied, go to settings?", function: () async {
               await openAppSettings();
             });
           }

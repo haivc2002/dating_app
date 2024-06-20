@@ -17,7 +17,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../theme/theme_notifier.dart';
-import '../../../../bloc/bloc_profile/upload_image_bloc.dart';
+import '../../../../bloc/bloc_profile/edit_bloc.dart';
 import '../../../../controller/profile_controller/edit_profile_controller.dart';
 import 'edit_more_info_screen.dart';
 
@@ -65,7 +65,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         flex: 2,
                         child: Hero(
                           tag: 'keyAVT',
-                          child: BlocBuilder<UploadImageBloc, UploadImageState>(
+                          child: BlocBuilder<EditBloc, EditState>(
                               builder: (context, state) {
                                 return Center(
                                   child: ItemAddImage(
@@ -113,7 +113,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget itemAddImage(Function() onTap, int? index) {
-    return BlocBuilder<UploadImageBloc, UploadImageState>(
+    return BlocBuilder<EditBloc, EditState>(
       builder: (context, state) {
         File? backgroundUpload;
         if (state.imageUpload != null && index != null && index < state.imageUpload!.length) {
@@ -143,15 +143,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Text('Hà nội', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),),
             ],
             iconRight: Icons.arrow_forward_ios,
-            onTap: () {
-              controller.popupName();
-            },
+            onTap: ()=> controller.popupName()
           ),
           ItemCard(
             iconTitle: Icon(Icons.work_outline, color: themeNotifier.systemText.withOpacity(0.4)),
             titleCard: 'Work',
             listWidget: [Text('data', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
             iconRight: Icons.arrow_forward_ios,
+            onTap: ()=> controller.popupWork(),
           ),
           ItemCard(
             iconTitle: Icon(Icons.home_work_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
@@ -164,12 +163,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             titleCard: 'Why are you here?',
             listWidget: [Text('Hẹn hò', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
             iconRight: Icons.arrow_forward_ios,
+            onTap: ()=> controller.popupPurpose(),
           ),
           ItemCard(
             iconTitle: Icon(Icons.edit_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
             titleCard: 'A little about yourself',
             listWidget: [Text('làgweiufgiwe', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
             iconRight: Icons.arrow_forward_ios,
+            onTap: ()=> controller.popupAbout(),
           ),
           Text('More information about me', style: TextStyles.defaultStyle.bold.setTextSize(17.sp).setColor(ThemeColor.pinkColor))
         ],

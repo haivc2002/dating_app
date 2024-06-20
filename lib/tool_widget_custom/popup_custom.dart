@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import '../theme/theme_color.dart';
 
 class PopupCustom {
-  static void showPopup(BuildContext context, Function() function, {String? textContent,String? title, String? textDisable, String? textEnable, Widget? content}) {
+  static void showPopup(BuildContext context, {String? textContent,String? title, String? textDisable, String? textEnable, Widget? content, required Function() function}) {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(

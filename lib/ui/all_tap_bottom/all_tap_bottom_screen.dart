@@ -103,24 +103,16 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
                 height: heightScreen(context),
                 child: Stack(
                   children: [
-                    BlocBuilder<GetLocationBloc, GetLocationState>(builder: (context, state) {
-                      if(state is LoadGetLocationState) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if(state is SuccessGetLocationState) {
-                        return PageView(
-                          physics: const NeverScrollableScrollPhysics(),
-                          controller: controller.pageController,
-                          children: [
-                            HomeScreen(animationController: animationController, openDrawer: controller.openDrawer, buildContext: context),
-                            const PremiumScreen(),
-                            SizedBox(),
-                            const ProfileScreen(),
-                          ],
-                        );
-                      } else {
-                        return const Text('Could not find address');
-                      }
-                    }),
+                    PageView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      controller: controller.pageController,
+                      children: [
+                        HomeScreen(animationController: animationController, openDrawer: controller.openDrawer, buildContext: context),
+                        const PremiumScreen(),
+                        SizedBox(),
+                        const ProfileScreen(),
+                      ],
+                    ),
                     bottom(),
                   ],
                 ),

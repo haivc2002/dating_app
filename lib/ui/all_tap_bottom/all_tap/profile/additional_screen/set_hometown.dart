@@ -2,11 +2,11 @@ import 'package:dating/bloc/bloc_profile/edit_more_bloc.dart';
 import 'package:dating/bloc/bloc_search_autocomplete/autocomplete_bloc.dart';
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/tool_widget_custom/input_custom.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:rive/rive.dart';
 
 import '../../../../../../theme/theme_notifier.dart';
 import '../../../../../../tool_widget_custom/popup_type_hero.dart';
@@ -24,6 +24,7 @@ class SetHomeTown extends StatefulWidget {
 class _SetHomeTownState extends State<SetHomeTown> {
 
   late SearchAutocompleteController controller;
+  TextEditingController inputControl = TextEditingController();
 
   @override
   void initState() {
@@ -53,34 +54,23 @@ class _SetHomeTownState extends State<SetHomeTown> {
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 10.w),
                     child: InputCustom(
+                      controller: inputControl,
                       colorInput: themeNotifier.systemTheme,
                       onChanged: (location) {
+                        setState(() {
+                          inputControl.text;
+                        });
                         controller.getData(location);
                       },
                     ),
                   ),
-                  BlocBuilder<AutocompleteBloc, AutocompleteState>(
-                    builder: (context, state) {
-                      if(state is LoadAutocompleteState) {
-                        return Center(
-                          child: CircularProgressIndicator(color: themeNotifier.systemText),
-                        );
-                      } else if(state is SuccessAutocompleteState) {
-                        return ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: state.response.where((element) => element.properties?.city != null).length,
-                          itemBuilder: (context, index) {
-                            final validItems = state.response.where((element) => element.properties?.city != null).toList();
-                            return titleHometown(validItems, index);
-                          }
-                        );
+                  returnResult()
 
-                      } else {
-                        return Text("Could not find the address", style: TextStyles.defaultStyle.setColor(themeNotifier.systemText));
-                      }
-                    }
-                  )
+                  // if(inputControl.text.isNotEmpty) {
+                  //   return
+                  // }
+
+
                 ],
               ),
             ),
@@ -114,6 +104,35 @@ class _SetHomeTownState extends State<SetHomeTown> {
         )
       ),
     );
+  }
+
+  Widget returnResult() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    if(inputControl.text.isNotEmpty) {
+      return BlocBuilder<AutocompleteBloc, AutocompleteState>(
+          builder: (context, state) {
+            if(state is LoadAutocompleteState) {
+              return Center(
+                child: CircularProgressIndicator(color: themeNotifier.systemText),
+              );
+            } else if(state is SuccessAutocompleteState) {
+              return ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: state.response.where((element) => element.properties?.city != null).length,
+                  itemBuilder: (context, index) {
+                    final validItems = state.response.where((element) => element.properties?.city != null).toList();
+                    return titleHometown(validItems, index);
+                  }
+              );
+            } else {
+              return Text("Could not find the address", style: TextStyles.defaultStyle.setColor(themeNotifier.systemText));
+            }
+          }
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 
 }

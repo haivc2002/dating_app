@@ -1,10 +1,7 @@
 
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:dating/common/textstyles.dart';
 import 'package:dating/tool_widget_custom/popup_custom.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,8 +9,7 @@ import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../bloc/bloc_profile/upload_image_bloc.dart';
-import '../theme/theme_color.dart';
+import '../bloc/bloc_profile/edit_bloc.dart';
 
 class AccessPhotoGallery {
   BuildContext context;
@@ -24,9 +20,6 @@ class AccessPhotoGallery {
   Future<void> selectImage(int? index) async {
     if (await _requestPermission(Permission.storage)) {
       try {
-        if(context.mounted) {
-          context.read<UploadImageBloc>().add(UploadImageEvent(isLoad: true));
-        }
         final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 25);
         if (pickedFile != null) {
           Uint8List compressedImage = await compute(compressImage, await File(pickedFile.path).readAsBytes());
@@ -41,12 +34,11 @@ class AccessPhotoGallery {
           }
 
           if (context.mounted) {
-            context.read<UploadImageBloc>().add(UploadImageEvent(imageUpload: imageUpload, isLoad: false));
+            context.read<EditBloc>().add(EditEvent(imageUpload: imageUpload));
           }
         }
       } catch (e) {
         if (context.mounted) {
-          context.read<UploadImageBloc>().add(UploadImageEvent(isLoad: false));
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Error when selecting photo'),
@@ -56,7 +48,7 @@ class AccessPhotoGallery {
       }
     } else {
       if (context.mounted) {
-        PopupCustom.showPopup(context, textContent: "Permission denied, go to settings?", () async {
+        PopupCustom.showPopup(context, textContent: "Permission denied, go to settings?", function: () async {
           await openAppSettings();
         });
       }

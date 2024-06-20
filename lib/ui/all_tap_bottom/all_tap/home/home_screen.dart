@@ -4,12 +4,14 @@ import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:swipable_stack/swipable_stack.dart';
 
 import '../../../../../common/textstyles.dart';
 import '../../../../../theme/theme_notifier.dart';
+import '../../../../bloc/bloc_all_tap/get_location_bloc.dart';
 import '../../../../common/global.dart';
 import '../../../../controller/home_controller/home_controller.dart';
 
@@ -86,58 +88,66 @@ class _HomeScreenState extends State<HomeScreen> {
           scrollPhysics: const NeverScrollableScrollPhysics(),
           textStyle: TextStyles.defaultStyle.bold.setColor(ThemeColor.pinkColor).setTextSize(18.sp),
           bodyListWidget: [
-            SizedBox(
-              height: heightScreen(context)*0.8,
-              width: widthScreen(context),
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: SwipableStack(
-                        detectableSwipeDirections: const {
-                          SwipeDirection.right,
-                          SwipeDirection.left,
-                        },
-                        controller: _controller,
-                        stackClipBehaviour: Clip.none,
-                        onSwipeCompleted: (index, direction) {
-                          if (kDebugMode) {
-                            print('$index, $direction');
-                          }
-                        },
-                        horizontalSwipeThreshold: 0.8,
-                        verticalSwipeThreshold: 0.8,
-                        builder: (context, properties) {
-                          final itemIndex = properties.index % _images.length;
-                          return Center(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10.w),
-                              child: Container(
-                                color: _images[itemIndex],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  Column(
+            BlocBuilder<GetLocationBloc, GetLocationState>(builder: (context, state) {
+              if(state is LoadGetLocationState) {
+                return Center(child: CircularProgressIndicator());
+              } else if(state is SuccessGetLocationState) {
+                return SizedBox(
+                  height: heightScreen(context)*0.8,
+                  width: widthScreen(context),
+                  child: Stack(
                     children: [
-                      const Spacer(),
-                      SizedBox(
-                        height: 100.w,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                          ],
+                      Positioned.fill(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: SwipableStack(
+                            detectableSwipeDirections: const {
+                              SwipeDirection.right,
+                              SwipeDirection.left,
+                            },
+                            controller: _controller,
+                            stackClipBehaviour: Clip.none,
+                            onSwipeCompleted: (index, direction) {
+                              if (kDebugMode) {
+                                print('$index, $direction');
+                              }
+                            },
+                            horizontalSwipeThreshold: 0.8,
+                            verticalSwipeThreshold: 0.8,
+                            builder: (context, properties) {
+                              final itemIndex = properties.index % _images.length;
+                              return Center(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10.w),
+                                  child: Container(
+                                    color: _images[itemIndex],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      )
+                      ),
+                      Column(
+                        children: [
+                          const Spacer(),
+                          SizedBox(
+                            height: 100.w,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-            )
+                );
+              } else {
+                return const Text('Could not find address');
+              }
+            }),
           ],
         ),
       ),
