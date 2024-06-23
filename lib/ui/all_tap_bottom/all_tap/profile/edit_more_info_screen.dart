@@ -2,6 +2,7 @@
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:dating/tool_widget_custom/hero_custom.dart';
+import 'package:dating/tool_widget_custom/press_hold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,6 +14,7 @@ import '../../../../bloc/bloc_profile/edit_more_bloc.dart';
 import 'additional_screen/select_height_person.dart';
 import 'additional_screen/set_hometown.dart';
 import 'common_local/return_height_value.dart';
+import 'package:flutter/services.dart';
 
 class EditMoreInfoScreen extends StatefulWidget {
   static const String routeName = 'editMoreInfoScreen';
@@ -28,8 +30,6 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
   List<String> zodiac = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpius', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
   List<String> character = ['Introverted', 'Outward', 'Somewhere in the middle', 'Undisclosed'];
   AlignmentGeometry alignment = Alignment.topLeft;
-  bool test = false;
-
 
   @override
   void initState() {
@@ -40,7 +40,6 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
-
     return Scaffold(
       backgroundColor: themeNotifier.systemTheme,
       body: AppBarCustom(
@@ -48,10 +47,9 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
         textStyle: TextStyles.defaultStyle.appbarTitle.bold,
         bodyListWidget: [
           SizedBox(height: 50.w),
-          GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, SelectHeightPerson.routeName);
-            },
+          PressHold(
+            function: ()=> Navigator.pushNamed(context, SelectHeightPerson.routeName),
+            onTap: ()=> Navigator.pushNamed(context, SelectHeightPerson.routeName),
             child: BlocBuilder<EditMoreBloc, EditMoreState>(
               builder: (context, state) {
                 return itemComponentInfoMore(
@@ -162,8 +160,9 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
               );
             }
           ),
-          GestureDetector(
+          PressHold(
             onTap: () => Navigator.pushNamed(context, SetHomeTown.routeName),
+            function: () => Navigator.pushNamed(context, SetHomeTown.routeName),
             child: itemComponentInfoMore(
               Icons.home, 'Hometown', 'Thái bình', 8,
               const SizedBox()

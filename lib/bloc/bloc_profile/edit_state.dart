@@ -6,6 +6,7 @@ class EditState {
   List<File>? imageUpload;
   int? indexPurpose;
   String? purposeValue;
+  int? indexLevel;
 
-  EditState({this.imageUpload, this.indexPurpose, this.purposeValue});
+  EditState({this.imageUpload, this.indexPurpose, this.purposeValue, this.indexLevel});
 }

@@ -10,6 +10,7 @@ class ThemeColor {
   static const Color whiteColor = Color(0xFFFFFFFF);
   static const Color blackColor = Color(0xFF000000);
   static const Color pinkColor = Color(0xFFFF6880);
+  static const Color pinkFadeColor = Color(0xFFF38F9F);
   static const Color redColor = Colors.red;
   static const Color deepRedColor = Color(0xFFC8001A);
   static const Color greyColor = Color(0xFF9C9C9C);

@@ -1,6 +1,6 @@
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
-import 'package:dating/ui/preamble/slider_screen.dart';
+import 'package:dating/ui/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../tool_widget_custom/scale_screen_animated.dart';
@@ -52,11 +52,10 @@ class _AnimateToNextScreenState extends State<AnimateToNextScreen> with TickerPr
                   width: widthScreen(context),
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: const SliderScreen()
+                      child: const LoginScreen()
                   ),
                 ),
               ),
-
               Visibility(
                 visible: filterBlur,
                 child: AnimatedContainer(
@@ -66,7 +65,7 @@ class _AnimateToNextScreenState extends State<AnimateToNextScreen> with TickerPr
                   color: Colors.black.withOpacity(fadeColor),
                 ),
               ),
-              Column(
+              filterBlur ? Column(
                 children: [
                   AnimatedContainer(
                     height: containerHeight,
@@ -85,8 +84,8 @@ class _AnimateToNextScreenState extends State<AnimateToNextScreen> with TickerPr
                             decoration: BoxDecoration(
                                 gradient: LinearGradient(
                               colors: [
-                                ThemeColor.pinkColor.withOpacity(0),
-                                ThemeColor.pinkColor
+                                ThemeColor.pinkFadeColor.withOpacity(0),
+                                ThemeColor.pinkFadeColor
                               ],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
@@ -94,14 +93,14 @@ class _AnimateToNextScreenState extends State<AnimateToNextScreen> with TickerPr
                           ),
                         ),
                         Container(
-                          color: ThemeColor.pinkColor,
+                          color: ThemeColor.pinkFadeColor,
                           height: heightScreen(context),
                         ),
                       ],
                     ),
                   ))
                 ],
-              ),
+              ) : const SizedBox(),
             ],
           ),
         ));

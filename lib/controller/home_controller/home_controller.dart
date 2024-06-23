@@ -1,4 +1,6 @@
+import 'package:dating/theme/theme_rive.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rive/rive.dart';
 
@@ -12,12 +14,14 @@ class HomeController {
   BuildContext context;
   HomeController(this.context);
 
-  void popupTutorial() {
-    showCupertinoDialog(
-      context: context,
-      builder: (_) {
-        return Container(
-            color: ThemeColor.blackColor.withOpacity(0.7),
+  void popupTutorial() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if(context.mounted) {
+      showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          return Material(
+            color: ThemeColor.blackColor.withOpacity(0.8),
             child: Column(
               children: [
                 const Spacer(),
@@ -26,11 +30,55 @@ class HomeController {
                     width: widthScreen(context)*0.7,
                     height: heightScreen(context)*0.7,
                     child: const RiveAnimation.asset(
-                      'assets/rive/swiping_tutorial.riv',
+                      ThemeRive.swipeTutorial,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
+                Text('Swipe right, you say you like them', style: TextStyles.defaultStyle.whiteText),
+                Text('Swipe left, Nope', style: TextStyles.defaultStyle.whiteText),
+                ButtonWidgetCustom(
+                  textButton: 'Skip',
+                  color: ThemeColor.pinkColor,
+                  radius: 100.w,
+                  symmetric: EdgeInsets.symmetric(horizontal: 20.w, vertical: 30.w),
+                  padding: EdgeInsets.symmetric(vertical: 15.w),
+                  styleText: TextStyles.defaultStyle.bold.whiteText,
+                  onTap: () {
+                    Navigator.pop(context);
+                    popupDetail();
+                  },
+                )
+              ],
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  void popupDetail() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if(context.mounted) {
+      showCupertinoDialog(
+        context: context,
+        builder: (_) {
+          return Material(
+            color: ThemeColor.blackColor.withOpacity(0.8),
+            child: Column(
+              children: [
+                const Spacer(),
+                Center(
+                  child: SizedBox(
+                    width: widthScreen(context)*0.7,
+                    height: heightScreen(context)*0.7,
+                    child: const RiveAnimation.asset(
+                      ThemeRive.pressHoldTutorial,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Text('Touch and hold to view that user\'s details', style: TextStyles.defaultStyle.whiteText),
                 ButtonWidgetCustom(
                   textButton: 'Skip',
                   color: ThemeColor.pinkColor,
@@ -44,9 +92,10 @@ class HomeController {
                   },
                 )
               ],
-            )
-        );
-      },
-    );
+            ),
+          );
+        },
+      );
+    }
   }
 }

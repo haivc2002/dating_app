@@ -52,7 +52,9 @@ class BottomSheetCustom {
                               borderRadius: BorderRadius.circular(100)
                           ),
                         ),
-                        child
+                        Expanded(child: child),
+                        // child
+                        SizedBox(height: 20.w)
                       ],
                     )
                 )

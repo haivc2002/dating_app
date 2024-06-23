@@ -7,12 +7,15 @@ import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/bottom_sheet_custom.dart';
 import 'package:dating/tool_widget_custom/button_widget_custom.dart';
 import 'package:dating/tool_widget_custom/input_custom.dart';
-import 'package:dating/tool_widget_custom/list_title_custom.dart';
+import 'package:dating/tool_widget_custom/list_tile_custom.dart';
 import 'package:dating/tool_widget_custom/popup_custom.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../tool_widget_custom/list_tile_check_circle.dart';
 import 'model_list_purpose.dart';
 
 
@@ -24,6 +27,14 @@ class EditProfileController {
     ModelListPurpose('Dating', Icons.wine_bar_sharp, 'I want to date and have fun with that person. That\'s all'),
     ModelListPurpose('Talk', Icons.chat_bubble, 'I want to chat and see where the relationship goes'),
     ModelListPurpose('Relationship', Icons.favorite, 'Find a long term relationship'),
+  ];
+
+  List<String> listAcademicLevel = [
+    'High School',
+    'College',
+    'University',
+    'Master\'s Degree',
+    'Doctoral Degree',
   ];
 
   void popupName() {
@@ -114,7 +125,7 @@ class EditProfileController {
                             padding: EdgeInsets.symmetric(vertical: 10.w),
                             child: BlocBuilder<EditBloc, EditState>(builder: (context, state) {
                               return ListTileCustom(
-                                color: state.indexPurpose != index ? ThemeColor.whiteColor.withOpacity(0.3) : ThemeColor.pinkColor.withOpacity(0.2),
+                                color: state.indexPurpose != index ? ThemeColor.whiteColor.withOpacity(0.3) : ThemeColor.pinkColor.withOpacity(0.3),
                                 title: listPurpose[index].title,
                                 iconLeading: listPurpose[index].iconLeading,
                                 iconTrailing: state.indexPurpose != index ? Icons.circle_outlined : Icons.check_circle,
@@ -137,7 +148,10 @@ class EditProfileController {
                     styleText: TextStyles.defaultStyle.bold.whiteText,
                     color: ThemeColor.blackColor,
                     radius: 100.w,
-                    onTap: ()=> context.read<EditBloc>().add(EditEvent(purposeValue: listPurpose[state.indexPurpose??0].title)),
+                    onTap: () {
+                      context.read<EditBloc>().add(EditEvent(purposeValue: listPurpose[state.indexPurpose??0].title));
+                      Navigator.pop(context);
+                    },
                   );
                 }
               ),
@@ -158,6 +172,42 @@ class EditProfileController {
           widget,
         ],
       ),
+    );
+  }
+
+  void popupAcademicLevel() {
+    BottomSheetCustom.showCustomBottomSheet(
+      context,
+      height: heightScreen(context)*0.5,
+      backgroundColor: ThemeColor.whiteColor.withOpacity(0.5),
+      Column(
+        children: [
+          Text('Academic level', style: TextStyles.defaultStyle.setTextSize(22.sp).bold,),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: List.generate(listAcademicLevel.length, (index) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.w),
+                    child: BlocBuilder<EditBloc, EditState>(builder: (context, state) {
+                      bool isSelect = state.indexLevel != index;
+                      return ListTileCheckCircle(
+                        color: isSelect ? ThemeColor.whiteColor.withOpacity(0.3) : ThemeColor.pinkColor.withOpacity(0.5),
+                        titleColor: isSelect ? ThemeColor.blackColor : ThemeColor.whiteColor,
+                        iconColor: isSelect ? ThemeColor.blackColor : ThemeColor.whiteColor,
+                        title: listAcademicLevel[index],
+                        iconData: isSelect ? CupertinoIcons.circle : Icons.check_circle,
+                        onTap: ()=> context.read<EditBloc>().add(EditEvent(indexLevel: index)),
+                      );
+                      }
+                    ),
+                  );
+                }),
+              ),
+            ),
+          )
+        ],
+      )
     );
   }
 }

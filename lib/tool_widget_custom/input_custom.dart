@@ -48,7 +48,7 @@ class InputCustom extends StatelessWidget {
               Container(height: 10.h, color: colorInput ?? Colors.transparent),
               TextField(
                 maxLength: maxLength,
-                maxLines: maxLines,
+                maxLines: maxLines ?? 1,
                 onChanged: onChanged,
                 focusNode: focusNode,
                 obscureText: hidePass == true ? true: false,

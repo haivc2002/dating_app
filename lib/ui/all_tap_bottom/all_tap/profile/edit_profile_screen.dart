@@ -154,9 +154,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           ItemCard(
             iconTitle: Icon(Icons.home_work_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
-            titleCard: 'Education',
+            titleCard: 'Academic level',
             listWidget: [Text('đại học', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
             iconRight: Icons.arrow_forward_ios,
+            onTap: ()=> controller.popupAcademicLevel(),
           ),
           ItemCard(
             iconTitle: Icon(CupertinoIcons.square_stack_3d_up, color: themeNotifier.systemText.withOpacity(0.4)),

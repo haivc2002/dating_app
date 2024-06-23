@@ -1,3 +1,4 @@
+import 'package:dating/ui/auth/register_screen.dart';
 import 'package:dating/ui/setting/setting_screen.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -15,6 +16,9 @@ class AppRouter {
 
       case LoginScreen.routeName:
         return CupertinoPageRoute(builder: (_) => const LoginScreen());
+
+      case RegisterScreen.routeName:
+        return CupertinoPageRoute(builder: (_) => const RegisterScreen());
 
       case AllTapBottomScreen.routeName:
         return CupertinoPageRoute(builder: (_) => const AllTapBottomScreen());

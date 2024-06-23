@@ -14,6 +14,7 @@ class EditBloc extends Bloc<EditEvent, EditState> {
         imageUpload: event.imageUpload ?? state.imageUpload,
         indexPurpose: event.indexPurpose ?? state.indexPurpose,
         purposeValue: event.purposeValue ?? state.purposeValue,
+        indexLevel: event.indexLevel ?? state.indexLevel,
       ));
     });
   }

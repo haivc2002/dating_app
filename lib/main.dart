@@ -38,8 +38,8 @@ class MyApp extends StatelessWidget {
                 home: child,
               );
             },
-            // child: const HelloScreen(),
-            child: const AllTapBottomScreen(),
+            child: const HelloScreen(),
+            // child: const AllTapBottomScreen(),
           ),
         );
       }

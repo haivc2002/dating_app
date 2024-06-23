@@ -1,5 +1,4 @@
 
-import 'package:dating/bloc/bloc_all_tap/get_location_bloc.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_icon.dart';

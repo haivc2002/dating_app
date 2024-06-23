@@ -54,6 +54,7 @@ dependencies:
   geolocator: ^7.0.3
   geocoding: ^3.0.0
   lottie: ^3.1.2
+  auto_size_text: ^3.0.0
 
 
 
@@ -83,7 +84,6 @@ flutter:
   assets:
     - assets/
     - assets/icon/
-    - assets/background.png
     - assets/icon/message.png
     - assets/rive/
 
