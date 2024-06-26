@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import 'bloc/bloc_all_tap/get_location_bloc.dart';
-import 'bloc/bloc_profile/edit_more_bloc.dart';
+import 'bloc/bloc_profile/store_edit_more_bloc.dart';
 import 'bloc/bloc_profile/edit_bloc.dart';
 import 'bloc/bloc_search_autocomplete/autocomplete_bloc.dart';
 
@@ -20,7 +20,7 @@ class MultiBloc extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => AllTapBloc(), lazy: true),
         BlocProvider(create: (context) => EditBloc(), lazy: true),
-        BlocProvider(create: (context) => EditMoreBloc(), lazy: true),
+        BlocProvider(create: (context) => StoreEditMoreBloc(), lazy: true),
         BlocProvider(create: (context) => AutocompleteBloc(), lazy: true),
         BlocProvider(create: (context) => GetLocationBloc(), lazy: true),
       ] ,

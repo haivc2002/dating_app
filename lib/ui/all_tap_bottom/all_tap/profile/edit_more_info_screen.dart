@@ -1,8 +1,11 @@
 
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:dating/common/scale_screen.dart';
+import 'package:dating/controller/profile_controller/edit_profile_controller.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
-import 'package:dating/tool_widget_custom/hero_custom.dart';
-import 'package:dating/tool_widget_custom/press_hold.dart';
+import 'package:dating/tool_widget_custom/press_popup_custom.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,11 +13,11 @@ import 'package:provider/provider.dart';
 
 import '../../../../../common/textstyles.dart';
 import '../../../../../theme/theme_notifier.dart';
-import '../../../../bloc/bloc_profile/edit_more_bloc.dart';
-import 'additional_screen/select_height_person.dart';
-import 'additional_screen/set_hometown.dart';
-import 'common_local/return_height_value.dart';
-import 'package:flutter/services.dart';
+import '../../../../bloc/bloc_profile/store_edit_more_bloc.dart';
+import '../../../../bloc/bloc_search_autocomplete/autocomplete_bloc.dart';
+import '../../../../controller/location_controller/search_autocomplete_controller.dart';
+import '../../../../model/location_model/search_autocomplete_model.dart';
+import '../../../../tool_widget_custom/input_custom.dart';
 
 class EditMoreInfoScreen extends StatefulWidget {
   static const String routeName = 'editMoreInfoScreen';
@@ -26,14 +29,16 @@ class EditMoreInfoScreen extends StatefulWidget {
 
 class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
 
-  List<String> wineAndSmoking = ['Sometime', 'Usually', 'Have', 'Never', 'Undisclosed'];
-  List<String> zodiac = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpius', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
-  List<String> character = ['Introverted', 'Outward', 'Somewhere in the middle', 'Undisclosed'];
   AlignmentGeometry alignment = Alignment.topLeft;
+  late EditProfileController controller;
+  TextEditingController inputControl = TextEditingController();
+  late SearchAutocompleteController searchAutocomplete;
 
   @override
   void initState() {
     super.initState();
+    controller = EditProfileController(context);
+    searchAutocomplete = SearchAutocompleteController(context);
   }
 
 
@@ -47,33 +52,51 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
         textStyle: TextStyles.defaultStyle.appbarTitle.bold,
         bodyListWidget: [
           SizedBox(height: 50.w),
-          PressHold(
-            function: ()=> Navigator.pushNamed(context, SelectHeightPerson.routeName),
-            onTap: ()=> Navigator.pushNamed(context, SelectHeightPerson.routeName),
-            child: BlocBuilder<EditMoreBloc, EditMoreState>(
-              builder: (context, state) {
-                return itemComponentInfoMore(
-                  Icons.height, 'height', '${returnHeightValue(state.heightPerson??0)}cm', 1,
-                  const SizedBox()
-                );
-              }
+          PressPopupCustom(
+            content: BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(
+                builder: (context, state) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: 101,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        decoration: BoxDecoration(
+                            color: state.heightPerson == (index+100) ? themeNotifier.systemTheme : Colors.transparent,
+                            borderRadius: BorderRadius.circular(5.w)
+                        ),
+                        child: InkWell(
+                            onTap: () {
+                              context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(heightPerson: index+100));
+                              state.heightPerson == (index+100) ? null : Navigator.pop(context);
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10.w),
+                              child: controller.listHeight(index)
+                            )
+                        ),
+                      );
+                    },
+                  );
+                }
             ),
+            child: BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(builder: (context, state) {
+              return itemComponentInfoMore(Icons.height, 'Height', '180cm', const SizedBox());
+            }),
           ),
-          BlocBuilder<EditMoreBloc, EditMoreState>(
+          SizedBox(height: 20.w),
+          BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(
             builder: (context, state) {
               return itemComponentInfoMore(
-                Icons.wine_bar, 'wine', '${state.wine}', 2,
+                Icons.wine_bar, 'wine', '${state.wine}',
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 20.w, 0, 0),
                   child: Wrap(
                     runSpacing: 10.w,
                     spacing: 10.w,
-                    children: List.generate(wineAndSmoking.length, (index) {
+                    children: List.generate(controller.wineAndSmoking.length, (index) {
                       return GestureDetector(
-                        onTap: () {
-                          context.read<EditMoreBloc>().add(EditMoreEvent(wine: wineAndSmoking[index]));
-                        },
-                        child: options(wineAndSmoking[index], wineAndSmoking[index] == state.wine)
+                        onTap: ()=>context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(wine: controller.wineAndSmoking[index])),
+                        child: options(controller.wineAndSmoking[index], controller.wineAndSmoking[index] == state.wine)
                       );
                     }),
                   ),
@@ -81,21 +104,20 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
               );
             }
           ),
-          BlocBuilder<EditMoreBloc, EditMoreState>(
+          SizedBox(height: 20.w),
+          BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(
             builder: (context, state) {
               return itemComponentInfoMore(
-                Icons.smoking_rooms, 'smoking', '${state.smoking}', 4,
+                Icons.smoking_rooms, 'smoking', '${state.smoking}',
                 Padding(
                     padding: EdgeInsets.fromLTRB(0, 20.w, 0, 0),
                     child: Wrap(
                       runSpacing: 10.w,
                       spacing: 10.w,
-                      children: List.generate(wineAndSmoking.length, (index) {
+                      children: List.generate(controller.wineAndSmoking.length, (index) {
                         return GestureDetector(
-                            onTap: () {
-                              context.read<EditMoreBloc>().add(EditMoreEvent(smoking: wineAndSmoking[index]));
-                            },
-                            child: options(wineAndSmoking[index], wineAndSmoking[index] == state.smoking)
+                            onTap: ()=> context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(smoking: controller.wineAndSmoking[index])),
+                            child: options(controller.wineAndSmoking[index], controller.wineAndSmoking[index] == state.smoking)
                         );
                       }),
                     ),
@@ -103,21 +125,20 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
               );
             }
           ),
-          BlocBuilder<EditMoreBloc, EditMoreState>(
+          SizedBox(height: 20.w),
+          BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(
             builder: (context, state) {
               return itemComponentInfoMore(
-                Icons.ac_unit_sharp, 'Zodiac', '${state.zodiac}', 5,
+                Icons.ac_unit_sharp, 'Zodiac', '${state.zodiac}',
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 20.w, 0, 0),
                   child: Wrap(
                     runSpacing: 10.w,
                     spacing: 10.w,
-                    children: List.generate(zodiac.length, (index) {
+                    children: List.generate(controller.zodiac.length, (index) {
                       return GestureDetector(
-                          onTap: () {
-                            context.read<EditMoreBloc>().add(EditMoreEvent(zodiac: zodiac[index]));
-                          },
-                          child: options(zodiac[index], zodiac[index] == state.zodiac)
+                          onTap: ()=> context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(zodiac: controller.zodiac[index])),
+                          child: options(controller.zodiac[index], controller.zodiac[index] == state.zodiac)
                       );
                     }),
                   ),
@@ -125,63 +146,80 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
               );
             }
           ),
+          SizedBox(height: 20.w),
           itemComponentInfoMore(
-            Icons.account_balance, 'Religion', 'vô thần', 6,
+            Icons.account_balance, 'Religion', 'vô thần',
             Text('♈data')
           ),
-          BlocBuilder<EditMoreBloc, EditMoreState>(
-            builder: (context, state) {
-              return itemComponentInfoMore(
-                Icons.person, 'Character', '${state.character}', 7,
-                Column(
-                  children: List.generate(character.length, (index) {
-                    return GestureDetector(
-                      onTap: () => context.read<EditMoreBloc>().add(EditMoreEvent(character: character[index])),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: themeNotifier.systemTheme,
-                          borderRadius: BorderRadius.circular(100.w)
+          SizedBox(height: 20.w),
+          PressPopupCustom(
+            content: BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(
+              builder: (context, state) {
+                return NotificationListener<ScrollNotification>(
+                  onNotification: (scrollNotification) {
+                    if (scrollNotification is ScrollStartNotification) {
+                      FocusScope.of(context).unfocus();
+                    }
+                    return false;
+                  },
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Find', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10.w),
+                          child: InputCustom(
+                            controller: inputControl,
+                            colorInput: themeNotifier.systemTheme,
+                            onChanged: (location) {
+                              context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(textEditingState: inputControl.text));
+                              searchAutocomplete.getData(location);
+                            },
+                          ),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 10.w, horizontal: 20.w),
-                        margin: EdgeInsets.symmetric(vertical: 5.w, horizontal: 20.w),
-                        child: Row(
-                          children: [
-                            Text(character[index], style: TextStyles.defaultStyle.setColor(state.character == character[index] ? ThemeColor.pinkColor : themeNotifier.systemText).bold),
-                            const Spacer(),
-                            state.character == character[index]
-                              ? const Icon(Icons.check_circle, color: ThemeColor.pinkColor)
-                              : const SizedBox(),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                )
-              );
-            }
-          ),
-          PressHold(
-            onTap: () => Navigator.pushNamed(context, SetHomeTown.routeName),
-            function: () => Navigator.pushNamed(context, SetHomeTown.routeName),
-            child: itemComponentInfoMore(
-              Icons.home, 'Hometown', 'Thái bình', 8,
-              const SizedBox()
+                        returnResult(),
+                      ],
+                    ),
+                  ),
+                );
+              }
             ),
+            child: BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(builder: (context, state) {
+              return itemComponentInfoMore(Icons.height, 'Hometown', '${state.homeTown}', const SizedBox());
+            }),
           ),
         ],
       ),
     );
   }
 
-  Widget itemComponentInfoMore(IconData iconData, String title, String data, int key, Widget widget) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 20.w),
-      child: HeroCustom(
-        title: title,
-        iconLeading: iconData,
-        data: data,
-        keyHero: key,
-        widget: widget,
+  Widget itemComponentInfoMore(IconData iconLeading, String title, String data, Widget widget) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    return Material(
+      color: themeNotifier.systemThemeFade,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 15.w, horizontal: 20.w),
+        child: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(iconLeading, color: themeNotifier.systemText.withOpacity(0.4)),
+                  SizedBox(width: 10.w),
+                  Material(color: Colors.transparent, child: Text(title, style: TextStyles.defaultStyle.bold.setColor(themeNotifier.systemText))),
+                  SizedBox(width: 20.w),
+                  Expanded(child: Material(color: Colors.transparent,
+                    child: AutoSizeText(data, style: TextStyles.defaultStyle.setColor(themeNotifier.systemText), maxLines: 1, textAlign: TextAlign.end)
+                  ))
+                ],
+              ),
+              widget
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -198,4 +236,62 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
       child: Text(title, style: TextStyles.defaultStyle.setColor(condition ? ThemeColor.whiteColor : themeNotifier.systemText)),
     );
   }
+
+  Widget returnResult() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    return BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(builder: (context, store) {
+      if((store.textEditingState??'').isNotEmpty) {
+        return BlocBuilder<AutocompleteBloc, AutocompleteState>(
+            builder: (context, state) {
+              if(state is LoadAutocompleteState) {
+                return Center(
+                  child: CircularProgressIndicator(color: themeNotifier.systemText),
+                );
+              } else if(state is SuccessAutocompleteState) {
+                return ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: state.response.where((element) => element.properties?.formatted != null).length,
+                    itemBuilder: (context, index) {
+                      final validItems = state.response.where((element) => element.properties?.formatted != null).toList();
+                      return titleHometown(validItems, index);
+                    }
+                );
+              } else {
+                return Text("Could not find the address", style: TextStyles.defaultStyle.setColor(themeNotifier.systemText));
+              }
+            }
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
+  }
+
+  Widget titleHometown(List<Features> validItems, int index) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final properties = validItems[index].properties;
+    String dataHomeTown = '${properties?.formatted}';
+    return InkWell(
+      borderRadius: BorderRadius.circular(5.w),
+      onTap: () {
+        context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(homeTown: dataHomeTown));
+        FocusScope.of(context).unfocus();
+        Future.delayed(const Duration(milliseconds: 300), () {
+          Navigator.pop(context);
+        });
+      },
+      child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 14.w, horizontal: 10.w),
+          child: Row(
+            children: [
+              Icon(Icons.home_work_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
+              SizedBox(width: 20.w),
+              Expanded(child: Text(dataHomeTown, style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)))
+            ],
+          )
+      ),
+    );
+  }
+
 }

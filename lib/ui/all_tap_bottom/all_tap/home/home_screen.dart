@@ -2,6 +2,7 @@ import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:dating/tool_widget_custom/press_hold.dart';
+import 'package:dating/ui/detail/detail_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -96,32 +97,36 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(8),
                       child: PressHold(
-                        function: () {},
-                        child: SwipableStack(
-                          detectableSwipeDirections: const {
-                            SwipeDirection.right,
-                            SwipeDirection.left,
-                          },
-                          controller: _controller,
-                          stackClipBehaviour: Clip.none,
-                          onSwipeCompleted: (index, direction) {
-                            if (kDebugMode) {
-                              print('$index, $direction');
-                            }
-                          },
-                          horizontalSwipeThreshold: 0.8,
-                          verticalSwipeThreshold: 0.8,
-                          builder: (context, properties) {
-                            final itemIndex = properties.index % _images.length;
-                            return Center(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10.w),
-                                child: Container(
-                                  color: _images[itemIndex],
+                        shrink: true,
+                        function: () => Navigator.pushNamed(context, DetailScreen.routeName),
+                        child: Hero(
+                          tag: 'detail',
+                          child: SwipableStack(
+                            detectableSwipeDirections: const {
+                              SwipeDirection.right,
+                              SwipeDirection.left,
+                            },
+                            controller: _controller,
+                            stackClipBehaviour: Clip.none,
+                            onSwipeCompleted: (index, direction) {
+                              if (kDebugMode) {
+                                print('$index, $direction');
+                              }
+                            },
+                            horizontalSwipeThreshold: 0.8,
+                            verticalSwipeThreshold: 0.8,
+                            builder: (context, properties) {
+                              final itemIndex = properties.index % _images.length;
+                              return Center(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10.w),
+                                  child: Container(
+                                    color: _images[itemIndex],
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),

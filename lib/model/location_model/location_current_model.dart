@@ -36,7 +36,7 @@ class Results {
   String? road;
   double? lon;
   double? lat;
-  double? distance;
+  dynamic distance;
   String? resultType;
   String? formatted;
   String? addressLine1;
@@ -158,9 +158,9 @@ class Datasource {
 class Timezone {
   String? name;
   String? offsetSTD;
-  int? offsetSTDSeconds;
+  dynamic offsetSTDSeconds;
   String? offsetDST;
-  int? offsetDSTSeconds;
+  dynamic offsetDSTSeconds;
 
   Timezone(
       {this.name,

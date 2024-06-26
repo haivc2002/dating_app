@@ -10,6 +10,7 @@ import 'package:dating/tool_widget_custom/item_add_image.dart';
 import 'package:dating/tool_widget_custom/item_card.dart';
 import 'package:dating/service/access_photo_gallery.dart';
 import 'package:dating/common/textstyles.dart';
+import 'package:dating/tool_widget_custom/press_hold_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -159,12 +160,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             iconRight: Icons.arrow_forward_ios,
             onTap: ()=> controller.popupAcademicLevel(),
           ),
-          ItemCard(
-            iconTitle: Icon(CupertinoIcons.square_stack_3d_up, color: themeNotifier.systemText.withOpacity(0.4)),
-            titleCard: 'Why are you here?',
-            listWidget: [Text('Hẹn hò', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
-            iconRight: Icons.arrow_forward_ios,
-            onTap: ()=> controller.popupPurpose(),
+          PressHoldMenu(
+            width: widthScreen(context)*0.9,
+            height: 120,
+            content: ItemCard(
+              iconTitle: Icon(CupertinoIcons.square_stack_3d_up, color: themeNotifier.systemText.withOpacity(0.4)),
+              titleCard: 'Why are you here?',
+              listWidget: [Text('Hẹn hò', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
+              iconRight: Icons.arrow_forward_ios,
+              onTap: ()=> controller.popupPurpose(),
+            ),
+            listTitle: ['listTitle', 'test', 'test','test','test', 'test', 'test'],
+            listFunction: [
+                  () => print('listTitle'),
+                  () => print('test'),
+                  () => print('test'),
+                  () => print('test'),
+                  () => print('test'),
+                  () => print('test'),
+                  () => print('test'),
+            ]
           ),
           ItemCard(
             iconTitle: Icon(Icons.edit_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
@@ -173,7 +188,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             iconRight: Icons.arrow_forward_ios,
             onTap: ()=> controller.popupAbout(),
           ),
-          Text('More information about me', style: TextStyles.defaultStyle.bold.setTextSize(17.sp).setColor(ThemeColor.pinkColor))
+          Text('More information about me', style: TextStyles.defaultStyle.bold.setTextSize(17.sp).setColor(ThemeColor.pinkColor)),
         ],
       ),
     );
@@ -188,25 +203,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         color: themeNotifier.systemThemeFade,
         child: Column(
           children: [
-            itemComponentInfoMore(Icons.height, 'height', '180cm', 1),
-            itemComponentInfoMore(Icons.wine_bar, 'wine', 'không uống rựu', 2),
-            itemComponentInfoMore(Icons.smoking_rooms, 'smoking', 'Không thuốc lá', 4),
-            itemComponentInfoMore(Icons.ac_unit_sharp, 'Zodiac', 'nhân mã', 5),
-            itemComponentInfoMore(Icons.account_balance, 'Religion', 'vô thần', 6),
-            itemComponentInfoMore(Icons.person, 'Character', 'hướng nội', 7),
-            itemComponentInfoMore(Icons.home, 'Hometown', 'Thái bình', 8),
+            SizedBox(height: 10.w),
+            itemComponentInfoMore(Icons.height, 'height', '180cm'),
+            itemComponentInfoMore(Icons.wine_bar, 'wine', 'không uống rựu'),
+            itemComponentInfoMore(Icons.smoking_rooms, 'smoking', 'Không thuốc lá'),
+            itemComponentInfoMore(Icons.ac_unit_sharp, 'Zodiac', 'nhân mã'),
+            itemComponentInfoMore(Icons.account_balance, 'Religion', 'vô thần'),
+            itemComponentInfoMore(Icons.person, 'Character', 'hướng nội'),
+            itemComponentInfoMore(Icons.home, 'Hometown', 'Thái bình'),
+            SizedBox(height: 10.w),
           ],
         ),
       ),
     );
   }
 
-  Widget itemComponentInfoMore(IconData iconData, String title, String data, int key) {
-    return HeroCustom(
-      title: title,
-      iconLeading: iconData,
-      data: data,
-      keyHero: key,
+  Widget itemComponentInfoMore(IconData iconData, String title, String data) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.w),
+      child: Row(
+        children: [
+          Icon(iconData, color: themeNotifier.systemText.withOpacity(0.4)),
+          SizedBox(width: 20.w),
+          Text(title, style: TextStyles.defaultStyle.bold.setColor(themeNotifier.systemText)),
+          const Spacer(),
+          Text(data, style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))
+        ],
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:dating/common/scale_screen.dart';
+import 'package:dating/common/textstyles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -45,9 +46,9 @@ class _PopupTypeHeroState extends State<PopupTypeHero>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _animation = Tween<double>(begin: 0, end: 10).animate(_controller);
+    _animation = Tween<double>(begin: 0, end: 6).animate(_controller);
     _opaCityBackground =
-        Tween<double>(begin: 0.0, end: 0.6).animate(_controller);
+        Tween<double>(begin: 0.0, end: 0.4).animate(_controller);
 
     _controller.forward();
   }
@@ -65,7 +66,6 @@ class _PopupTypeHeroState extends State<PopupTypeHero>
               Navigator.pop(context);
               _controller.reverse();
             }
-
           },
           child: AnimatedBuilder(
             animation: _animation,
@@ -93,26 +93,22 @@ class _PopupTypeHeroState extends State<PopupTypeHero>
                   child: Column(
                     children: [
                       Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 20.w, vertical: 10.w),
+                        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.w),
                         child: Row(
                           children: [
-                            Icon(widget.iconTitle,
-                                color: themeNotifier.systemText),
+                            Icon(widget.iconTitle, color: themeNotifier.systemText),
                             SizedBox(width: 10.w),
                             Text(widget.title ?? '',
-                                style: TextStyle(
-                                    color: themeNotifier.systemText,
-                                    fontWeight: FontWeight.bold)),
-                            SizedBox(width: 10.w),
-                            Expanded(
-                              child: Text(widget.data ?? '',
-                                  maxLines: 1,
-                                  textAlign: TextAlign.end,
-                                  style: TextStyle(
-                                      color: themeNotifier.systemText,
-                                      fontWeight: FontWeight.bold)),
-                            )
+                              style: TextStyles.defaultStyle.bold.setColor(themeNotifier.systemText),
+                            ),
+                            // Expanded(
+                            //   child: Text(widget.data ?? '',
+                            //       maxLines: 1,
+                            //       textAlign: TextAlign.end,
+                            //       style: TextStyle(
+                            //           color: themeNotifier.systemText,
+                            //           fontWeight: FontWeight.bold)),
+                            // )
                           ],
                         ),
                       ),

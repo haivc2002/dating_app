@@ -5,10 +5,12 @@ class PressHold extends StatefulWidget {
   final Function() function;
   final Function()? onTap;
   final Widget child;
+  final bool? shrink;
   const PressHold({
     Key? key,
     required this.function,
     required this.child,
+    this.shrink,
     this.onTap,
   }) : super(key: key);
 
@@ -21,7 +23,7 @@ class _PressHoldState extends State<PressHold> {
 
   void _handleTapDown(TapDownDetails details) {
     setState(() {
-      _scale = 0.95;
+      _scale = widget.shrink == true ? 0.95 : 1.2;
     });
   }
 

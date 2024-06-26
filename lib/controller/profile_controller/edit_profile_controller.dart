@@ -14,7 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
+import '../../theme/theme_notifier.dart';
 import '../../tool_widget_custom/list_tile_check_circle.dart';
 import 'model_list_purpose.dart';
 
@@ -28,6 +30,10 @@ class EditProfileController {
     ModelListPurpose('Talk', Icons.chat_bubble, 'I want to chat and see where the relationship goes'),
     ModelListPurpose('Relationship', Icons.favorite, 'Find a long term relationship'),
   ];
+
+  List<String> wineAndSmoking = ['Sometime', 'Usually', 'Have', 'Never', 'Undisclosed'];
+  List<String> zodiac = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpius', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+  List<String> character = ['Introverted', 'Outward', 'Somewhere in the middle', 'Undisclosed'];
 
   List<String> listAcademicLevel = [
     'High School',
@@ -209,5 +215,16 @@ class EditProfileController {
         ],
       )
     );
+  }
+
+  Widget listHeight(int index) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    if(index == 0) {
+      return Text('lower 100cm', textAlign: TextAlign.center, style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),);
+    } else if (index == 100) {
+      return Text('higher 200cm', textAlign: TextAlign.center, style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),);
+    } else {
+      return Text('${index+100}cm', textAlign: TextAlign.center, style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),);
+    }
   }
 }
