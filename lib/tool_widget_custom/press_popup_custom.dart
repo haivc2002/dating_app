@@ -108,7 +108,6 @@ class _CartPopupState extends State<CartPopup> with SingleTickerProviderStateMix
     );
     _animation = Tween<double>(begin: 0, end: 5).animate(_controller);
     _opaCityBackground = Tween<double>(begin: 0.0, end: 0.4).animate(_controller);
-
     _controller.forward();
   }
   @override

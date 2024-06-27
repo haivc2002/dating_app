@@ -10,9 +10,11 @@ import 'package:dating/tool_widget_custom/item_add_image.dart';
 import 'package:dating/tool_widget_custom/item_card.dart';
 import 'package:dating/service/access_photo_gallery.dart';
 import 'package:dating/common/textstyles.dart';
+import 'package:dating/tool_widget_custom/press_hold.dart';
 import 'package:dating/tool_widget_custom/press_hold_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -138,55 +140,68 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ItemCard(
-            titleCard: 'Bùi Thanh Hải',
-            listWidget: [
-              Text('Hà nội', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),),
-            ],
-            iconRight: Icons.arrow_forward_ios,
-            onTap: ()=> controller.popupName()
+          PressHold(
+            function: ()=> controller.popupName(),
+            child: ItemCard(
+              titleCard: 'Bùi Thanh Hải',
+              listWidget: [
+                Text('Hà nội', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),),
+              ],
+              iconRight: Icons.arrow_forward_ios,
+              onTap: ()=> controller.popupName()
+            ),
           ),
-          ItemCard(
-            iconTitle: Icon(Icons.work_outline, color: themeNotifier.systemText.withOpacity(0.4)),
-            titleCard: 'Work',
-            listWidget: [Text('data', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
-            iconRight: Icons.arrow_forward_ios,
-            onTap: ()=> controller.popupWork(),
-          ),
-          ItemCard(
-            iconTitle: Icon(Icons.home_work_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
-            titleCard: 'Academic level',
-            listWidget: [Text('đại học', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
-            iconRight: Icons.arrow_forward_ios,
-            onTap: ()=> controller.popupAcademicLevel(),
+          PressHold(
+            function: ()=> controller.popupWork(),
+            child: ItemCard(
+              iconTitle: Icon(Icons.work_outline, color: themeNotifier.systemText.withOpacity(0.4)),
+              titleCard: 'Work',
+              listWidget: [Text('data', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
+              iconRight: Icons.arrow_forward_ios,
+              onTap: ()=> controller.popupWork(),
+            ),
           ),
           PressHoldMenu(
-            width: widthScreen(context)*0.9,
-            height: 120,
-            content: ItemCard(
+            onPressedList: [
+              ()=> print('object1'),
+              ()=> print('object2'),
+              ()=> print('object3'),
+              ()=> print('object3'),
+              ()=> print('object3'),
+            ],
+            menuAction: const ['High School', 'College', 'University', 'Master\'s Degree', 'Doctoral Degree'],
+            onTap: ()=> controller.popupAcademicLevel(),
+            child: ItemCard(
+              iconTitle: Icon(Icons.home_work_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
+              titleCard: 'Academic level',
+              listWidget: [Text('đại học', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
+              iconRight: Icons.arrow_forward_ios,
+            ),
+          ),
+          PressHoldMenu(
+            onPressedList: [
+              ()=> print('object1'),
+              ()=> print('object2'),
+              ()=> print('object3'),
+            ],
+            onTap: ()=> controller.popupPurpose(),
+            menuAction: const ['Dating', 'Talk', 'Relationship'],
+            child: ItemCard(
               iconTitle: Icon(CupertinoIcons.square_stack_3d_up, color: themeNotifier.systemText.withOpacity(0.4)),
               titleCard: 'Why are you here?',
               listWidget: [Text('Hẹn hò', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
               iconRight: Icons.arrow_forward_ios,
-              onTap: ()=> controller.popupPurpose(),
-            ),
-            listTitle: ['listTitle', 'test', 'test','test','test', 'test', 'test'],
-            listFunction: [
-                  () => print('listTitle'),
-                  () => print('test'),
-                  () => print('test'),
-                  () => print('test'),
-                  () => print('test'),
-                  () => print('test'),
-                  () => print('test'),
-            ]
+            )
           ),
-          ItemCard(
-            iconTitle: Icon(Icons.edit_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
-            titleCard: 'A little about yourself',
-            listWidget: [Text('làgweiufgiwe', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
-            iconRight: Icons.arrow_forward_ios,
-            onTap: ()=> controller.popupAbout(),
+          PressHold(
+            function: ()=> controller.popupAbout(),
+            child: ItemCard(
+              iconTitle: Icon(Icons.edit_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
+              titleCard: 'A little about yourself',
+              listWidget: [Text('làgweiufgiwe', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
+              iconRight: Icons.arrow_forward_ios,
+              onTap: ()=> controller.popupAbout(),
+            ),
           ),
           Text('More information about me', style: TextStyles.defaultStyle.bold.setTextSize(17.sp).setColor(ThemeColor.pinkColor)),
         ],
