@@ -4,8 +4,8 @@ import 'package:dating/ui/setting/setting_screen.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'about_app/about_app_screen.dart';
-import 'all_tap_bottom/all_tap/profile/edit_more_info_screen.dart';
-import 'all_tap_bottom/all_tap/profile/edit_profile_screen.dart';
+import 'profile/edit_more_info_screen.dart';
+import 'profile/edit_profile_screen.dart';
 import 'all_tap_bottom/all_tap_bottom_screen.dart';
 import 'auth/login_screen.dart';
 

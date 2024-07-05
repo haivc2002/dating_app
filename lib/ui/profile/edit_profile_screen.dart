@@ -19,9 +19,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../theme/theme_notifier.dart';
-import '../../../../bloc/bloc_profile/edit_bloc.dart';
-import '../../../../controller/profile_controller/edit_profile_controller.dart';
+import '../../../theme/theme_notifier.dart';
+import '../../bloc/bloc_profile/edit_bloc.dart';
+import '../../controller/profile_controller/edit_profile_controller.dart';
 import 'edit_more_info_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {

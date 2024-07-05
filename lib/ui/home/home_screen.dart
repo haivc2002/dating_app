@@ -10,10 +10,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:swipable_stack/swipable_stack.dart';
 
-import '../../../../../common/textstyles.dart';
-import '../../../../../theme/theme_notifier.dart';
-import '../../../../common/global.dart';
-import '../../../../controller/home_controller/home_controller.dart';
+import '../../../common/textstyles.dart';
+import '../../../theme/theme_notifier.dart';
+import '../../common/global.dart';
+import '../../controller/home_controller/home_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   final void Function(BuildContext) openDrawer;

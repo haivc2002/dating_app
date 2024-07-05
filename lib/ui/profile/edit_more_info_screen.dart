@@ -11,13 +11,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../common/textstyles.dart';
-import '../../../../../theme/theme_notifier.dart';
-import '../../../../bloc/bloc_profile/store_edit_more_bloc.dart';
-import '../../../../bloc/bloc_search_autocomplete/autocomplete_bloc.dart';
-import '../../../../controller/location_controller/search_autocomplete_controller.dart';
-import '../../../../model/location_model/search_autocomplete_model.dart';
-import '../../../../tool_widget_custom/input_custom.dart';
+import '../../../common/textstyles.dart';
+import '../../../theme/theme_notifier.dart';
+import '../../bloc/bloc_profile/store_edit_more_bloc.dart';
+import '../../bloc/bloc_search_autocomplete/autocomplete_bloc.dart';
+import '../../controller/location_controller/search_autocomplete_controller.dart';
+import '../../model/location_model/search_autocomplete_model.dart';
+import '../../tool_widget_custom/input_custom.dart';
 
 class EditMoreInfoScreen extends StatefulWidget {
   static const String routeName = 'editMoreInfoScreen';

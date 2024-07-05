@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../theme/theme_notifier.dart';
-import '../../../../../tool_widget_custom/item_card.dart';
-import '../../../setting/setting_screen.dart';
+import '../../../theme/theme_notifier.dart';
+import '../../../tool_widget_custom/item_card.dart';
+import '../setting/setting_screen.dart';
 import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {

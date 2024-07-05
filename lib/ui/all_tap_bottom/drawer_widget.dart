@@ -6,8 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../../theme/theme_color.dart';
-import '../../../setting/setting_screen.dart';
+import '../../../theme/theme_color.dart';
+import '../setting/setting_screen.dart';
 import '../profile/edit_profile_screen.dart';
 
 class DrawerWidget extends StatefulWidget {

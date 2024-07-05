@@ -106,6 +106,7 @@ class _CartMenuState extends State<CartMenu>  with SingleTickerProviderStateMixi
   late Animation<double> _scaleAnimation;
 
   late Animation<double> _opaCityBackground;
+  late Animation<double> _opaCityListMenu;
   double scale = 0.5;
 
   @override
@@ -117,10 +118,11 @@ class _CartMenuState extends State<CartMenu>  with SingleTickerProviderStateMixi
     );
     _fade = Tween<double>(begin: 0, end: 5).animate(_controller);
     _opaCityBackground = Tween<double>(begin: 0.0, end: 0.4).animate(_controller);
-    _controller.forward();
-    _scaleAnimation = Tween<double>(begin: 0.2, end: 1.0).animate(
+    _opaCityListMenu = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
+    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
+    _controller.forward();
   }
 
   void disablePressMenu() async {
@@ -173,7 +175,7 @@ class _CartMenuState extends State<CartMenu>  with SingleTickerProviderStateMixi
                               return Transform.scale(
                                 scale: _scaleAnimation.value,
                                 child: Opacity(
-                                  opacity: _opaCityBackground.value+0.5,
+                                  opacity: _opaCityListMenu.value,
                                   child: MediaQuery.removePadding(
                                     context: context,
                                     removeTop: true,

@@ -10,10 +10,10 @@ import 'package:provider/provider.dart';
 import '../../../theme/theme_notifier.dart';
 import '../../bloc/bloc_all_tap/all_tap_bloc.dart';
 import '../../controller/all_tap_controller/all_tap_controller.dart';
-import 'all_tap/drawer/drawer_widget.dart';
-import 'all_tap/home/home_screen.dart';
-import 'all_tap/premium/premium_screen.dart';
-import 'all_tap/profile/profile_screen.dart';
+import 'drawer_widget.dart';
+import '../home/home_screen.dart';
+import '../premium/premium_screen.dart';
+import '../profile/profile_screen.dart';
 
 
 class AllTapBottomScreen extends StatefulWidget {
