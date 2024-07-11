@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:dating/common/scale_screen.dart';
-import 'package:dating/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -61,12 +60,11 @@ class AppBarCustom extends StatelessWidget {
           height: 100.w,
           width: widthScreen(context),
           decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  // colors: [ThemeColor.themeDarkSystem, ThemeColor.themeDarkSystem.withOpacity(0.5)],
-                  colors: [themeNotifier.systemTheme, themeNotifier.systemTheme.withOpacity(0.5)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                )
+              gradient: LinearGradient(
+                colors: [themeNotifier.systemTheme, themeNotifier.systemTheme.withOpacity(0.5)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              )
         ),
           child: Column(
             children: [
@@ -114,7 +112,6 @@ class AppBarCustom extends StatelessWidget {
                       width: 30.w,
                       child: Container(
                         decoration: BoxDecoration(
-                            // color: ThemeColor.whiteColor.withOpacity(0.1),
                             color: themeNotifier.highlight.withOpacity(0.2),
                             shape: BoxShape.circle
                         ),

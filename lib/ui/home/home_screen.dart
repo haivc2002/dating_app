@@ -98,9 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.all(8),
                       child: PressHold(
                         shrink: true,
-                        function: () => Navigator.pushNamed(context, DetailScreen.routeName),
+                        function: () => Navigator.pushNamed(context, DetailScreen.routeName, arguments: 0),
                         child: Hero(
-                          tag: 'detail',
+                          tag: 'detail0',
                           child: SwipableStack(
                             detectableSwipeDirections: const {
                               SwipeDirection.right,

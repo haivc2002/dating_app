@@ -3,18 +3,16 @@
 import 'dart:io';
 
 import 'package:dating/common/scale_screen.dart';
+import 'package:dating/common/textstyles.dart';
+import 'package:dating/service/access_photo_gallery.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
-import 'package:dating/tool_widget_custom/hero_custom.dart';
 import 'package:dating/tool_widget_custom/item_add_image.dart';
 import 'package:dating/tool_widget_custom/item_card.dart';
-import 'package:dating/service/access_photo_gallery.dart';
-import 'package:dating/common/textstyles.dart';
 import 'package:dating/tool_widget_custom/press_hold.dart';
 import 'package:dating/tool_widget_custom/press_hold_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';

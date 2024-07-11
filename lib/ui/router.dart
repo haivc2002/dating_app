@@ -44,6 +44,7 @@ class AppRouter {
 
       case DetailScreen.routeName:
         return PageRouteBuilder(
+          settings: settings,
           pageBuilder: (context, animation, secondaryAnimation) => const DetailScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
