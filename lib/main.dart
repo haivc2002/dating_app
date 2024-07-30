@@ -1,6 +1,5 @@
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_notifier.dart';
-import 'package:dating/ui/all_tap_bottom/all_tap_bottom_screen.dart';
 import 'package:dating/ui/preamble/hello_screen.dart';
 import 'package:dating/ui/router.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,7 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Global.load();
   runApp(
-      const MultiBloc(child: MyApp()),
+    const MultiBloc(child: MyApp()),
   );
 }
 

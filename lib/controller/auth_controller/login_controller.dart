@@ -1,6 +1,12 @@
+import 'package:dating/common/global.dart';
+import 'package:dating/common/textstyles.dart';
+import 'package:dating/model/model_info_user.dart';
+import 'package:dating/model/model_request_auth.dart';
+import 'package:dating/tool_widget_custom/popup_custom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../service/service_login.dart';
 import '../../theme/theme_color.dart';
 import '../../tool_widget_custom/bottom_sheet_custom.dart';
 import '../../tool_widget_custom/button_widget_custom.dart';
@@ -11,6 +17,9 @@ class LoginController {
 
   BuildContext context;
   LoginController(this.context);
+
+  ServiceLogin serviceLogin = ServiceLogin();
+  ModelRequestAuth req = ModelRequestAuth();
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
@@ -44,6 +53,7 @@ class LoginController {
                   controller: emailController,
                   colorInput: ThemeColor.blackColor.withOpacity(0.3),
                   labelText: 'Email',
+                  colorText: ThemeColor.whiteColor,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 SizedBox(height: 20.h),
@@ -52,6 +62,7 @@ class LoginController {
                   hidePass: true,
                   colorInput: ThemeColor.blackColor.withOpacity(0.3),
                   labelText: 'passWord',
+                  colorText: ThemeColor.whiteColor,
                   keyboardType: TextInputType.visiblePassword,
                 ),
                 SizedBox(height: 20.h),
@@ -65,11 +76,7 @@ class LoginController {
                       fontSize: 15.sp,
                       fontWeight: FontWeight.bold
                   ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamedAndRemoveUntil(context, AllTapBottomScreen.routeName, (route) => false);
-                    // Navigator.pushNamed(context, AllTapDrawerScreen.routeName);
-                  },
+                  onTap: ()=> login(emailController.text, passController.text)
                 )
               ],
             ),
@@ -77,4 +84,36 @@ class LoginController {
         )
     );
   }
+
+  void login(String email, String password) async {
+    initModelRequestLogin(email, password);
+    ModelInfoUser response = await serviceLogin.login(req);
+    if(response.result == 'Success') {
+      onSuccess(response);
+    } else {
+      onError(response);
+    }
+  }
+
+  void initModelRequestLogin(String email, String password) {
+    req = ModelRequestAuth(
+      email : email,
+      password: password
+    );
+  }
+
+  void onSuccess(ModelInfoUser response) {
+    Navigator.pop(context);
+    Global.setInt('idUser', response.idUser!);
+    Navigator.pushNamedAndRemoveUntil(context, AllTapBottomScreen.routeName, (route) => false);
+  }
+
+  void onError(ModelInfoUser response) {
+    PopupCustom.showPopup(context,
+      content: Text('${response.message}'),
+      listOnPress: [()=> Navigator.pop(context)],
+      listAction: [Text('Ok', style: TextStyles.defaultStyle.bold.setColor(ThemeColor.blueColor))]
+    );
+  }
+
 }

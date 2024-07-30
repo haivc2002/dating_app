@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 
 import '../theme/theme_color.dart';
-import '../theme/theme_notifier.dart';
 
 class TextStyles {
   TextStyles(this.context);

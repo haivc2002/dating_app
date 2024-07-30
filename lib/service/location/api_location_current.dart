@@ -1,3 +1,5 @@
+import 'package:dating/common/textstyles.dart';
+import 'package:dating/theme/theme_color.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
@@ -25,23 +27,43 @@ class ApiLocationCurrent {
     }
   }
 
-  Future<void> getCurrentPosition(BuildContext context) async {
+  Future<Position?> getCurrentPosition(BuildContext context, LocationAccuracy desiredAccuracy) async {
     try {
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission != LocationPermission.whileInUse &&
             permission != LocationPermission.always) {
-          if(context.mounted) {
-            PopupCustom.showPopup(context, textContent: "Permission denied, go to settings?", function: () async {
-              await openAppSettings();
-            });
+          if (context.mounted) {
+            popup(context);
           }
-          return;
+          return null;
         }
+      } else if (permission == LocationPermission.deniedForever) {
+        if (context.mounted) {
+          popup(context);
+        }
+        return null;
       }
+      return await Geolocator.getCurrentPosition(desiredAccuracy: desiredAccuracy);
     } catch (e) {
-      print('Error while getting current location: $e');
+      return null;
     }
+  }
+
+
+  void popup(BuildContext context) {
+    PopupCustom.showPopup(
+      context,
+      textContent: "Permission denied, go to settings?",
+      listAction: [
+        Text('No', style: TextStyles.defaultStyle.setColor(ThemeColor.redColor)),
+        Text('Yes', style: TextStyles.defaultStyle.setColor(ThemeColor.blueColor).bold),
+      ],
+      listOnPress: [
+        ()=> Navigator.pop(context),
+        () async => await openAppSettings()
+      ],
+    );
   }
 }

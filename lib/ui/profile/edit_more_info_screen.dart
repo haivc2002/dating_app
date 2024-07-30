@@ -1,11 +1,9 @@
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:dating/common/scale_screen.dart';
 import 'package:dating/controller/profile_controller/edit_profile_controller.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:dating/tool_widget_custom/press_popup_custom.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

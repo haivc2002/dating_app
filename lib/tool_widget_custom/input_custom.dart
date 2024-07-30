@@ -8,7 +8,7 @@ import '../theme/theme_notifier.dart';
 
 class InputCustom extends StatelessWidget {
   final TextEditingController? controller;
-  final Color? colorInput, colorText;
+  final Color? colorInput, colorText, labelColor;
   final int? maxLines, maxLength;
   final String? labelText;
   final double? topRadius, bottomRadius;
@@ -34,6 +34,7 @@ class InputCustom extends StatelessWidget {
     this.maxLines,
     this.maxLength,
     this.colorText,
+    this.labelColor,
   }) : super(key: key);
 
   @override
@@ -59,7 +60,7 @@ class InputCustom extends StatelessWidget {
                   filled: true,
                   fillColor: colorInput ?? Colors.transparent,
                   labelText: labelText,
-                  labelStyle: TextStyle(color: ThemeColor.whiteColor.withOpacity(0.5)),
+                  labelStyle: TextStyle(color: labelColor ?? ThemeColor.whiteColor.withOpacity(0.5)),
                   enabledBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.transparent),
                     borderRadius: BorderRadius.only(

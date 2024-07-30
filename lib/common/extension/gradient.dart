@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../../theme/theme_color.dart';
 
@@ -11,4 +12,14 @@ extension GradientColor on LinearGradient {
         end: Alignment.bottomCenter
     );
   }
+
+  static LinearGradient get gradientPremium {
+    return const LinearGradient(
+        colors: [ThemeColor.golderColor, ThemeColor.golderFadeColor],
+        begin: Alignment.bottomLeft,
+        end: Alignment.topRight
+    );
+  }
+
+
 }

@@ -8,6 +8,7 @@ class ThemeColor {
 
 
   static const Color whiteColor = Color(0xFFFFFFFF);
+  static const Color whiteIos = Color(0xFFE8E8E8);
   static const Color blackColor = Color(0xFF000000);
   static const Color pinkColor = Color(0xFFFF6880);
   static const Color pinkFadeColor = Color(0xFFF38F9F);
@@ -19,6 +20,8 @@ class ThemeColor {
   static const Color blackNotAbsolute = Color(0xFF18191A);
   static const Color yellowColor = Colors.yellow;
   static const Color orangeFadeColor = Color(0xFFF3A332);
+  static const Color golderColor = Color(0xFFEB9D26);
+  static const Color golderFadeColor = Color(0xFFF7D678);
 
 }
 

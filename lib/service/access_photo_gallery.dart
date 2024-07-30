@@ -1,6 +1,8 @@
 
 import 'dart:io';
 
+import 'package:dating/common/textstyles.dart';
+import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/popup_custom.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +29,9 @@ class AccessPhotoGallery {
           final compressedFile = File(pickedFile.path)
             ..writeAsBytesSync(compressedImage);
 
+          if(context.mounted) {
+            imageUpload = List.from(context.read<EditBloc>().state.imageUpload ?? []);
+          }
           if (index != null && index < imageUpload.length) {
             imageUpload[index] = compressedFile;
           } else {
@@ -48,9 +53,18 @@ class AccessPhotoGallery {
       }
     } else {
       if (context.mounted) {
-        PopupCustom.showPopup(context, textContent: "Permission denied, go to settings?", function: () async {
-          await openAppSettings();
-        });
+        PopupCustom.showPopup(
+          context,
+          textContent: "Permission denied, go to settings?",
+          listAction: [
+            Text('No', style: TextStyles.defaultStyle.setColor(ThemeColor.redColor)),
+            Text('Yes', style: TextStyles.defaultStyle.setColor(ThemeColor.blueColor)),
+          ],
+          listOnPress: [
+            (){},
+            () async => await openAppSettings(),
+          ],
+        );
       }
     }
   }
@@ -63,6 +77,15 @@ class AccessPhotoGallery {
       return result == PermissionStatus.granted;
     }
   }
+
+  void remove() {
+    imageUpload = List.from(context.read<EditBloc>().state.imageUpload ?? []);
+    if (imageUpload.isNotEmpty) {
+      imageUpload.removeLast();
+      context.read<EditBloc>().add(EditEvent(imageUpload: imageUpload));
+    }
+  }
+
   static Uint8List compressImage(Uint8List imageData) {
     final image = img.decodeImage(imageData);
     if (image != null) {
@@ -70,4 +93,6 @@ class AccessPhotoGallery {
     }
     return imageData;
   }
+
+
 }

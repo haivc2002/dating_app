@@ -15,7 +15,7 @@ class BottomSheetCustom {
     this.height,
   });
 
-  static void showCustomBottomSheet(BuildContext context, Widget child, {double? height, Color? backgroundColor}) {
+  static void showCustomBottomSheet(BuildContext context, Widget child, {double? height, Color? backgroundColor, Function? whenComplete}) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -62,7 +62,7 @@ class BottomSheetCustom {
             ),
           );
         }
-    );
+    ).then((_)=> whenComplete);
   }
 }
 

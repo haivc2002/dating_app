@@ -1,10 +1,15 @@
 import 'dart:ui';
 
+import 'package:dating/bloc/bloc_all_tap/api_all_tap_bloc.dart';
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/common/time_now.dart';
+import 'package:dating/theme/theme_notifier.dart';
+import 'package:dating/ui/auth/login_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 import '../../../theme/theme_color.dart';
 import '../setting/setting_screen.dart';
@@ -43,6 +48,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Row(
       children: [
         Drawer(
@@ -59,7 +65,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               ),
               Container(
                 decoration: BoxDecoration(
-                    color: ThemeColor.blackNotAbsolute.withOpacity(0.3),
+                    color: themeNotifier.systemTheme.withOpacity(0.3),
                     border: Border(
                         right: BorderSide(
                             color: ThemeColor.greyColor.withOpacity(0.1)
@@ -72,15 +78,40 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     Container(
                       height: 100.w,
                     ),
-                    ListTile(
-                      leading: CircleAvatar(),
-                      title: Text(TimeNow.helloDate(), style: TextStyles.defaultStyle.whiteText.setTextSize(16.sp)),
-                      subtitle: Text('Thanh Hải', style: TextStyles.defaultStyle.setColor(ThemeColor.greyColor)),
-                      trailing: TimeNow.iconDate(),
+                    BlocBuilder<ApiAllTapBloc, ApiAllTapState>(
+                      builder: (context, state) {
+                        if(state is LoadApiAllTapState) {
+                          return ListTile(
+                            leading: const CircleAvatar(),
+                            title: Text(TimeNow.helloDate(), style: TextStyles.defaultStyle.whiteText.setTextSize(16.sp)),
+                            subtitle: const Text('Loading...'),
+                            trailing: TimeNow.iconDate(),
+                          );
+                        } else if(state is SuccessApiAllTapState) {
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage('${state.info?.listImage?[0].image}'),
+                            ),
+                            title: Text(TimeNow.helloDate(), style: TextStyles.defaultStyle.whiteText.setTextSize(16.sp)),
+                            subtitle: Text('${state.info?.info?.name}', style: TextStyles
+                                .defaultStyle
+                                .setColor(themeNotifier.systemText)
+                            ),
+                            trailing: TimeNow.iconDate(),
+                          );
+                        } else {
+                          return ListTile(
+                            leading: CircleAvatar(),
+                            title: Text(TimeNow.helloDate(), style: TextStyles.defaultStyle.whiteText.setTextSize(16.sp)),
+                            subtitle: Text('fiwhifh'),
+                            trailing: TimeNow.iconDate(),
+                          );
+                        }
+                      }
                     ),
                     itemDrawer(CupertinoIcons.profile_circled, 'Edit Personal information', () {Navigator.pushNamed(context, EditProfileScreen.routeName);}),
                     itemDrawer(Icons.settings,'Setting', () {Navigator.pushNamed(context, SettingScreen.routeName);}),
-                    itemDrawer(Icons.logout,'Sign Out', () {}),
+                    itemDrawer(Icons.logout,'Sign Out', ()=> Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false)),
                   ],
                 ),
               )

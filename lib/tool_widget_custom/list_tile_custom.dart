@@ -7,6 +7,7 @@ class ListTileCustom extends StatelessWidget {
   final String? title, subtitle;
   final Color? color;
   final Function()? onTap;
+  final double? borderRadius;
   final IconData? iconLeading, iconTrailing;
   const ListTileCustom({
     Key? key,
@@ -16,15 +17,16 @@ class ListTileCustom extends StatelessWidget {
     this.color,
     this.subtitle,
     this.onTap,
+    this.borderRadius,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      borderRadius: BorderRadius.circular(10.w),
+      borderRadius: BorderRadius.circular(borderRadius ?? 10.w),
       color: color ?? ThemeColor.whiteColor,
       child: InkWell(
-        borderRadius: BorderRadius.circular(10.w),
+        borderRadius: BorderRadius.circular(borderRadius ?? 10.w),
         onTap: onTap,
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 10.w),

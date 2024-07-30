@@ -4,6 +4,7 @@ import 'package:dating/ui/setting/setting_screen.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'about_app/about_app_screen.dart';
+import 'auth/register_info_screen.dart';
 import 'profile/edit_more_info_screen.dart';
 import 'profile/edit_profile_screen.dart';
 import 'all_tap_bottom/all_tap_bottom_screen.dart';
@@ -17,7 +18,10 @@ class AppRouter {
         return CupertinoPageRoute(builder: (_) => const LoginScreen());
 
       case RegisterScreen.routeName:
-        return CupertinoPageRoute(builder: (_) => const RegisterScreen());
+        return CupertinoPageRoute(
+          settings: settings,
+          builder: (_) => const RegisterScreen()
+        );
 
       case AllTapBottomScreen.routeName:
         return CupertinoPageRoute(builder: (_) => const AllTapBottomScreen());
@@ -52,6 +56,12 @@ class AppRouter {
               child: child,
             );
           },
+        );
+
+      case RegisterInfoScreen.routeName:
+        return CupertinoPageRoute(
+          settings: settings,
+          builder: (_) => const RegisterInfoScreen()
         );
 
       default:

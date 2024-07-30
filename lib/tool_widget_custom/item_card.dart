@@ -1,4 +1,3 @@
-import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,25 +41,22 @@ class ItemCard extends StatelessWidget {
               padding: EdgeInsets.all(20.w),
               child: Row(
                 children: [
-                  SizedBox(
-                    width: widthScreen(context)*0.7,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            iconTitle ?? const SizedBox.shrink(),
-                            iconTitle != null ? SizedBox(width: 10.w) : const SizedBox.shrink(),
-                            Text(titleCard ?? '', style: TextStyle(
-                              fontSize: fontSize ?? 13.sp,
-                              fontWeight: FontWeight.bold,
-                              color: titleColor ?? themeNotifier.systemText
-                            ))
-                          ],
-                        ),
-                        if (listWidget != null) ...listWidget! else const SizedBox()
-                      ],
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          iconTitle ?? const SizedBox.shrink(),
+                          iconTitle != null ? SizedBox(width: 10.w) : const SizedBox.shrink(),
+                          Text(titleCard ?? '', style: TextStyle(
+                            fontSize: fontSize ?? 13.sp,
+                            fontWeight: FontWeight.bold,
+                            color: titleColor ?? themeNotifier.systemText
+                          ))
+                        ],
+                      ),
+                      if (listWidget != null) ...listWidget! else const SizedBox()
+                    ],
                   ),
                   const Spacer(),
                   iconRight != null ? Icon(iconRight!, color: ThemeColor.greyColor.withOpacity(0.7), size: 17.sp,) : const SizedBox.shrink()

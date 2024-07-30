@@ -16,3 +16,4 @@ class ErrorAutocompleteState extends AutocompleteState {
 
   ErrorAutocompleteState({required this.message});
 }
+

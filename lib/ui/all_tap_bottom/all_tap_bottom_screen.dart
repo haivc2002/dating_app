@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../../../theme/theme_notifier.dart';
 import '../../bloc/bloc_all_tap/all_tap_bloc.dart';
 import '../../controller/all_tap_controller/all_tap_controller.dart';
+import '../message/message_screen.dart';
 import 'drawer_widget.dart';
 import '../home/home_screen.dart';
 import '../premium/premium_screen.dart';
@@ -28,7 +29,6 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
 
   late AnimationController animationController;
   late Animation<double> animation;
-  late ThemeNotifier themeNotifier;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   late AllTapController controller = AllTapController(context);
   bool drawerStatus = false;
@@ -43,34 +43,20 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
     );
     animation = Tween<double>(begin: 1.0, end: 0.9).animate(animationController);
     controller.getData();
-  }
-
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    themeNotifier = Provider.of<ThemeNotifier>(context);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scaffoldKey.currentState != null) {
-        if (scaffoldKey.currentState!.isDrawerOpen) {
-          drawerStatus = true;
-        } else {
-          drawerStatus = false;
-        }
+    if (scaffoldKey.currentState != null) {
+      if (scaffoldKey.currentState!.isDrawerOpen) {
+        drawerStatus = true;
+      } else {
+        drawerStatus = false;
       }
-    });
-    drawerStatus != false
-        ? animationController.forward()
-        : animationController.reverse();
+    }
+    drawerStatus ? animationController.forward() : animationController.reverse();
   }
 
   @override
   void dispose() {
-    super.dispose();
     animationController.dispose();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      drawerStatus == false;
-    });
+    super.dispose();
   }
 
   updateDrawerStatus(bool status) {
@@ -86,9 +72,10 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
       drawerEnableOpenDragGesture: false,
-      backgroundColor: themeNotifier.systemThemeFade,
+      backgroundColor: themeNotifier.systemTheme,
       drawer: DrawerWidget(updateDrawerStatus: updateDrawerStatus, animationController: animationController),
       body: AnimatedBuilder(
           animation: animation,
@@ -108,7 +95,7 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
                       children: [
                         HomeScreen(animationController: animationController, openDrawer: controller.openDrawer, buildContext: context),
                         const PremiumScreen(),
-                        SizedBox(),
+                        const MessageScreen(),
                         const ProfileScreen(),
                       ],
                     ),

@@ -34,7 +34,7 @@ class ItemParallax extends StatelessWidget {
   Widget _itemImage(BuildContext context) {
     return Expanded(
       child: Hero(
-        tag: 'detail$index',
+        tag: '$index',
         child: SizedBox(
           height: 130.w,
           child: Flow(
@@ -44,7 +44,7 @@ class ItemParallax extends StatelessWidget {
             ),
             children: [
               Image.network(
-                'https://scontent.fhan3-4.fna.fbcdn.net/v/t39.30808-6/410234611_1064741508008575_9077321802523100747_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHCfgivLMyPioQvBrx-aall8mt63cjttFrya3rdyO20WivFgNlKwUS24gv0v3vvEWVGesV9NyzHaydxglh_d-Yj&_nc_ohc=USUnZA3SmWMQ7kNvgGji5-N&_nc_zt=23&_nc_ht=scontent.fhan3-4.fna&cb_e2o_trans=t&oh=00_AYDPvYkNJ3PHcUkqJhyxtHCZT1sqOq6wfCtDfsabtA4Mvg&oe=66958430',
+                'https://i.pinimg.com/736x/a1/ae/8a/a1ae8ad5d7f52510172f9384260105fd.jpg',
                 fit: BoxFit.cover,
               ),
             ],

@@ -1,3 +1,4 @@
+import 'package:dating/argument_model/arguments_detail_model.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
@@ -35,12 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
   late final SwipableStackController _controller;
   void _listenController() => setState(() {});
   late HomeController controller;
-  bool isSwipingTutorial = Global.getBool('swipingTutorial', def: true);
 
-  final List<Color> _images = [
-    ThemeColor.redColor,
-    Colors.black,
-    ThemeColor.pinkColor,
+  final List<String> _images = [
+    'https://gcs.tripi.vn/public-tripi/tripi-feed/img/474014MTE/anh-gai-xinh-cute-de-thuong-hot-girl-5.jpg',
+    'https://gcs.tripi.vn/public-tripi/tripi-feed/img/474014MTE/anh-gai-xinh-cute-de-thuong-hot-girl-5.jpg',
+    'https://gcs.tripi.vn/public-tripi/tripi-feed/img/474014MTE/anh-gai-xinh-cute-de-thuong-hot-girl-5.jpg',
   ];
 
   @override
@@ -48,10 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _controller = SwipableStackController()..addListener(_listenController);
     controller = HomeController(context);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      isSwipingTutorial ? controller.popupTutorial() : null;
-    });
+    controller.getListNomination();
   }
 
   @override
@@ -66,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
-      backgroundColor: themeNotifier.systemThemeFade,
+      backgroundColor: themeNotifier.systemTheme,
       body: SafeArea(
         top: false,
         child: AppBarCustom(
@@ -98,9 +95,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.all(8),
                       child: PressHold(
                         shrink: true,
-                        function: () => Navigator.pushNamed(context, DetailScreen.routeName, arguments: 0),
+                        function: () => Navigator.pushNamed(
+                          context,
+                          DetailScreen.routeName,
+                          arguments: ArgumentsDetailModel(keyHero: 0, controller: _controller)
+                        ),
                         child: Hero(
-                          tag: 'detail0',
+                          tag: '0',
                           child: SwipableStack(
                             detectableSwipeDirections: const {
                               SwipeDirection.right,
@@ -121,8 +122,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10.w),
                                   child: Container(
-                                    color: _images[itemIndex],
-                                  ),
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: NetworkImage(_images[itemIndex]),
+                                        fit: BoxFit.cover,
+                                      )
+                                    ),
+                                  )
                                 ),
                               );
                             },
@@ -130,19 +136,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                  ),
-                  Column(
-                    children: [
-                      const Spacer(),
-                      SizedBox(
-                        height: 100.w,
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                          ],
-                        ),
-                      )
-                    ],
                   ),
                 ],
               ),

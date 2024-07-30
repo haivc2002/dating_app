@@ -1,6 +1,7 @@
 
-import 'package:dating/bloc/bloc_all_tap/get_location_bloc.dart';
+import 'package:dating/bloc/bloc_all_tap/api_all_tap_bloc.dart';
 import 'package:dating/bloc/bloc_profile/edit_bloc.dart';
+import 'package:dating/common/remove_province.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/theme/theme_color.dart';
@@ -9,6 +10,7 @@ import 'package:dating/tool_widget_custom/button_widget_custom.dart';
 import 'package:dating/tool_widget_custom/input_custom.dart';
 import 'package:dating/tool_widget_custom/list_tile_custom.dart';
 import 'package:dating/tool_widget_custom/popup_custom.dart';
+import 'package:dating/tool_widget_custom/wait.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -56,21 +58,36 @@ class EditProfileController {
             colorText: ThemeColor.blackColor,
           ),
           contentRow('Birthday', SizedBox()),
-          contentRow('Location', BlocBuilder<GetLocationBloc, GetLocationState>(builder: (context, state) {
-            if(state is LoadGetLocationState) {
-              return const CircularProgressIndicator();
-            } else if (state is SuccessGetLocationState) {
-              return Text('${state.response[0].city}');
+          contentRow('Location', BlocBuilder<ApiAllTapBloc, ApiAllTapState>(builder: (context, state) {
+            if(state is LoadApiAllTapState) {
+              return Wait(size: 15.w,strokeWidth: 2.w);
+            } else if (state is SuccessApiAllTapState) {
+              return Text(_city(state));
             } else {
               return const Text('Error');
             }
           })),
         ],
       ),
-      function: () {
-
-      }
+      listAction: [
+        Text('Cancel', style: TextStyles.defaultStyle.setColor(ThemeColor.redColor)),
+        Text('Yes', style: TextStyles.defaultStyle.setColor(ThemeColor.blueColor).bold),
+      ],
+      listOnPress: [
+        ()=>Navigator.pop(context),
+        ()=>Navigator.pop(context),
+      ]
     );
+  }
+
+  String _city(SuccessApiAllTapState state) {
+    if(state.response?[0].state != null) {
+      return RemoveProvince.cancel('${state.response?[0].state}');
+    } else if(state.response?[0].city != null) {
+      return '${state.response?[0].city}';
+    } else {
+      return 'Unknown';
+    }
   }
 
   void popupWork() {
@@ -81,7 +98,14 @@ class EditProfileController {
         colorInput: ThemeColor.themeDarkFadeSystem.withOpacity(0.1),
         colorText: ThemeColor.blackColor,
       ),
-      function: () {}
+      listAction: [
+        Text('Cancel', style: TextStyles.defaultStyle.setColor(ThemeColor.redColor)),
+        Text('Yes', style: TextStyles.defaultStyle.setColor(ThemeColor.blueColor).bold),
+      ],
+      listOnPress: [
+            ()=>Navigator.pop(context),
+            ()=>Navigator.pop(context),
+      ]
     );
   }
 
@@ -100,7 +124,14 @@ class EditProfileController {
           ),
         ],
       ),
-      function: () {}
+      listAction: [
+        Text('Cancel', style: TextStyles.defaultStyle.setColor(ThemeColor.redColor)),
+        Text('Yes', style: TextStyles.defaultStyle.setColor(ThemeColor.blueColor).bold),
+      ],
+      listOnPress: [
+        ()=>Navigator.pop(context),
+        ()=>Navigator.pop(context),
+      ]
     );
   }
 
@@ -164,7 +195,7 @@ class EditProfileController {
             ],
           ),
         ),
-      )
+      ),
     );
   }
 

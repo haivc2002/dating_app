@@ -56,7 +56,14 @@ dependencies:
   lottie: ^3.1.2
   auto_size_text: ^3.0.0
   flip_card: ^0.7.0
-
+  webview_flutter: ^4.8.0
+  flutter_widget_from_html: ^0.14.6
+  flutter_map: ^7.0.0
+  latlong2: ^0.9.1
+  hugeicons: ^0.0.5
+  huge_icons_flutter: ^0.0.2
+  intl: ^0.19.0
+  shimmer: ^3.0.0
 
 
 dev_dependencies:
@@ -87,6 +94,11 @@ flutter:
     - assets/icon/
     - assets/icon/message.png
     - assets/rive/
+    - assets/image/1-2829.jpg
+    - assets/image/map_blur.png
+    - assets/image/avatar_none.jpg
+    - assets/image/girl.png
+    - assets/image/boy.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
