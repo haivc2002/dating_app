@@ -1,7 +1,7 @@
 import 'package:dating/argument_model/arguments_detail_model.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
-import 'package:dating/controller/premium_controller/premium_controller.dart';
+import 'package:dating/controller/premium_controller.dart';
 import 'package:dating/theme/theme_notifier.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:dating/tool_widget_custom/build/extension_build.dart';

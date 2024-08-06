@@ -153,7 +153,7 @@ class _AnimateToNextScreenState extends State<AnimateToNextScreen> with TickerPr
                 width: widthScreen(context),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: idUser == 0 ? const LoginScreen() : const AllTapBottomScreen()
+                    child: idUser < 0 ? const LoginScreen() : const AllTapBottomScreen()
                 ),
               ),
               Visibility(

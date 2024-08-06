@@ -1,9 +1,15 @@
 
-import 'package:dating/bloc/bloc_all_tap/api_all_tap_bloc.dart';
+import 'dart:ui';
+
+import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/bloc/bloc_profile/edit_bloc.dart';
 import 'package:dating/common/remove_province.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
+import 'package:dating/controller/home_controller.dart';
+import 'package:dating/controller/profile_controller/update_model.dart';
+import 'package:dating/model/model_info_user.dart';
+import 'package:dating/service/access_photo_gallery.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/bottom_sheet_custom.dart';
 import 'package:dating/tool_widget_custom/button_widget_custom.dart';
@@ -11,6 +17,7 @@ import 'package:dating/tool_widget_custom/input_custom.dart';
 import 'package:dating/tool_widget_custom/list_tile_custom.dart';
 import 'package:dating/tool_widget_custom/popup_custom.dart';
 import 'package:dating/tool_widget_custom/wait.dart';
+import 'package:dating/ui/profile/item_photo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -33,35 +40,36 @@ class EditProfileController {
     ModelListPurpose('Relationship', Icons.favorite, 'Find a long term relationship'),
   ];
 
-  List<String> wineAndSmoking = ['Sometime', 'Usually', 'Have', 'Never', 'Undisclosed'];
-  List<String> zodiac = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpius', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
-  List<String> character = ['Introverted', 'Outward', 'Somewhere in the middle', 'Undisclosed'];
-
   List<String> listAcademicLevel = [
-    'High School',
+    'High school',
     'College',
     'University',
-    'Master\'s Degree',
-    'Doctoral Degree',
+    'Master\'s degree',
+    'Doctoral degree',
+    'Empty'
   ];
 
-  void popupName() {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController workController = TextEditingController();
+  TextEditingController aboutController = TextEditingController();
+
+  void popupName(SuccessApiHomeState state) {
+    nameController.text = '${state.info?.info?.name}';
     PopupCustom.showPopup(context,
       title: 'Name',
-      textEnable: 'Apply',
-      textDisable: 'Cancel',
       content: Column(
         children: [
-          contentRow('Name', SizedBox()),
+          contentRow('Name', const SizedBox()),
           InputCustom(
+            controller: nameController,
             colorInput: ThemeColor.themeDarkFadeSystem.withOpacity(0.1),
             colorText: ThemeColor.blackColor,
           ),
-          contentRow('Birthday', SizedBox()),
-          contentRow('Location', BlocBuilder<ApiAllTapBloc, ApiAllTapState>(builder: (context, state) {
-            if(state is LoadApiAllTapState) {
+          contentRow('Birthday', Text('${state.info?.info?.birthday}')),
+          contentRow('Location', BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+            if(state is LoadApiHomeState) {
               return Wait(size: 15.w,strokeWidth: 2.w);
-            } else if (state is SuccessApiAllTapState) {
+            } else if (state is SuccessApiHomeState) {
               return Text(_city(state));
             } else {
               return const Text('Error');
@@ -75,26 +83,32 @@ class EditProfileController {
       ],
       listOnPress: [
         ()=>Navigator.pop(context),
-        ()=>Navigator.pop(context),
+        ()=>activatedName(state, nameController.text),
       ]
     );
   }
 
-  String _city(SuccessApiAllTapState state) {
-    if(state.response?[0].state != null) {
-      return RemoveProvince.cancel('${state.response?[0].state}');
-    } else if(state.response?[0].city != null) {
-      return '${state.response?[0].city}';
+  String _city(SuccessApiHomeState state) {
+    if(state.location?[0].state != null) {
+      return RemoveProvince.cancel('${state.location?[0].state}');
+    } else if(state.location?[0].city != null) {
+      return '${state.location?[0].city}';
     } else {
       return 'Unknown';
     }
   }
 
-  void popupWork() {
+  void popupWork(SuccessApiHomeState state) {
+    if(state.info?.info?.word != null) {
+      workController.text = '${state.info?.info?.word}';
+    } else {
+      workController.text = '';
+    }
     PopupCustom.showPopup(
       context,
       title: 'Company name',
       content: InputCustom(
+        controller: workController,
         colorInput: ThemeColor.themeDarkFadeSystem.withOpacity(0.1),
         colorText: ThemeColor.blackColor,
       ),
@@ -103,13 +117,18 @@ class EditProfileController {
         Text('Yes', style: TextStyles.defaultStyle.setColor(ThemeColor.blueColor).bold),
       ],
       listOnPress: [
-            ()=>Navigator.pop(context),
-            ()=>Navigator.pop(context),
+        ()=>Navigator.pop(context),
+        ()=>activatedWork(state, workController.text)
       ]
     );
   }
 
-  void popupAbout() {
+  void popupAbout(SuccessApiHomeState state) {
+    if(state.info?.info?.describeYourself != null) {
+      aboutController.text = '${state.info?.info?.describeYourself}';
+    } else {
+      aboutController.text = '';
+    }
     PopupCustom.showPopup(
       context,
       title: 'A little about yourself',
@@ -117,6 +136,7 @@ class EditProfileController {
         children: [
           Text('Don\'t hesitate', style: TextStyles.defaultStyle),
           InputCustom(
+            controller: aboutController,
             maxLines: 8,
             colorInput: ThemeColor.blackColor.withOpacity(0.1),
             colorText: ThemeColor.blackColor,
@@ -130,7 +150,7 @@ class EditProfileController {
       ],
       listOnPress: [
         ()=>Navigator.pop(context),
-        ()=>Navigator.pop(context),
+        ()=>activatedAbout(state, aboutController.text)
       ]
     );
   }
@@ -153,28 +173,33 @@ class EditProfileController {
                       style: TextStyles.defaultStyle.bold.setTextSize(22.sp),
                       textAlign: TextAlign.center,
                     ),
-                    ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: 3,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10.w),
-                            child: BlocBuilder<EditBloc, EditState>(builder: (context, state) {
-                              return ListTileCustom(
-                                color: state.indexPurpose != index ? ThemeColor.whiteColor.withOpacity(0.3) : ThemeColor.pinkColor.withOpacity(0.3),
-                                title: listPurpose[index].title,
-                                iconLeading: listPurpose[index].iconLeading,
-                                iconTrailing: state.indexPurpose != index ? Icons.circle_outlined : Icons.check_circle,
-                                subtitle: listPurpose[index].subtitle,
-                                onTap: () {
-                                  context.read<EditBloc>().add(EditEvent(indexPurpose: index));
-                                },
+                    BlocBuilder<HomeBloc, HomeState>(
+                      builder: (context, state) {
+                        if(state is SuccessApiHomeState) {
+                          String purposeValue = '${state.info?.info?.desiredState}';
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: 3,
+                            itemBuilder: (context, index) {
+                              int indexCurrent = listPurpose[index].title.indexOf(purposeValue);
+                              return Padding(
+                                padding: EdgeInsets.symmetric(vertical: 10.w),
+                                child: ListTileCustom(
+                                  color: indexCurrent != 0 ? ThemeColor.whiteColor.withOpacity(0.3) : ThemeColor.pinkColor.withOpacity(0.3),
+                                  title: listPurpose[index].title,
+                                  iconLeading: listPurpose[index].iconLeading,
+                                  iconTrailing: indexCurrent != 0 ? Icons.circle_outlined : Icons.check_circle,
+                                  subtitle: listPurpose[index].subtitle,
+                                  onTap: () => activatedPurpose(index, state)
+                                )
                               );
-                              }
-                            ),
+                            }
                           );
+                        } else {
+                          return const SizedBox();
                         }
+                      }
                     ),
                   ]),
                 )
@@ -221,41 +246,174 @@ class EditProfileController {
         children: [
           Text('Academic level', style: TextStyles.defaultStyle.setTextSize(22.sp).bold,),
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: List.generate(listAcademicLevel.length, (index) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.w),
-                    child: BlocBuilder<EditBloc, EditState>(builder: (context, state) {
-                      bool isSelect = state.indexLevel != index;
-                      return ListTileCheckCircle(
-                        color: isSelect ? ThemeColor.whiteColor.withOpacity(0.3) : ThemeColor.pinkColor.withOpacity(0.5),
-                        titleColor: isSelect ? ThemeColor.blackColor : ThemeColor.whiteColor,
-                        iconColor: isSelect ? ThemeColor.blackColor : ThemeColor.whiteColor,
-                        title: listAcademicLevel[index],
-                        iconData: isSelect ? CupertinoIcons.circle : Icons.check_circle,
-                        onTap: ()=> context.read<EditBloc>().add(EditEvent(indexLevel: index)),
+            child: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+              if(state is SuccessApiHomeState) {
+                String academicLevelValue = '${state.info?.info?.academicLevel}';
+                int indexCurrent = listAcademicLevel.indexOf(academicLevelValue);
+                return SingleChildScrollView(
+                  child: Column(
+                    children: List.generate(listAcademicLevel.length, (index) {
+                      bool isSelect = indexCurrent != index;
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.w),
+                        child: ListTileCheckCircle(
+                          color: isSelect ? ThemeColor.whiteColor.withOpacity(0.3) : ThemeColor.pinkColor.withOpacity(0.5),
+                          titleColor: isSelect ? ThemeColor.blackColor : ThemeColor.whiteColor,
+                          iconColor: isSelect ? ThemeColor.blackColor : ThemeColor.whiteColor,
+                          title: listAcademicLevel[index],
+                          iconData: isSelect ? CupertinoIcons.circle : Icons.check_circle,
+                          onTap: () => activatedAcademicLevel(index, state)
+                        ),
                       );
-                      }
-                    ),
-                  );
-                }),
-              ),
-            ),
+                    }),
+                  ),
+                );
+              } else {
+                return const SizedBox();
+              }
+            })
           )
         ],
       )
     );
   }
 
-  Widget listHeight(int index) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    if(index == 0) {
-      return Text('lower 100cm', textAlign: TextAlign.center, style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),);
-    } else if (index == 100) {
-      return Text('higher 200cm', textAlign: TextAlign.center, style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),);
-    } else {
-      return Text('${index+100}cm', textAlign: TextAlign.center, style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),);
-    }
+  void activatedAcademicLevel(int index, SuccessApiHomeState state) {
+    UpdateModel.updateModelInfo(
+      state.info!,
+      academicLevel: listAcademicLevel[index]
+    );
+    context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
+  }
+
+  void activatedName(SuccessApiHomeState state, String nameValue) {
+    UpdateModel.updateModelInfo(
+      state.info!,
+      name: nameValue
+    );
+    context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
+    Navigator.pop(context);
+  }
+
+  void activatedWork(SuccessApiHomeState state, String workValue) {
+    UpdateModel.updateModelInfo(
+      state.info!,
+      work: workValue
+    );
+    context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
+    Navigator.pop(context);
+  }
+
+  void activatedAbout(SuccessApiHomeState state, String aboutValue) {
+    UpdateModel.updateModelInfo(
+      state.info!,
+      describeYourself: aboutValue,
+    );
+    context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
+    Navigator.pop(context);
+  }
+
+  void activatedPurpose(int index, SuccessApiHomeState state) {
+    UpdateModel.updateModelInfo(
+      state.info!,
+      desiredState: listPurpose[index].title
+    );
+    context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
+  }
+
+  void getInfo() async {
+    HomeController homeController = HomeController(context);
+    await homeController.getInfo();
+  }
+
+  void onOption(ListImage imageView, int index) {
+    AccessPhotoGallery gallery = AccessPhotoGallery(context);
+    double size = 150.w;
+    BottomSheetCustom.showCustomBottomSheet(
+      height: 350.w,
+      blur: 0,
+      backgroundColor: Colors.transparent,
+      context,
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
+        child: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  Center(child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.w),
+                    child: SizedBox(
+                      height: size+30,
+                      width: widthScreen(context),
+                      child: ImageFiltered(
+                        imageFilter: ImageFilter.blur(sigmaY: 15, sigmaX: 15),
+                        child: ItemPhoto(
+                          size: size,
+                          backgroundUpload: imageView.image,
+                        ),
+                      ),
+                    ),
+                  )),
+                  Center(
+                    child: SizedBox(
+                      height: size+30,
+                      width: widthScreen(context),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.w),
+                          color: ThemeColor.whiteColor.withOpacity(0.2)
+                        )
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: ItemPhoto(
+                      size: size,
+                      backgroundUpload: imageView.image,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                  color: ThemeColor.whiteIos,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(10.w))
+              ),
+              child: ListTile(
+                  title: const Text('Replace', style: TextStyle(color: ThemeColor.blueColor)),
+                  leading: const Icon(Icons.edit, color: ThemeColor.blueColor),
+                  onTap: () {
+                    gallery.updateImage(index);
+                    Navigator.pop(context);
+                  }
+              ),
+            ),
+            ColoredBox(
+              color: ThemeColor.whiteIos.withOpacity(0.9),
+              child: SizedBox(height: 1, width: widthScreen(context)),
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                  color: ThemeColor.whiteIos,
+                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(10.w))
+              ),
+              child: ListTile(
+                title: const Text('Delete', style: TextStyle(color: ThemeColor.redColor)),
+                leading: const Icon(Icons.delete_forever_rounded, color: ThemeColor.redColor),
+                onTap: ()=> gallery.deleteImage(index),
+              ),
+            )
+          ],
+        ),
+      )
+    );
+  }
+
+  void backAndUpdate() {
+    getInfo();
+    Navigator.pop(context);
+    print(UpdateModel.modelInfoUser.toJson());
   }
 }

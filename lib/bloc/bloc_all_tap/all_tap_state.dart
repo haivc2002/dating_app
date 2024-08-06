@@ -2,7 +2,8 @@
 part of '../../../bloc/bloc_all_tap/all_tap_bloc.dart';
 
 class AllTapState {
-  int selectedIndex;
+  int? selectedIndex;
+  bool? drawerStatus;
 
-  AllTapState({required this.selectedIndex});
+  AllTapState({this.selectedIndex, this.drawerStatus});
 }

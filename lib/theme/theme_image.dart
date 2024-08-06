@@ -5,4 +5,5 @@ class ThemeImage {
   static const String avatarNone = 'assets/image/avatar_none.jpg';
   static const String genderMale = 'assets/image/boy.png';
   static const String genderFeMale = 'assets/image/girl.png';
+  static const String error = 'assets/image/error.png';
 }

@@ -1,6 +1,7 @@
+import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
-import 'package:dating/controller/setting_controller/setting_controller.dart';
+import 'package:dating/controller/setting_controller.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,6 @@ import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
 
 import '../../../theme/theme_notifier.dart';
-import '../../bloc/bloc_all_tap/api_all_tap_bloc.dart';
 import '../about_app/about_app_screen.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -138,8 +138,8 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
               margin: EdgeInsets.only(bottom: 15.w),
               padding: EdgeInsets.all(10.w),
-              child: BlocBuilder<ApiAllTapBloc, ApiAllTapState>(builder: (context, state) {
-                if(state is SuccessApiAllTapState) {
+              child: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+                if(state is SuccessApiHomeState) {
                   return Column(
                     children: [
                       ListTile(
@@ -154,7 +154,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             setState(() {
                               controller.currentDistance = value;
                               mapController.move(
-                                LatLng(state.response?[0].lat??0, state.response?[0].lon??0),
+                                LatLng(state.location?[0].lat??0, state.location?[0].lon??0),
                                 controller.sizeMap()
                               );
                             });
@@ -207,7 +207,7 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  Widget _map(SuccessApiAllTapState state) {
+  Widget _map(SuccessApiHomeState state) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.w),
       child: SizedBox(
@@ -217,7 +217,7 @@ class _SettingScreenState extends State<SettingScreen> {
         child: FlutterMap(
           mapController: mapController,
           options: MapOptions(
-            initialCenter: LatLng(state.response?[0].lat??0, state.response?[0].lon??0),
+            initialCenter: LatLng(state.location?[0].lat??0, state.location?[0].lon??0),
             initialZoom: controller.sizeMap()
           ),
           children: [
@@ -229,13 +229,13 @@ class _SettingScreenState extends State<SettingScreen> {
             MarkerLayer(markers: [Marker(
                 width: 80,
                 height: 80,
-                point: LatLng(state.response?[0].lat??0, state.response?[0].lon??0),
+                point: LatLng(state.location?[0].lat??0, state.location?[0].lon??0),
                 child: Icon(Icons.location_on, size: 30.sp, color: ThemeColor.deepRedColor)
             )]),
             CircleLayer(
               circles: [
                 CircleMarker(
-                  point: LatLng(state.response?[0].lat??0, state.response?[0].lon??0),
+                  point: LatLng(state.location?[0].lat??0, state.location?[0].lon??0),
                   color: ThemeColor.pinkColor.withOpacity(0.1),
                   borderStrokeWidth: 2,
                   borderColor: ThemeColor.pinkColor,

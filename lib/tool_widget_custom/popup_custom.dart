@@ -5,8 +5,6 @@ class PopupCustom {
   static void showPopup(BuildContext context, {
     String? textContent,
     String? title,
-    String? textDisable,
-    String? textEnable,
     Widget? content,
     Function? thenFunction,
     required List<Function()> listOnPress,

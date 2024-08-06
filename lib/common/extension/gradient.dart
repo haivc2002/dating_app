@@ -21,5 +21,13 @@ extension GradientColor on LinearGradient {
     );
   }
 
+  static LinearGradient get gradientBlackFade {
+    return LinearGradient(
+        colors: [ThemeColor.blackColor.withOpacity(0), ThemeColor.blackColor],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter
+    );
+  }
+
 
 }

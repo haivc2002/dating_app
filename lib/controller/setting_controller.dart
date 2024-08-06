@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
 
-import '../../common/global.dart';
-import '../../theme/theme_notifier.dart';
-import '../../theme/theme_rive.dart';
+import '../common/global.dart';
+import '../theme/theme_notifier.dart';
+import '../theme/theme_rive.dart';
 
 class SettingController {
   BuildContext context;

@@ -1,5 +1,6 @@
 
 import 'package:dating/common/scale_screen.dart';
+import 'package:dating/controller/home_controller.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_icon.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../../../theme/theme_notifier.dart';
 import '../../bloc/bloc_all_tap/all_tap_bloc.dart';
-import '../../controller/all_tap_controller/all_tap_controller.dart';
+import '../../controller/all_tap_controller.dart';
 import '../message/message_screen.dart';
 import 'drawer_widget.dart';
 import '../home/home_screen.dart';
@@ -33,6 +34,8 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
   late AllTapController controller = AllTapController(context);
   bool drawerStatus = false;
 
+  late HomeController homeController;
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +45,6 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
       duration: const Duration(milliseconds: 200),
     );
     animation = Tween<double>(begin: 1.0, end: 0.9).animate(animationController);
-    controller.getData();
     if (scaffoldKey.currentState != null) {
       if (scaffoldKey.currentState!.isDrawerOpen) {
         drawerStatus = true;
@@ -51,6 +53,8 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
       }
     }
     drawerStatus ? animationController.forward() : animationController.reverse();
+    homeController = HomeController(context);
+    homeController.getData();
   }
 
   @override
@@ -60,9 +64,8 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
   }
 
   updateDrawerStatus(bool status) {
-    setState(() {
-      drawerStatus = status;
-    });
+    drawerStatus = status;
+    context.read<AllTapBloc>().add(AllTapEvent(drawerStatus: drawerStatus));
     if (status) {
       animationController.forward();
     } else {

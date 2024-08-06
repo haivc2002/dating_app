@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:dating/bloc/bloc_all_tap/api_all_tap_bloc.dart';
+import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/common/time_now.dart';
+import 'package:dating/controller/all_tap_controller.dart';
 import 'package:dating/theme/theme_notifier.dart';
 import 'package:dating/ui/auth/login_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,20 +32,21 @@ class DrawerWidget extends StatefulWidget {
 
 class _DrawerWidgetState extends State<DrawerWidget> {
 
+  late AllTapController controller;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.updateDrawerStatus(true);
     });
+    controller = AllTapController(context);
   }
 
   @override
   void dispose() {
     super.dispose();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.updateDrawerStatus(false);
-    });
+    widget.updateDrawerStatus(false);
   }
 
   @override
@@ -67,9 +70,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 decoration: BoxDecoration(
                     color: themeNotifier.systemTheme.withOpacity(0.3),
                     border: Border(
-                        right: BorderSide(
-                            color: ThemeColor.greyColor.withOpacity(0.1)
-                        )
+                      right: BorderSide(
+                        color: ThemeColor.greyColor.withOpacity(0.1)
+                      )
                     )
                 ),
                 child: ListView(
@@ -78,16 +81,16 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     Container(
                       height: 100.w,
                     ),
-                    BlocBuilder<ApiAllTapBloc, ApiAllTapState>(
+                    BlocBuilder<HomeBloc, HomeState>(
                       builder: (context, state) {
-                        if(state is LoadApiAllTapState) {
+                        if(state is LoadApiHomeState) {
                           return ListTile(
                             leading: const CircleAvatar(),
                             title: Text(TimeNow.helloDate(), style: TextStyles.defaultStyle.whiteText.setTextSize(16.sp)),
                             subtitle: const Text('Loading...'),
                             trailing: TimeNow.iconDate(),
                           );
-                        } else if(state is SuccessApiAllTapState) {
+                        } else if(state is SuccessApiHomeState) {
                           return ListTile(
                             leading: CircleAvatar(
                               backgroundImage: NetworkImage('${state.info?.listImage?[0].image}'),
@@ -111,7 +114,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     ),
                     itemDrawer(CupertinoIcons.profile_circled, 'Edit Personal information', () {Navigator.pushNamed(context, EditProfileScreen.routeName);}),
                     itemDrawer(Icons.settings,'Setting', () {Navigator.pushNamed(context, SettingScreen.routeName);}),
-                    itemDrawer(Icons.logout,'Sign Out', ()=> Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false)),
+                    itemDrawer(Icons.logout,'Sign Out', ()=> controller.onSignOut()),
                   ],
                 ),
               )

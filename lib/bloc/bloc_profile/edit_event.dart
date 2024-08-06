@@ -7,6 +7,7 @@ class EditEvent {
   int? indexPurpose;
   String? purposeValue;
   int? indexLevel;
+  ModelInfoUser? modelInfoUser;
 
-  EditEvent({this.imageUpload, this.indexPurpose, this.purposeValue, this.indexLevel});
+  EditEvent({this.imageUpload, this.indexPurpose, this.purposeValue, this.indexLevel, this.modelInfoUser});
 }

@@ -7,14 +7,15 @@ class ModelInfoUser {
   Info? info;
   InfoMore? infoMore;
 
-  ModelInfoUser(
-      {this.result,
-        this.message,
-        this.idUser,
-        this.email,
-        this.listImage,
-        this.info,
-        this.infoMore});
+  ModelInfoUser({
+    String? result,
+    String? message,
+    this.idUser,
+    this.email,
+    this.listImage,
+    this.info,
+    this.infoMore
+  });
 
   ModelInfoUser.fromJson(Map<String, dynamic> json) {
     result = json['result'];

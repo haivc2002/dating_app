@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import '../theme/theme_color.dart';
-import '../theme/theme_notifier.dart';
+import '../../theme/theme_color.dart';
+import '../../theme/theme_notifier.dart';
 
-class ItemAddImage extends StatelessWidget {
+class ItemPhoto extends StatelessWidget {
   final double? size;
   final void Function()? onTap;
-  final File? backgroundUpload;
-  const ItemAddImage({
+  final String? backgroundUpload;
+  const ItemPhoto({
     Key? key,
     this.size,
     this.onTap,
@@ -32,7 +32,7 @@ class ItemAddImage extends StatelessWidget {
             color: themeNotifier.systemTheme,
             image: backgroundUpload != null
                 ? DecorationImage(
-              image: FileImage(backgroundUpload!),
+              image: imageValue(),
               fit: BoxFit.cover,
             ) : null,
           ),
@@ -43,10 +43,19 @@ class ItemAddImage extends StatelessWidget {
               size: 50.sp,
               color: ThemeColor.greyColor,
             ),
-          )
-              : const SizedBox.shrink(),
+          ) : const SizedBox.shrink(),
         ),
       ),
     );
   }
+
+  ImageProvider imageValue() {
+    if(backgroundUpload!.startsWith('http')) {
+      return NetworkImage(backgroundUpload!);
+    } else {
+      return FileImage(File(backgroundUpload!));
+    }
+  }
 }
+
+

@@ -1,13 +1,20 @@
 
+import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
+import 'package:dating/common/year_old.dart';
+import 'package:dating/controller/detail_controller.dart';
+import 'package:dating/controller/home_controller.dart';
 import 'package:dating/theme/theme_color.dart';
+import 'package:dating/theme/theme_image.dart';
 import 'package:dating/theme/theme_notifier.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:dating/tool_widget_custom/item_card.dart';
+import 'package:dating/tool_widget_custom/number_of_photos.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:swipable_stack/swipable_stack.dart';
@@ -23,6 +30,24 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
+
+  late HomeController homeController;
+  late DetailController controller;
+
+  int page = 0;
+  PageController pageController = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+    homeController = HomeController(context);
+    controller = DetailController(context);
+    pageController.addListener(() {
+      setState(() {
+        page = pageController.page!.round();
+      });
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final ArgumentsDetailModel args = ModalRoute.of(context)!.settings.arguments as ArgumentsDetailModel;
@@ -31,37 +56,102 @@ class _DetailScreenState extends State<DetailScreen> {
       backgroundColor: themeNotifier.systemTheme,
       body: Stack(
         children: [
-          AppBarCustom(
-            title: 'Name use',
-            textStyle: TextStyles.defaultStyle.appbarTitle.bold,
-            bodyListWidget: [
-              Hero(
-                tag: '${args.keyHero}',
-                child: Container(
-                  height: heightScreen(context)*0.6,
-                  width: widthScreen(context),
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage('https://scontent.fhan3-2.fna.fbcdn.net/v/t39.30808-6/410901502_1064741344675258_6524863206527149438_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHTTPgyIimQp_GRwRVGIFfaGPBdOLhPQKcY8F04uE9ApwhVlMk9aU_NaGYsVGYGpfHfl9IGLb83TmePogL4XvBY&_nc_ohc=d8qYPy0u4bQQ7kNvgFQaJV5&_nc_ht=scontent.fhan3-2.fna&cb_e2o_trans=t&oh=00_AYA2usHbWG9iPkByAZgDtl9IL7YaaFmhiD9r0wLukYTxYw&oe=669B98E7'),
-                      fit: BoxFit.cover
-                    )
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 30.w),
-                child: Column(
-                  children: [
-                    ItemCard(
-                      titleCard: 'I need to find',
+          BlocBuilder<HomeBloc, HomeState>(
+            builder: (context, state) {
+              if(state is SuccessApiHomeState) {
+                final data = state.listNomination?.nominations?[args.idUser!];
+                return AppBarCustom(
+                  title: '${data?.info?.name}, ${yearOld('${data?.info?.birthday}')}',
+                  textStyle: TextStyles.defaultStyle.appbarTitle.bold,
+                  bodyListWidget: [
+                    Stack(
+                      children: [
+                        Hero(
+                          tag: '${args.keyHero}',
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: heightScreen(context)*0.6,
+                                width: widthScreen(context),
+                                child: PageView.builder(
+                                  controller: pageController,
+                                  itemCount: data?.listImage?.length,
+                                  itemBuilder: (context, index) {
+                                    return Image.network(
+                                      '${data?.listImage?[index].image}',
+                                      fit: BoxFit.cover,
+                                    );
+                                  }
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        NumberOfPhotos(count: data?.listImage?.length, currentPage: page),
+                      ],
                     ),
-                    ItemCard(),
-                    ItemCard(),
-                    ItemCard(),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 30.w),
+                      child: Column(
+                        children: [
+                          ItemCard(
+                            titleCard: 'introduce yourself',
+                            iconTitle: Icon(Icons.format_quote, color: themeNotifier.systemText),
+                            fontSize: 20.sp,
+                            listWidget: [
+                              SizedBox(
+                                width: 240.w,
+                                child: Text('${data?.info?.describeYourself}', 
+                                  style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)
+                                ),
+                              )
+                            ],
+                          ),
+                          ItemCard(
+                            fontSize: 20.sp,
+                            titleCard: 'Information base',
+                            iconTitle: Icon(CupertinoIcons.person_alt_circle_fill, color: themeNotifier.systemText),
+                            listWidget: [
+                              _infoBase(Icons.location_on_outlined, ' ${homeController.calculateDistance(state, args.idUser!)} away'),
+                              _infoBase(Icons.school_outlined, ' ${data?.info?.academicLevel}'),
+                              _infoBase(Icons.work_outline, ' ${data?.info?.word}'),
+                            ],
+                          ),
+                          ItemCard(
+                            fontSize: 20.sp,
+                            titleCard: '${data?.info?.desiredState}',
+                            titleColor: ThemeColor.pinkColor,
+                            iconTitle: Icon(CupertinoIcons.square_stack_3d_up, color: ThemeColor.pinkColor.withOpacity(0.5)),
+                          ),
+                          ItemCard(
+                            fontSize: 20.sp,
+                            titleCard: 'Information more',
+                            iconTitle: Icon(Icons.contacts_outlined, color: themeNotifier.systemText),
+                            listWidget: [
+                              SizedBox(height: 20.w),
+                              SizedBox(
+                                width: widthScreen(context)*0.77,
+                                child: Wrap(
+                                  direction: Axis.horizontal,
+                                  runSpacing: 7.w,
+                                  spacing: 7.w,
+                                  children: controller.items(data!).isEmpty
+                                    ? [Text('No information available', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))]
+                                    : controller.items(data)
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
                   ],
-                ),
-              )
-            ],
+                );
+              } else {
+                return Image.asset(ThemeImage.error);
+              }
+
+            }
           ),
           Positioned(
             bottom: 0,
@@ -127,6 +217,20 @@ class _DetailScreenState extends State<DetailScreen> {
             child: Icon(icon, size: 40.sp, color: border??true ? ThemeColor.blackColor : ThemeColor.whiteColor),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _infoBase(IconData iconData, String data) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 5.w),
+      child: Row(
+        children: [
+          Icon(iconData, color: themeNotifier.systemText.withOpacity(0.5)),
+          SizedBox(width: 10.w),
+          Text(data.isNotEmpty ? data : '', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))
+        ],
       ),
     );
   }

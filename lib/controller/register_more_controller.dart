@@ -4,15 +4,19 @@ import 'package:dating/argument_model/argument_register_info.dart';
 import 'package:dating/bloc/bloc_auth/api_register_bloc.dart';
 import 'package:dating/bloc/bloc_auth/register_bloc.dart';
 import 'package:dating/bloc/bloc_profile/edit_bloc.dart';
+import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
-import 'package:dating/controller/all_tap_controller/all_tap_controller.dart';
-import 'package:dating/controller/auth_controller/login_controller.dart';
-import 'package:dating/controller/profile_controller/edit_profile_controller.dart';
+import 'package:dating/controller/all_tap_controller.dart';
+import 'package:dating/controller/login_controller.dart';
+import 'package:dating/controller/profile_controller/model_list_purpose.dart';
 import 'package:dating/model/model_req_register_info.dart';
 import 'package:dating/model/model_request_image.dart';
 import 'package:dating/service/service_add_image.dart';
 import 'package:dating/theme/theme_color.dart';
+import 'package:dating/tool_widget_custom/bottom_sheet_custom.dart';
 import 'package:dating/tool_widget_custom/button_widget_custom.dart';
+import 'package:dating/tool_widget_custom/item_card.dart';
+import 'package:dating/tool_widget_custom/list_tile_custom.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,13 +24,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../bloc/bloc_all_tap/api_all_tap_bloc.dart';
-import '../../common/remove_province.dart';
-import '../../model/model_base.dart';
-import '../../model/model_request_auth.dart';
-import '../../service/location/api_location_current.dart';
-import '../../service/service_register.dart';
-import '../../tool_widget_custom/popup_custom.dart';
+import '../bloc/bloc_all_tap/api_all_tap_bloc.dart';
+import '../common/remove_province.dart';
+import '../model/model_base.dart';
+import '../model/model_request_auth.dart';
+import '../service/location/api_location_current.dart';
+import '../service/service_register.dart';
+import '../tool_widget_custom/popup_custom.dart';
 
 class RegisterMoreController {
   BuildContext context;
@@ -46,6 +50,12 @@ class RegisterMoreController {
   DraggableScrollableController draggableScrollableController = DraggableScrollableController();
   ModelRequestAuth reqLogin = ModelRequestAuth();
   bool isLoading = false;
+
+  List<ModelListPurpose> listPurpose = [
+    ModelListPurpose('Dating', Icons.wine_bar_sharp, 'I want to date and have fun with that person. That\'s all'),
+    ModelListPurpose('Talk', Icons.chat_bubble, 'I want to chat and see where the relationship goes'),
+    ModelListPurpose('Relationship', Icons.favorite, 'Find a long term relationship'),
+  ];
 
   String missingFields = '';
 
@@ -150,8 +160,33 @@ class RegisterMoreController {
   }
 
   void popupPurpose() {
-    EditProfileController controller = EditProfileController(context);
-    controller.popupPurpose();
+    BottomSheetCustom.showCustomBottomSheet(context,
+      height: widthScreen(context)*1.2,
+      backgroundColor: ThemeColor.whiteIos.withOpacity(0.5),
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: SingleChildScrollView(
+          child: Column(
+            children: List.generate(listPurpose.length, (index) {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 10.w),
+                child: BlocBuilder<EditBloc, EditState>(
+                  builder: (context, state) {
+                    return ListTileCustom(
+                      color: state.indexPurpose == index ? ThemeColor.pinkColor.withOpacity(0.5) : ThemeColor.whiteColor.withOpacity(0.3),
+                      title: listPurpose[index].title,
+                      iconLeading: listPurpose[index].iconLeading,
+                      subtitle: listPurpose[index].subtitle,
+                      onTap: ()=> context.read<EditBloc>().add(EditEvent(indexPurpose: index, purposeValue: listPurpose[index].title)),
+                    );
+                  }
+                ),
+              );
+            })
+          ),
+        ),
+      )
+    );
   }
 
   void tapDismiss() {

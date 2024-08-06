@@ -11,11 +11,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rive/rive.dart';
 
-import '../../bloc/bloc_auth/api_register_bloc.dart';
-import '../../common/textstyles.dart';
-import '../../model/model_request_auth.dart';
-import '../../theme/theme_color.dart';
-import '../../tool_widget_custom/popup_custom.dart';
+import '../bloc/bloc_auth/api_register_bloc.dart';
+import '../common/textstyles.dart';
+import '../model/model_request_auth.dart';
+import '../theme/theme_color.dart';
+import '../tool_widget_custom/popup_custom.dart';
 
 class RegisterController {
   BuildContext context;

@@ -1,5 +1,5 @@
 import 'package:dating/common/scale_screen.dart';
-import 'package:dating/controller/auth_controller/login_controller.dart';
+import 'package:dating/controller/login_controller.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_image.dart';
 import 'package:dating/ui/auth/register_screen.dart';
@@ -41,20 +41,22 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             height: heightScreen(context),
             width: widthScreen(context),
             decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(ThemeImage.backgroundLogin),
-                  fit: BoxFit.cover
-                )
+              image: DecorationImage(
+                image: AssetImage(ThemeImage.backgroundLogin),
+                fit: BoxFit.cover
+              )
             ),
-            child: Container(
+            child: SizedBox(
               height: heightScreen(context),
               width: widthScreen(context),
-              decoration: BoxDecoration(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      colors: [ThemeColor.blackColor.withOpacity(0.4), ThemeColor.blackColor],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter
+                    colors: [ThemeColor.blackColor.withOpacity(0.4), ThemeColor.blackColor],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter
                   )
+                ),
               ),
             ),
           ),

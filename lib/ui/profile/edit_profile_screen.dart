@@ -1,16 +1,20 @@
 
-
-import 'dart:io';
-
+import 'package:dating/bloc/bloc_home/home_bloc.dart';
+import 'package:dating/common/city_cover.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
+import 'package:dating/controller/profile_controller/update_model.dart';
+import 'package:dating/model/model_info_user.dart';
 import 'package:dating/service/access_photo_gallery.dart';
 import 'package:dating/theme/theme_color.dart';
+import 'package:dating/theme/theme_image.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
-import 'package:dating/tool_widget_custom/item_add_image.dart';
+import 'package:dating/tool_widget_custom/button_widget_custom.dart';
 import 'package:dating/tool_widget_custom/item_card.dart';
 import 'package:dating/tool_widget_custom/press_hold.dart';
 import 'package:dating/tool_widget_custom/press_hold_menu.dart';
+import 'package:dating/tool_widget_custom/press_popup_custom.dart';
+import 'package:dating/ui/profile/item_photo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,88 +54,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       body: AppBarCustom(
         title: 'Edit profile',
         textStyle: TextStyles.defaultStyle.bold.appbarTitle,
+        leadingIcon: IconButton(
+          onPressed: () => controller.backAndUpdate(),
+          icon: Icon(CupertinoIcons.back, color: themeNotifier.systemText),
+        ),
         bodyListWidget: [
-          Container(
-            height: widthScreen(context),
-            width: widthScreen(context),
-            padding: EdgeInsets.all(10.w),
-            color: themeNotifier.systemThemeFade,
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Hero(
-                          tag: 'keyAVT',
-                          child: BlocBuilder<EditBloc, EditState>(
-                              builder: (context, state) {
-                                return Center(
-                                  child: ItemAddImage(
-                                    size: widthScreen(context)*0.60,
-                                    backgroundUpload: state.imageUpload?[0],
-                                    onTap: () {
-                                      accessPhotoGallery.selectImage(0);
-                                    },
-                                  ),
-                                );
-                              }
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Expanded(child: itemAddImage(() {
-                              accessPhotoGallery.selectImage(1);
-                            }, 1)),
-                            Expanded(child: itemAddImage(() {accessPhotoGallery.selectImage(2);}, 2)),
-                          ],
-                        )
-                      )
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(child: itemAddImage(() {accessPhotoGallery.selectImage(3);}, 3)),
-                      Expanded(child: itemAddImage(() {accessPhotoGallery.selectImage(4);}, 4)),
-                      Expanded(child: itemAddImage(() {accessPhotoGallery.selectImage(5);}, 5)),
-                    ],
-                  ),
-                ),
-              ],
-            )
-          ),
-          itemInfo(),
-          itemInfoMore(themeNotifier)
+          BlocBuilder<HomeBloc, HomeState>(builder: (context, homeState) {
+            if(homeState is SuccessApiHomeState) {
+              return Column(
+                children: [
+                  _boxImage(homeState.info!.listImage!),
+                  itemInfo(homeState),
+                  itemInfoMore(themeNotifier, homeState),
+                ],
+              );
+            } else {
+              return _error();
+            }
+          })
         ],
       ),
     );
   }
 
-  Widget itemAddImage(Function() onTap, int? index) {
-    return BlocBuilder<EditBloc, EditState>(
-      builder: (context, state) {
-        File? backgroundUpload;
-        if (state.imageUpload != null && index != null && index < state.imageUpload!.length) {
-          backgroundUpload = state.imageUpload![index];
-        }
-        return Center(
-          child: ItemAddImage(
-            size: widthScreen(context) * 0.28,
-            backgroundUpload: backgroundUpload,
-            onTap: onTap,
-          ),
-        );
-      },
-    );
-  }
-
-  Widget itemInfo() {
+  Widget itemInfo(SuccessApiHomeState homeState) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Padding(
       padding: EdgeInsets.all(20.w),
@@ -139,66 +85,56 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           PressHold(
-            function: ()=> controller.popupName(),
+            function: ()=> controller.popupName(homeState),
             child: ItemCard(
-              titleCard: 'Bùi Thanh Hải',
-              listWidget: [
-                Text('Hà nội', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),),
-              ],
-              iconRight: Icons.arrow_forward_ios,
-              onTap: ()=> controller.popupName()
+                titleCard: '${homeState.info?.info?.name}',
+                listWidget: [Text(cityCover(homeState), style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
+                iconRight: Icons.arrow_forward_ios,
+                onTap: ()=> controller.popupName(homeState)
             ),
           ),
           PressHold(
-            function: ()=> controller.popupWork(),
+            function: ()=> controller.popupWork(homeState),
             child: ItemCard(
               iconTitle: Icon(Icons.work_outline, color: themeNotifier.systemText.withOpacity(0.4)),
               titleCard: 'Work',
-              listWidget: [Text('data', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
+              listWidget: [Text('${homeState.info?.info?.word}', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
               iconRight: Icons.arrow_forward_ios,
-              onTap: ()=> controller.popupWork(),
+              onTap: ()=> controller.popupWork(homeState),
             ),
           ),
           PressHoldMenu(
-            onPressedList: [
-              ()=> print('object1'),
-              ()=> print('object2'),
-              ()=> print('object3'),
-              ()=> print('object3'),
-              ()=> print('object3'),
-            ],
-            menuAction: const ['High School', 'College', 'University', 'Master\'s Degree', 'Doctoral Degree'],
+            onPressedList: List.generate(5, (index) => ()=> controller.activatedAcademicLevel(index, homeState)),
+            menuAction: controller.listAcademicLevel,
             onTap: ()=> controller.popupAcademicLevel(),
             child: ItemCard(
               iconTitle: Icon(Icons.home_work_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
               titleCard: 'Academic level',
-              listWidget: [Text('đại học', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
+              listWidget: [Text('${homeState.info?.info?.academicLevel}', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
               iconRight: Icons.arrow_forward_ios,
             ),
           ),
           PressHoldMenu(
-            onPressedList: [
-              ()=> print('object1'),
-              ()=> print('object2'),
-              ()=> print('object3'),
-            ],
+            onPressedList: List.generate(controller.listPurpose.length,
+              (index) => ()=> controller.activatedPurpose(index, homeState)
+            ),
             onTap: ()=> controller.popupPurpose(),
             menuAction: const ['Dating', 'Talk', 'Relationship'],
             child: ItemCard(
               iconTitle: Icon(CupertinoIcons.square_stack_3d_up, color: themeNotifier.systemText.withOpacity(0.4)),
               titleCard: 'Why are you here?',
-              listWidget: [Text('Hẹn hò', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
+              listWidget: [Text('${homeState.info?.info?.desiredState}', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
               iconRight: Icons.arrow_forward_ios,
             )
           ),
           PressHold(
-            function: ()=> controller.popupAbout(),
+            function: ()=> controller.popupAbout(homeState),
             child: ItemCard(
               iconTitle: Icon(Icons.edit_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
               titleCard: 'A little about yourself',
-              listWidget: [Text('làgweiufgiwe', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
+              listWidget: [Text('${homeState.info?.info?.describeYourself}', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))],
               iconRight: Icons.arrow_forward_ios,
-              onTap: ()=> controller.popupAbout(),
+              onTap: ()=> controller.popupAbout(homeState),
             ),
           ),
           Text('More information about me', style: TextStyles.defaultStyle.bold.setTextSize(17.sp).setColor(ThemeColor.pinkColor)),
@@ -207,23 +143,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget itemInfoMore(ThemeNotifier themeNotifier) {
+  Widget itemInfoMore(ThemeNotifier themeNotifier, SuccessApiHomeState state) {
+    final infoMore = state.info?.infoMore;
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, EditMoreInfoScreen.routeName);
-      },
+      onTap: ()=> Navigator.pushNamed(context, EditMoreInfoScreen.routeName),
       child: Container(
         color: themeNotifier.systemThemeFade,
         child: Column(
           children: [
             SizedBox(height: 10.w),
-            itemComponentInfoMore(Icons.height, 'height', '180cm'),
-            itemComponentInfoMore(Icons.wine_bar, 'wine', 'không uống rựu'),
-            itemComponentInfoMore(Icons.smoking_rooms, 'smoking', 'Không thuốc lá'),
-            itemComponentInfoMore(Icons.ac_unit_sharp, 'Zodiac', 'nhân mã'),
-            itemComponentInfoMore(Icons.account_balance, 'Religion', 'vô thần'),
-            itemComponentInfoMore(Icons.person, 'Character', 'hướng nội'),
-            itemComponentInfoMore(Icons.home, 'Hometown', 'Thái bình'),
+            itemComponentInfoMore(Icons.height, 'height', '${infoMore?.height}'),
+            itemComponentInfoMore(Icons.wine_bar, 'wine', '${infoMore?.wine}'),
+            itemComponentInfoMore(Icons.smoking_rooms, 'smoking', '${infoMore?.smoking}'),
+            itemComponentInfoMore(Icons.ac_unit_sharp, 'Zodiac', '${infoMore?.zodiac}'),
+            itemComponentInfoMore(Icons.account_balance, 'Religion', '${infoMore?.religion}'),
+            itemComponentInfoMore(Icons.person, 'Character', 'not'),
+            itemComponentInfoMore(Icons.home, 'Hometown', '${infoMore?.hometown}'),
             SizedBox(height: 10.w),
           ],
         ),
@@ -246,4 +181,98 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
     );
   }
+
+  Widget _error() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    return Column(
+      children: [
+        SizedBox(height: heightScreen(context)/5),
+        SizedBox(
+          width: widthScreen(context)*0.7,
+          child: Image.asset(ThemeImage.error),
+        ),
+        SizedBox(height: 20.w),
+        Text('Error! Failed to load data!', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))
+      ],
+    );
+  }
+
+  Widget _boxImage(List<ListImage> listImage) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    List<ListImage> preparedListImage = List<ListImage>.generate(6, (index) {
+      return index < listImage.length ? listImage[index] : ListImage(id: null, idUser: null, image: null);
+    });
+    return Container(
+        height: widthScreen(context),
+        width: widthScreen(context),
+        padding: EdgeInsets.all(10.w),
+        color: themeNotifier.systemThemeFade,
+        child: Column(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: BlocBuilder<EditBloc, EditState>(
+                        builder: (context, state) {
+                          return Center(
+                            child: Hero(
+                              tag: 'keyAVT',
+                              child: ItemPhoto(
+                                size: widthScreen(context)*0.60,
+                                backgroundUpload: preparedListImage[0].image,
+                                onTap: ()=> preparedListImage[0].image == null
+                                    ? accessPhotoGallery.updateImage(0)
+                                    : controller.onOption(preparedListImage[0], 0)
+                              ),
+                            ),
+                          );
+                        }
+                    ),
+                  ),
+                  Expanded(
+                      child: Column(
+                        children: [
+                          itemAddImage(1, preparedListImage),
+                          itemAddImage(2, preparedListImage),
+                        ],
+                      )
+                  )
+                ],
+              ),
+            ),
+            Expanded(
+              child: Row(
+                children: [
+                  itemAddImage(3, preparedListImage),
+                  itemAddImage(4, preparedListImage),
+                  itemAddImage(5, preparedListImage),
+                ],
+              ),
+            ),
+          ],
+        )
+    );
+  }
+
+  Widget itemAddImage(int index, List<ListImage> preparedListImage) {
+    return Expanded(
+      child: BlocBuilder<EditBloc, EditState>(
+        builder: (context, state) {
+          return Center(
+            child: ItemPhoto(
+              size: widthScreen(context) * 0.28,
+              backgroundUpload: preparedListImage[index].image,
+              onTap: ()=> preparedListImage[index].image == null
+                ? accessPhotoGallery.updateImage(index)
+                : controller.onOption(preparedListImage[index], index)
+            ),
+          );
+        },
+      ),
+    );
+  }
+
 }

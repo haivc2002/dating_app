@@ -84,10 +84,7 @@ class Global {
 
   static void clear() {
     _prefs?.clear();
-    Global.setString('fullName', '');
-    Global.setString('token', '');
-    Global.setString('accountId', '');
-    Global.setString('cmnd', '');
+    Global.getInt('idUser');
   }
   static String fullName = Global.getString('fullName');
 }

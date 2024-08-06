@@ -2,12 +2,22 @@
 
 part of 'home_bloc.dart';
 
-class HomeState {}
+class HomeState {
+  String? message;
+
+  HomeState({this.message});
+}
 
 class LoadApiHomeState extends HomeState {}
 
 class SuccessApiHomeState extends HomeState {
-  ModelListNomination listNomination;
+  final ModelListNomination? listNomination;
+  final ModelInfoUser? info;
+  final List<Results>? location;
 
-  SuccessApiHomeState({required this.listNomination});
+  SuccessApiHomeState({this.listNomination, this.info, this.location});
+}
+
+class ErrorApiHomeState extends HomeState {
+  ErrorApiHomeState({String? message}) : super(message: message);
 }

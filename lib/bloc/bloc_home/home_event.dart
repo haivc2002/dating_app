@@ -7,7 +7,15 @@ class HomeEvent {}
 class LoadApiHomeEvent extends HomeEvent {}
 
 class SuccessApiHomeEvent extends HomeEvent {
-  ModelListNomination listNomination;
+  final ModelListNomination? listNomination;
+  final ModelInfoUser? info;
+  final List<Results>? location;
 
-  SuccessApiHomeEvent(this.listNomination);
+  SuccessApiHomeEvent({this.listNomination, this.info, this.location});
+}
+
+class ErrorApiHomeEvent extends HomeEvent {
+  String message;
+
+  ErrorApiHomeEvent(this.message);
 }

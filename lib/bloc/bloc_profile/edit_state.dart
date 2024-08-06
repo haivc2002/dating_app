@@ -7,6 +7,7 @@ class EditState {
   int? indexPurpose;
   String? purposeValue;
   int? indexLevel;
+  ModelInfoUser? modelInfoUser;
 
-  EditState({this.imageUpload, this.indexPurpose, this.purposeValue, this.indexLevel});
+  EditState({this.imageUpload, this.indexPurpose, this.purposeValue, this.indexLevel, this.modelInfoUser});
 }

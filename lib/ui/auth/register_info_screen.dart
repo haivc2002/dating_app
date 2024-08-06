@@ -5,9 +5,10 @@ import 'package:dating/bloc/bloc_auth/register_bloc.dart';
 import 'package:dating/bloc/bloc_profile/edit_bloc.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
-import 'package:dating/controller/auth_controller/register_more_controller.dart';
+import 'package:dating/controller/register_more_controller.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_image.dart';
+import 'package:dating/theme/theme_notifier.dart';
 import 'package:dating/tool_widget_custom/button_widget_custom.dart';
 import 'package:dating/tool_widget_custom/input_custom.dart';
 import 'package:dating/tool_widget_custom/item_card.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 
 import '../../bloc/bloc_all_tap/api_all_tap_bloc.dart';
 import '../../service/access_photo_gallery.dart';
@@ -61,10 +63,11 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return GestureDetector(
       onTap: controller.tapDismiss,
       child: Scaffold(
-        backgroundColor: ThemeColor.themeLightSystem,
+        backgroundColor: themeNotifier.systemTheme,
         body: Stack(
           children: [
             DraggableScrollableSheet(
@@ -84,6 +87,7 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
   }
 
   Widget _mustBeComplete(ScrollController scrollController) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return SingleChildScrollView(
       controller: scrollController,
       child: Column(
@@ -93,7 +97,7 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
             margin: EdgeInsets.symmetric(vertical: 20.w, horizontal: 10.w),
             padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 10.w),
             decoration: BoxDecoration(
-              color: ThemeColor.themeLightFadeSystem,
+              color: themeNotifier.systemThemeFade,
               borderRadius: BorderRadius.circular(10.w)
             ),
             child: Column(
@@ -103,7 +107,7 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
                 _input(title: 'Your name', controller: controller.nameController),
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.w),
-                  child: Text('Your birthday', style: TextStyles.defaultStyle),
+                  child: Text('Your birthday', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
                 ),
                 BlocBuilder<RegisterBloc, RegisterState>(
                   builder: (context, store) {
@@ -120,7 +124,7 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.w),
-                  child: const Text('Your location'),
+                  child: Text('Your location', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
                 ),
                 BlocBuilder<ApiAllTapBloc, ApiAllTapState>(builder: (context, state) {
                   if(state is LoadApiAllTapState) {
@@ -142,13 +146,19 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
                       ],
                     );
                   } else {
-                    return Text('failde');
+                    return Center(
+                      child: SizedBox(
+                        width: widthScreen(context)*0.7,
+                        child: Image.asset(ThemeImage.error),
+                      ),
+                    );
                   }
                 }),
                 SizedBox(height: 20.w),
                 BlocBuilder<EditBloc, EditState>(
                   builder: (context, state) {
                     return ItemCard(
+                      titleColor: ThemeColor.blackColor,
                       titleCard: 'I came here to: ${state.purposeValue}',
                       iconTitle: const Icon(CupertinoIcons.square_stack_3d_up_fill),
                       colorCard: ThemeColor.themeLightSystem,
@@ -163,22 +173,30 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
           Text('Select photo (minimum 1 photo)', style: TextStyles.defaultStyle.bold.appbarTitle),
           BoxPhoto(function: (index) => photoGallery.selectImage(index)),
           Container(
-            color: ThemeColor.themeLightFadeSystem,
-            child: Padding(
-              padding: EdgeInsets.all(20.w),
-              child: controller.isLoading == false
-                  ? ButtonWidgetCustom(
-                textButton: 'finished',
-                color: ThemeColor.blackColor,
-                radius: 100.w,
-                styleText: TextStyles.defaultStyle.bold.setColor(ThemeColor.whiteColor),
-                onTap: ()=> controller.registerInfo(setState),
-              )
-                  : Container(
-                height: 40.w,
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(100.w),color: ThemeColor.blackColor),
-                child: Center(child: Wait(color: ThemeColor.whiteColor),),
-              )
+            color: themeNotifier.systemThemeFade,
+            width: widthScreen(context),
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 20.w),
+                child: GestureDetector(
+                  onTap: ()=> controller.registerInfo(setState),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.fastEaseInToSlowEaseOut,
+                    width: controller.isLoading ? 40.w : widthScreen(context)*0.9,
+                    decoration: BoxDecoration(
+                      color: themeNotifier.systemText,
+                      borderRadius: BorderRadius.circular(100.w)
+                    ),
+                    height: 40.w,
+                    child: Center(
+                      child: controller.isLoading
+                          ? Wait(color: themeNotifier.systemTheme)
+                          : Text('finished', style: TextStyles.defaultStyle.setColor(themeNotifier.systemTheme).bold),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -272,15 +290,15 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
                 ? const Wait(color: ThemeColor.whiteColor)
                 : SizedBox(
                 width: widthScreen(context)*0.7,
-                  child: Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(CupertinoIcons.info, color: ThemeColor.whiteColor),
                     const SizedBox(width: 10),
                     Expanded(child: Text('Location access permission has \nnot been granted, tap to proceed', style: TextStyles.defaultStyle.whiteText))
                   ],
-                                ),
-                )
+                ),
+              )
             ],
           ),
         )

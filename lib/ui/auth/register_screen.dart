@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
-import 'package:dating/controller/auth_controller/register_controller.dart';
+import 'package:dating/controller/register_controller.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/input_custom.dart';
 import 'package:dating/ui/auth/register_info_screen.dart';

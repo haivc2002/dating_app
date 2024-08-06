@@ -64,6 +64,10 @@ dependencies:
   huge_icons_flutter: ^0.0.2
   intl: ^0.19.0
   shimmer: ^3.0.0
+  flutter_blurhash: ^0.8.2
+  cached_network_image: ^3.4.0
+  url_launcher: ^6.3.0
+  google_sign_in: ^6.2.1
 
 
 dev_dependencies:
@@ -99,6 +103,8 @@ flutter:
     - assets/image/avatar_none.jpg
     - assets/image/girl.png
     - assets/image/boy.png
+    - assets/image/error.png
+    - assets/icon/icon_gender.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

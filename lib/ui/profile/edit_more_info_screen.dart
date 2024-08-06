@@ -1,9 +1,10 @@
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:dating/controller/profile_controller/edit_profile_controller.dart';
+import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:dating/tool_widget_custom/press_popup_custom.dart';
+import 'package:dating/tool_widget_custom/wait.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,7 +14,8 @@ import '../../../common/textstyles.dart';
 import '../../../theme/theme_notifier.dart';
 import '../../bloc/bloc_profile/store_edit_more_bloc.dart';
 import '../../bloc/bloc_search_autocomplete/autocomplete_bloc.dart';
-import '../../controller/location_controller/search_autocomplete_controller.dart';
+import '../../controller/profile_controller/edit_more_info_controller.dart';
+import '../../controller/search_autocomplete_controller.dart';
 import '../../model/location_model/search_autocomplete_model.dart';
 import '../../tool_widget_custom/input_custom.dart';
 
@@ -28,14 +30,14 @@ class EditMoreInfoScreen extends StatefulWidget {
 class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
 
   AlignmentGeometry alignment = Alignment.topLeft;
-  late EditProfileController controller;
+  late EditMoreInfoController controller;
   TextEditingController inputControl = TextEditingController();
   late SearchAutocompleteController searchAutocomplete;
 
   @override
   void initState() {
     super.initState();
-    controller = EditProfileController(context);
+    controller = EditMoreInfoController(context);
     searchAutocomplete = SearchAutocompleteController(context);
   }
 
@@ -45,149 +47,131 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
       backgroundColor: themeNotifier.systemTheme,
-      body: AppBarCustom(
-        title: 'Edit more information',
-        textStyle: TextStyles.defaultStyle.appbarTitle.bold,
-        bodyListWidget: [
-          SizedBox(height: 50.w),
-          PressPopupCustom(
-            content: BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(
-                builder: (context, state) {
-                  return ListView.builder(
+      body: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
+          if(state is SuccessApiHomeState) {
+            final infoMore = state.info?.infoMore;
+            return AppBarCustom(
+              title: 'Edit more information',
+              textStyle: TextStyles.defaultStyle.appbarTitle.bold,
+              bodyListWidget: [
+                SizedBox(height: 50.w),
+                PressPopupCustom(
+                  content: ListView.builder(
                     shrinkWrap: true,
                     itemCount: 101,
                     itemBuilder: (context, index) {
                       return Container(
                         decoration: BoxDecoration(
-                            color: state.heightPerson == (index+100) ? themeNotifier.systemTheme : Colors.transparent,
-                            borderRadius: BorderRadius.circular(5.w)
+                          color: infoMore?.height == (index+100) ? themeNotifier.systemTheme : Colors.transparent,
+                          borderRadius: BorderRadius.circular(5.w)
                         ),
                         child: InkWell(
-                            onTap: () {
-                              context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(heightPerson: index+100));
-                              state.heightPerson == (index+100) ? null : Navigator.pop(context);
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 10.w),
-                              child: controller.listHeight(index)
-                            )
+                          onTap: () => controller.onChange(state.info!, heightValue: index+100),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10.w),
+                            child: controller.listHeight(index)
+                          )
                         ),
                       );
                     },
-                  );
-                }
-            ),
-            child: BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(builder: (context, state) {
-              return itemComponentInfoMore(Icons.height, 'Height', '180cm', const SizedBox());
-            }),
-          ),
-          SizedBox(height: 20.w),
-          BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(
-            builder: (context, state) {
-              return itemComponentInfoMore(
-                Icons.wine_bar, 'wine', '${state.wine}',
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 20.w, 0, 0),
-                  child: Wrap(
-                    runSpacing: 10.w,
-                    spacing: 10.w,
-                    children: List.generate(controller.wineAndSmoking.length, (index) {
-                      return GestureDetector(
-                        onTap: ()=>context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(wine: controller.wineAndSmoking[index])),
-                        child: options(controller.wineAndSmoking[index], controller.wineAndSmoking[index] == state.wine)
-                      );
-                    }),
                   ),
-                )
-              );
-            }
-          ),
-          SizedBox(height: 20.w),
-          BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(
-            builder: (context, state) {
-              return itemComponentInfoMore(
-                Icons.smoking_rooms, 'smoking', '${state.smoking}',
-                Padding(
+                  child: itemComponentInfoMore(Icons.height, 'Height', controller.returnHeight(infoMore?.height??0), const SizedBox())
+                ),
+                SizedBox(height: 20.w),
+                itemComponentInfoMore(
+                    Icons.wine_bar, 'wine', '${infoMore?.wine}',
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 20.w, 0, 0),
+                      child: Wrap(
+                        runSpacing: 10.w,
+                        spacing: 10.w,
+                        children: List.generate(controller.wineAndSmoking.length, (index) {
+                          return GestureDetector(
+                            onTap: ()=>controller.onChange(state.info!, wine: controller.wineAndSmoking[index]),
+                            child: options(controller.wineAndSmoking[index], controller.wineAndSmoking[index] == infoMore?.wine),
+                          );
+                        }),
+                      ),
+                    )
+                ),
+                SizedBox(height: 20.w),
+                itemComponentInfoMore(
+                  Icons.smoking_rooms, 'smoking', '${infoMore?.smoking}',
+                  Padding(
                     padding: EdgeInsets.fromLTRB(0, 20.w, 0, 0),
                     child: Wrap(
                       runSpacing: 10.w,
                       spacing: 10.w,
                       children: List.generate(controller.wineAndSmoking.length, (index) {
                         return GestureDetector(
-                            onTap: ()=> context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(smoking: controller.wineAndSmoking[index])),
-                            child: options(controller.wineAndSmoking[index], controller.wineAndSmoking[index] == state.smoking)
+                          onTap: ()=> controller.onChange(state.info!, smoking: controller.wineAndSmoking[index]),
+                          child: options(controller.wineAndSmoking[index], controller.wineAndSmoking[index] == infoMore?.smoking)
                         );
                       }),
                     ),
                   )
-              );
-            }
-          ),
-          SizedBox(height: 20.w),
-          BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(
-            builder: (context, state) {
-              return itemComponentInfoMore(
-                Icons.ac_unit_sharp, 'Zodiac', '${state.zodiac}',
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 20.w, 0, 0),
-                  child: Wrap(
-                    runSpacing: 10.w,
-                    spacing: 10.w,
-                    children: List.generate(controller.zodiac.length, (index) {
-                      return GestureDetector(
-                          onTap: ()=> context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(zodiac: controller.zodiac[index])),
-                          child: options(controller.zodiac[index], controller.zodiac[index] == state.zodiac)
-                      );
-                    }),
-                  ),
-                )
-              );
-            }
-          ),
-          SizedBox(height: 20.w),
-          itemComponentInfoMore(
-            Icons.account_balance, 'Religion', 'vô thần',
-            Text('♈data')
-          ),
-          SizedBox(height: 20.w),
-          PressPopupCustom(
-            content: BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(
-              builder: (context, state) {
-                return NotificationListener<ScrollNotification>(
-                  onNotification: (scrollNotification) {
-                    if (scrollNotification is ScrollStartNotification) {
-                      FocusScope.of(context).unfocus();
-                    }
-                    return false;
-                  },
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Find', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10.w),
-                          child: InputCustom(
-                            controller: inputControl,
-                            colorInput: themeNotifier.systemTheme,
-                            onChanged: (location) {
-                              context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(textEditingState: inputControl.text));
-                              searchAutocomplete.getData(location);
-                            },
+                ),
+                SizedBox(height: 20.w),
+                itemComponentInfoMore(
+                  Icons.ac_unit_sharp, 'Zodiac', '${infoMore?.zodiac}',
+                  const SizedBox()
+                ),
+                SizedBox(height: 20.w),
+                itemComponentInfoMore(
+                  Icons.account_balance, 'Religion', '${infoMore?.religion}',
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 20.w, 0, 0),
+                    child: Wrap(
+                      runSpacing: 10.w,
+                      spacing: 10.w,
+                      children: List.generate(controller.religion.length, (index) {
+                        return GestureDetector(
+                          onTap: ()=> controller.onChange(state.info!, religion: controller.religion[index]),
+                          child: options(controller.religion[index], controller.religion[index] == infoMore?.religion),
+                        );
+                      }),
+                    ),
+                  )
+                ),
+                SizedBox(height: 20.w),
+                PressPopupCustom(
+                  content: NotificationListener<ScrollNotification>(
+                    onNotification: (scrollNotification) {
+                      if (scrollNotification is ScrollStartNotification) {
+                        FocusScope.of(context).unfocus();
+                      }
+                      return false;
+                    },
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Find', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10.w),
+                            child: InputCustom(
+                              controller: inputControl,
+                              colorInput: themeNotifier.systemTheme,
+                              onChanged: (location) {
+                                context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(textEditingState: inputControl.text));
+                                searchAutocomplete.getData(location);
+                              },
+                            ),
                           ),
-                        ),
-                        returnResult(),
-                      ],
+                          returnResult(),
+                        ],
+                      ),
                     ),
                   ),
-                );
-              }
-            ),
-            child: BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(builder: (context, state) {
-              return itemComponentInfoMore(Icons.height, 'Hometown', '${state.homeTown}', const SizedBox());
-            }),
-          ),
-        ],
+                  child: itemComponentInfoMore(Icons.home, 'Hometown', '${infoMore?.hometown}', const SizedBox()),
+                ),
+              ],
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }
       ),
     );
   }
@@ -240,25 +224,25 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
     return BlocBuilder<StoreEditMoreBloc, StoreEditMoreState>(builder: (context, store) {
       if((store.textEditingState??'').isNotEmpty) {
         return BlocBuilder<AutocompleteBloc, AutocompleteState>(
-            builder: (context, state) {
-              if(state is LoadAutocompleteState) {
-                return Center(
-                  child: CircularProgressIndicator(color: themeNotifier.systemText),
-                );
-              } else if(state is SuccessAutocompleteState) {
-                return ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: state.response.where((element) => element.properties?.formatted != null).length,
-                    itemBuilder: (context, index) {
-                      final validItems = state.response.where((element) => element.properties?.formatted != null).toList();
-                      return titleHometown(validItems, index);
-                    }
-                );
-              } else {
-                return Text("Could not find the address", style: TextStyles.defaultStyle.setColor(themeNotifier.systemText));
-              }
+          builder: (context, state) {
+            if(state is LoadAutocompleteState) {
+              return Center(
+                child: Wait(color: themeNotifier.systemText),
+              );
+            } else if(state is SuccessAutocompleteState) {
+              return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: state.response.where((element) => element.properties?.formatted != null).length,
+                itemBuilder: (context, index) {
+                  final validItems = state.response.where((element) => element.properties?.formatted != null).toList();
+                  return titleHometown(validItems, index);
+                }
+              );
+            } else {
+              return Text("Could not find the address", style: TextStyles.defaultStyle.setColor(themeNotifier.systemText));
             }
+          }
         );
       } else {
         return const SizedBox.shrink();
@@ -272,22 +256,16 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
     String dataHomeTown = '${properties?.formatted}';
     return InkWell(
       borderRadius: BorderRadius.circular(5.w),
-      onTap: () {
-        context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(homeTown: dataHomeTown));
-        FocusScope.of(context).unfocus();
-        Future.delayed(const Duration(milliseconds: 300), () {
-          Navigator.pop(context);
-        });
-      },
+      onTap: ()=> controller.updateHomeTown(dataHomeTown),
       child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 14.w, horizontal: 10.w),
-          child: Row(
-            children: [
-              Icon(Icons.home_work_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
-              SizedBox(width: 20.w),
-              Expanded(child: Text(dataHomeTown, style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)))
-            ],
-          )
+        padding: EdgeInsets.symmetric(vertical: 14.w, horizontal: 10.w),
+        child: Row(
+          children: [
+            Icon(Icons.home_work_outlined, color: themeNotifier.systemText.withOpacity(0.4)),
+            SizedBox(width: 20.w),
+            Expanded(child: Text(dataHomeTown, style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)))
+          ],
+        )
       ),
     );
   }
