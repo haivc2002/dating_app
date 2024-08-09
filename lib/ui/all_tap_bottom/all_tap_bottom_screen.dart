@@ -1,4 +1,5 @@
 
+import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/controller/home_controller.dart';
 import 'package:dating/theme/theme_color.dart';
@@ -54,7 +55,8 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
     }
     drawerStatus ? animationController.forward() : animationController.reverse();
     homeController = HomeController(context);
-    homeController.getData();
+    final rangeValue = context.read<HomeBloc>().state.currentDistance;
+    homeController.getData(rangeValue!);
   }
 
   @override

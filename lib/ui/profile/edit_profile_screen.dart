@@ -60,24 +60,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         bodyListWidget: [
           BlocBuilder<HomeBloc, HomeState>(builder: (context, homeState) {
-            if(homeState is SuccessApiHomeState) {
-              return Column(
-                children: [
-                  _boxImage(homeState.info!.listImage!),
-                  itemInfo(homeState),
-                  itemInfoMore(themeNotifier, homeState),
-                ],
-              );
-            } else {
-              return _error();
-            }
+            return Column(
+              children: [
+                _boxImage(homeState.info!.listImage!),
+                itemInfo(homeState),
+                itemInfoMore(themeNotifier, homeState),
+              ],
+            );
           })
         ],
       ),
     );
   }
 
-  Widget itemInfo(SuccessApiHomeState homeState) {
+  Widget itemInfo(HomeState homeState) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Padding(
       padding: EdgeInsets.all(20.w),
@@ -143,7 +139,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget itemInfoMore(ThemeNotifier themeNotifier, SuccessApiHomeState state) {
+  Widget itemInfoMore(ThemeNotifier themeNotifier, HomeState state) {
     final infoMore = state.info?.infoMore;
     return GestureDetector(
       onTap: ()=> Navigator.pushNamed(context, EditMoreInfoScreen.routeName),

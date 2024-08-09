@@ -9,6 +9,7 @@ import 'package:dating/tool_widget_custom/popup_custom.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -28,25 +29,26 @@ class AccessPhotoGallery {
       try {
         final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 25);
         if (pickedFile != null) {
-          Uint8List compressedImage = await compute(compressImage, await File(pickedFile.path).readAsBytes());
+          final file = File(pickedFile.path);
+          if (await file.exists()) {
+            final imageBytes = await file.readAsBytes();
 
-          final compressedFile = File(pickedFile.path)
-            ..writeAsBytesSync(compressedImage);
+            final compressedFile = File(pickedFile.path)
+              ..writeAsBytesSync(imageBytes);
 
-          if(context.mounted) {
-            imageUpload = List.from(context.read<EditBloc>().state.imageUpload ?? []);
-          }
-          if (index != null && index < imageUpload.length) {
-            imageUpload[index] = compressedFile;
-          } else {
-            imageUpload.add(compressedFile);
-          }
-
-          if (context.mounted) {
-            context.read<EditBloc>().add(EditEvent(imageUpload: imageUpload));
+            if (context.mounted) {
+              final currentImages = context.read<EditBloc>().state.imageUpload ?? [];
+              if (index != null && index < currentImages.length) {
+                currentImages[index] = compressedFile;
+              } else {
+                currentImages.add(compressedFile);
+              }
+              context.read<EditBloc>().add(EditEvent(imageUpload: currentImages));
+            }
           }
         }
       } catch (e) {
+        print(e);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -65,8 +67,8 @@ class AccessPhotoGallery {
             Text('Yes', style: TextStyles.defaultStyle.setColor(ThemeColor.blueColor)),
           ],
           listOnPress: [
-            (){},
-            () async => await openAppSettings(),
+                () {},
+                () async => await openAppSettings(),
           ],
         );
       }
@@ -100,19 +102,19 @@ class AccessPhotoGallery {
 
   Future<void> updateImage(int index) async {
     if (await _requestPermission(Permission.storage)) {
-      try {
-        final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 25);
-        if (pickedFile != null) {
-          Uint8List compressedImage = compressImage(await File(pickedFile.path).readAsBytes());
-          final compressedFile = File(pickedFile.path)..writeAsBytesSync(compressedImage);
-          onSuccess(compressedFile, index);
-        }
-      } catch (e) {
-        if (context.mounted) {
-          PopupCustom.showPopup(context,
-            content: const Text('Error when selecting photo'),
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        final rotatedImage = await FlutterExifRotation.rotateImage(path: pickedFile.path);
+        final compressedImage = compressImage(await rotatedImage.readAsBytes());
+        final compressedFile = File(pickedFile.path)..writeAsBytesSync(compressedImage);
+        onSuccess(compressedFile, index);
+      } else {
+        if(context.mounted) {
+          PopupCustom.showPopup(
+            context,
+            content: const Text('File null'),
             listOnPress: [()=> Navigator.pop(context)],
-            listAction: [Text('Ok', style: TextStyles.defaultStyle.setColor(ThemeColor.blueColor))]
+            listAction: [Text('Ok', style: TextStyles.defaultStyle.setColor(ThemeColor.blueColor)),]
           );
         }
       }
@@ -123,44 +125,39 @@ class AccessPhotoGallery {
 
   Future<void> deleteImage(int index) async {
     final state = context.read<HomeBloc>().state;
-    if (state is SuccessApiHomeState) {
-      List<ListImage> imageUpload = List.from(state.info?.listImage ?? []);
-
-      if (index < imageUpload.length) {
-        imageUpload.removeAt(index);
-        UpdateModel.updateModelInfo(
-          state.info!,
-          listImage: imageUpload,
-        );
-
-        if (context.mounted) {
-          context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
-          Navigator.pop(context);
-        }
-      }
-    }
-  }
-
-  void onSuccess(compressedFile, int index) async {
-    final state = context.read<HomeBloc>().state;
-    if (state is SuccessApiHomeState) {
-      List<ListImage> imageUpload = List.from(state.info?.listImage ?? []);
-
-      String imagePath = compressedFile.path;
-
-      if (index < imageUpload.length) {
-        imageUpload[index] = ListImage(id: imageUpload[index].id, idUser: imageUpload[index].idUser, image: imagePath);
-      } else {
-        imageUpload.add(ListImage(id: null, idUser: Global.getInt('idUser'), image: imagePath));
-      }
+    List<ListImage> imageUpload = List.from(state.info?.listImage ?? []);
+    if (index < imageUpload.length) {
+      imageUpload.removeAt(index);
       UpdateModel.updateModelInfo(
         state.info!,
         listImage: imageUpload,
       );
 
       if (context.mounted) {
-        context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
+        context.read<HomeBloc>().add(HomeEvent(info: UpdateModel.modelInfoUser));
+        Navigator.pop(context);
       }
+    }
+  }
+
+  void onSuccess(compressedFile, int index) async {
+    final state = context.read<HomeBloc>().state;
+    List<ListImage> imageUpload = List.from(state.info?.listImage ?? []);
+
+    String imagePath = compressedFile.path;
+
+    if (index < imageUpload.length) {
+      imageUpload[index] = ListImage(id: imageUpload[index].id, idUser: imageUpload[index].idUser, image: imagePath);
+    } else {
+      imageUpload.add(ListImage(id: null, idUser: Global.getInt('idUser'), image: imagePath));
+    }
+    UpdateModel.updateModelInfo(
+      state.info!,
+      listImage: imageUpload,
+    );
+
+    if (context.mounted) {
+      context.read<HomeBloc>().add(HomeEvent(info: UpdateModel.modelInfoUser));
     }
   }
 

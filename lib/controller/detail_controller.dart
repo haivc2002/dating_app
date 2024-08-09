@@ -1,15 +1,19 @@
+import 'package:dating/bloc/bloc_detail/detail_bloc.dart';
+import 'package:dating/model/model_info_user.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../model/model_list_nomination.dart';
+import '../service/service_info_user.dart';
 import '../theme/theme_color.dart';
 
 class DetailController {
   BuildContext context;
-
   DetailController(this.context);
 
-  List<Widget> items(Nominations data) {
+  ServiceInfoUser info = ServiceInfoUser();
+
+  List<Widget> items(ModelInfoUser data) {
     List<Widget> result = [];
 
     if (data.infoMore?.height != null) {
@@ -53,4 +57,20 @@ class DetailController {
       ),
     );
   }
+
+  void getData(int idUser) async {
+    onLoad();
+    ModelInfoUser response = await info.info(idUser, context);
+    if(response.result == 'Success') {
+      onSuccess(response);
+    } else {
+      onError();
+    }
+  }
+
+  void onLoad()=> context.read<DetailBloc>().add(LoadDetailEvent());
+
+  void onSuccess(ModelInfoUser response)=> context.read<DetailBloc>().add(SuccessDetailEvent(response));
+
+  void onError() {}
 }

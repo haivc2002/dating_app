@@ -12,7 +12,6 @@ class SettingController {
   SettingController(this.context);
 
   bool isDarkMode = Global.getBool('theme', def: false);
-  double currentDistance = 1;
   RiveFile? fileRive;
 
   void toggleTheme(setState) {
@@ -41,7 +40,7 @@ class SettingController {
     }
   }
 
-  double sizeMap() {
+  double sizeMap(double currentDistance) {
     double result = 0;
     result = currentDistance/5;
     return 14 - result;

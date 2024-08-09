@@ -6,8 +6,10 @@ import 'package:dating/model/model_request_auth.dart';
 import 'package:dating/theme/theme_icon.dart';
 import 'package:dating/tool_widget_custom/popup_custom.dart';
 import 'package:dating/ui/auth/register_info_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../service/service_login.dart';
 import '../theme/theme_color.dart';
@@ -26,6 +28,7 @@ class LoginController {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
+  final firebaseAuth = FirebaseAuth.instance;
 
   void popupLogin() {
     BottomSheetCustom.showCustomBottomSheet(context,
@@ -82,34 +85,26 @@ class LoginController {
                 onTap: ()=> login(emailController.text, passController.text)
               ),
               SizedBox(height: 20.h),
-              SizedBox(
-                height: 30.w,
-                width: 150.w,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: ThemeColor.whiteColor,
-                    borderRadius: BorderRadius.circular(6.w),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: 30.w,
-                          width: 30.w,
-                          child: Image.asset(ThemeIcon.iconGoogle),
-                        ),
-                        Expanded(child: Center(child: Text('Google', style: TextStyles.defaultStyle.bold))),
-                        SizedBox(
-                          height: 30.w,
-                          width: 30.w,
-                        ),
-                      ],
-                    ),
-                  )
-                ),
-              )
+              Row(
+                children: [
+                  Expanded(child: Divider(endIndent: 20.w, color: ThemeColor.whiteColor.withOpacity(0.5))),
+                  Text('or', style: TextStyles.defaultStyle.whiteText),
+                  Expanded(child: Divider(indent: 20.w, color: ThemeColor.whiteColor.withOpacity(0.5))),
+                ],
+              ),
+              _or(
+                title: 'Facebook',
+                textColor: ThemeColor.whiteColor,
+                boxColor: ThemeColor.blueColor,
+                icon: const Icon(Icons.facebook, color: ThemeColor.whiteColor)
+              ),
+              _or(
+                title: 'Google',
+                textColor: ThemeColor.blackColor,
+                boxColor: ThemeColor.whiteColor,
+                icon: Image.asset(ThemeIcon.iconGoogle),
+                onTap: () async => await loginWithGoogle()
+              ),
             ],
           ),
         ),
@@ -160,8 +155,56 @@ class LoginController {
     );
   }
 
-  _loginWithGoogle() async {
+  Widget _or({String? title, Color? textColor, Color? boxColor, Widget? icon, Function()? onTap}) {
+    return Padding(
+      padding: EdgeInsets.only(top: 20.w),
+      child: GestureDetector(
+        onTap: onTap,
+        child: SizedBox(
+          height: 30.w,
+          width: 150.w,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: boxColor,
+              borderRadius: BorderRadius.circular(6.w),
+            ),
+            child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 30.w,
+                      width: 30.w,
+                      child: icon,
+                    ),
+                    Expanded(child: Center(child: Text(title??'', style: TextStyles.defaultStyle.bold.setColor(textColor??Colors.transparent)))),
+                    SizedBox(
+                      height: 30.w,
+                      width: 30.w,
+                    ),
+                  ],
+                ),
+              )
+          ),
+        ),
+      ),
+    );
+  }
 
+  Future<void> loginWithGoogle() async {
+    final googleSignIn = GoogleSignIn();
+    if (await googleSignIn.isSignedIn()) {
+      await googleSignIn.signOut();
+    }
+    final googleUser = await googleSignIn.signIn();
+    final googleAuth = await googleUser?.authentication;
+    final cred = GoogleAuthProvider.credential(
+      idToken: googleAuth?.idToken,
+      accessToken: googleAuth?.accessToken,
+    );
+    await firebaseAuth.signInWithCredential(cred);
+    // print(firebaseAuth.currentUser?.email);
   }
 
 }

@@ -1,12 +1,10 @@
 import 'dart:ui';
 
-import 'package:dating/bloc/bloc_all_tap/api_all_tap_bloc.dart';
 import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/common/time_now.dart';
 import 'package:dating/controller/all_tap_controller.dart';
 import 'package:dating/theme/theme_notifier.dart';
-import 'package:dating/ui/auth/login_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,14 +81,14 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     ),
                     BlocBuilder<HomeBloc, HomeState>(
                       builder: (context, state) {
-                        if(state is LoadApiHomeState) {
+                        if(state.isLoading!) {
                           return ListTile(
                             leading: const CircleAvatar(),
                             title: Text(TimeNow.helloDate(), style: TextStyles.defaultStyle.whiteText.setTextSize(16.sp)),
                             subtitle: const Text('Loading...'),
                             trailing: TimeNow.iconDate(),
                           );
-                        } else if(state is SuccessApiHomeState) {
+                        } else {
                           return ListTile(
                             leading: CircleAvatar(
                               backgroundImage: NetworkImage('${state.info?.listImage?[0].image}'),
@@ -100,13 +98,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                 .defaultStyle
                                 .setColor(themeNotifier.systemText)
                             ),
-                            trailing: TimeNow.iconDate(),
-                          );
-                        } else {
-                          return ListTile(
-                            leading: CircleAvatar(),
-                            title: Text(TimeNow.helloDate(), style: TextStyles.defaultStyle.whiteText.setTextSize(16.sp)),
-                            subtitle: Text('fiwhifh'),
                             trailing: TimeNow.iconDate(),
                           );
                         }

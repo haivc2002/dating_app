@@ -3,6 +3,8 @@ import 'package:dating/controller/login_controller.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_image.dart';
 import 'package:dating/ui/auth/register_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

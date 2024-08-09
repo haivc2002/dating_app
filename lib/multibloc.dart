@@ -7,7 +7,9 @@ import 'package:provider/provider.dart';
 import 'bloc/bloc_all_tap/api_all_tap_bloc.dart';
 import 'bloc/bloc_auth/api_register_bloc.dart';
 import 'bloc/bloc_auth/register_bloc.dart';
+import 'bloc/bloc_detail/detail_bloc.dart';
 import 'bloc/bloc_home/home_bloc.dart';
+import 'bloc/bloc_premium/premium_bloc.dart';
 import 'bloc/bloc_profile/edit_bloc.dart';
 import 'bloc/bloc_profile/store_edit_more_bloc.dart';
 import 'bloc/bloc_search_autocomplete/autocomplete_bloc.dart';
@@ -29,6 +31,8 @@ class MultiBloc extends StatelessWidget {
         BlocProvider(create: (context) => RegisterBloc(), lazy: true),
         BlocProvider(create: (context) => ApiRegisterBloc(), lazy: true),
         BlocProvider(create: (context) => HomeBloc(), lazy: true),
+        BlocProvider(create: (context) => PremiumBloc(), lazy: true),
+        BlocProvider(create: (context) => DetailBloc(), lazy: true),
       ] ,
       child: ChangeNotifierProvider(
         create: (_) => ThemeNotifier(),

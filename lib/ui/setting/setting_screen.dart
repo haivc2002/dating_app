@@ -139,34 +139,28 @@ class _SettingScreenState extends State<SettingScreen> {
               margin: EdgeInsets.only(bottom: 15.w),
               padding: EdgeInsets.all(10.w),
               child: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
-                if(state is SuccessApiHomeState) {
-                  return Column(
-                    children: [
-                      ListTile(
-                        title: Text('${controller.currentDistance.round()}km', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
-                        subtitle: Slider(
-                          activeColor: ThemeColor.pinkColor,
-                          value: controller.currentDistance,
-                          min: 1,
-                          max: 20,
-                          divisions: 19,
-                          onChanged: (value) {
-                            setState(() {
-                              controller.currentDistance = value;
-                              mapController.move(
-                                LatLng(state.location?[0].lat??0, state.location?[0].lon??0),
-                                controller.sizeMap()
-                              );
-                            });
-                          },
-                        ),
+                return Column(
+                  children: [
+                    ListTile(
+                      title: Text('${state.currentDistance}km', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
+                      subtitle: Slider(
+                        activeColor: ThemeColor.pinkColor,
+                        value: state.currentDistance!.toDouble(),
+                        min: 1,
+                        max: 20,
+                        divisions: 19,
+                        onChanged: (value) {
+                          context.read<HomeBloc>().add(HomeEvent(currentDistance: value.toInt()));
+                          mapController.move(
+                              LatLng(state.location?[0].lat??0, state.location?[0].lon??0),
+                              controller.sizeMap(state.currentDistance!.toDouble())
+                          );
+                        },
                       ),
-                      _map(state)
-                    ],
-                  );
-                } else {
-                  return Text('Máy chủ bận');
-                }
+                    ),
+                    _map(state)
+                  ],
+                );
               })
             ),
             cartAnimate(
@@ -207,43 +201,47 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  Widget _map(SuccessApiHomeState state) {
+  Widget _map(HomeState state) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.w),
       child: SizedBox(
         height: heightScreen(context)/3,
         child: IgnorePointer(
         ignoring: true,
-        child: FlutterMap(
-          mapController: mapController,
-          options: MapOptions(
-            initialCenter: LatLng(state.location?[0].lat??0, state.location?[0].lon??0),
-            initialZoom: controller.sizeMap()
-          ),
-          children: [
-            TileLayer(
-                urlTemplate: 'https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=4mjr9TMaEoYEKYaRJUin',
-                subdomains: const ['a', 'b', 'c'],
-                tileBuilder: controller.isDarkMode ? _darkModeTileBuilder : null,
-            ),
-            MarkerLayer(markers: [Marker(
-                width: 80,
-                height: 80,
-                point: LatLng(state.location?[0].lat??0, state.location?[0].lon??0),
-                child: Icon(Icons.location_on, size: 30.sp, color: ThemeColor.deepRedColor)
-            )]),
-            CircleLayer(
-              circles: [
-                CircleMarker(
-                  point: LatLng(state.location?[0].lat??0, state.location?[0].lon??0),
-                  color: ThemeColor.pinkColor.withOpacity(0.1),
-                  borderStrokeWidth: 2,
-                  borderColor: ThemeColor.pinkColor,
-                  radius: 120.sp,
+        child: BlocBuilder<HomeBloc, HomeState>(
+          builder: (context, state) {
+            return FlutterMap(
+              mapController: mapController,
+              options: MapOptions(
+                initialCenter: LatLng(state.location?[0].lat??0, state.location?[0].lon??0),
+                initialZoom: controller.sizeMap(state.currentDistance!.toDouble())
+              ),
+              children: [
+                TileLayer(
+                    urlTemplate: 'https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=4mjr9TMaEoYEKYaRJUin',
+                    subdomains: const ['a', 'b', 'c'],
+                    tileBuilder: controller.isDarkMode ? _darkModeTileBuilder : null,
+                ),
+                MarkerLayer(markers: [Marker(
+                    width: 80,
+                    height: 80,
+                    point: LatLng(state.location?[0].lat??0, state.location?[0].lon??0),
+                    child: Icon(Icons.location_on, size: 30.sp, color: ThemeColor.deepRedColor)
+                )]),
+                CircleLayer(
+                  circles: [
+                    CircleMarker(
+                      point: LatLng(state.location?[0].lat??0, state.location?[0].lon??0),
+                      color: ThemeColor.pinkColor.withOpacity(0.1),
+                      borderStrokeWidth: 2,
+                      borderColor: ThemeColor.pinkColor,
+                      radius: 120.sp,
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ],
+            );
+          }
         ))
       ),
     );

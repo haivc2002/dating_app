@@ -1,12 +1,16 @@
 import 'dart:ui';
 
 import 'package:dating/argument_model/argument_register_info.dart';
+import 'package:dating/bloc/bloc_all_tap/all_tap_bloc.dart';
+import 'package:dating/bloc/bloc_all_tap/api_all_tap_bloc.dart';
 import 'package:dating/bloc/bloc_auth/api_register_bloc.dart';
 import 'package:dating/bloc/bloc_auth/register_bloc.dart';
+import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/bloc/bloc_profile/edit_bloc.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/controller/all_tap_controller.dart';
+import 'package:dating/controller/home_controller.dart';
 import 'package:dating/controller/login_controller.dart';
 import 'package:dating/controller/profile_controller/model_list_purpose.dart';
 import 'package:dating/model/model_req_register_info.dart';
@@ -15,17 +19,17 @@ import 'package:dating/service/service_add_image.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/bottom_sheet_custom.dart';
 import 'package:dating/tool_widget_custom/button_widget_custom.dart';
-import 'package:dating/tool_widget_custom/item_card.dart';
 import 'package:dating/tool_widget_custom/list_tile_custom.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../bloc/bloc_all_tap/api_all_tap_bloc.dart';
 import '../common/remove_province.dart';
+import '../model/location_model/location_current_model.dart';
 import '../model/model_base.dart';
 import '../model/model_request_auth.dart';
 import '../service/location/api_location_current.dart';
@@ -134,7 +138,7 @@ class RegisterMoreController {
     }
   }
 
-  void getLocation() {
+  void getLocation() async {
     AllTapController allTapController = AllTapController(context);
     allTapController.getData();
   }

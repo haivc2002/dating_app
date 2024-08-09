@@ -85,6 +85,7 @@ class Global {
   static void clear() {
     _prefs?.clear();
     Global.getInt('idUser');
+    Global.getInt('currentDistance');
   }
   static String fullName = Global.getString('fullName');
 }

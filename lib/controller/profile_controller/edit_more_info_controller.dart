@@ -43,7 +43,7 @@ class EditMoreInfoController {
       zodiac: zodiac,
       religion: religion,
     );
-    context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
+    context.read<HomeBloc>().add(HomeEvent(info: UpdateModel.modelInfoUser));
   }
 
   String returnHeight(int heightValue) {
@@ -60,16 +60,14 @@ class EditMoreInfoController {
 
   void updateHomeTown(String dataHomeTown) {
     final state = context.read<HomeBloc>().state;
-    if(state is SuccessApiHomeState) {
-      UpdateModel.updateModelInfo(state.info!,
+    UpdateModel.updateModelInfo(state.info!,
         hometown: cityAutoComplete(dataHomeTown)
-      );
-      context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
-      FocusScope.of(context).unfocus();
-      Future.delayed(const Duration(milliseconds: 300), () {
-        Navigator.pop(context);
-      });
-    }
+    );
+    context.read<HomeBloc>().add(HomeEvent(info: UpdateModel.modelInfoUser));
+    FocusScope.of(context).unfocus();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      Navigator.pop(context);
+    });
   }
 
 }

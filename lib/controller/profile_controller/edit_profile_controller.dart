@@ -20,12 +20,9 @@ import 'package:dating/tool_widget_custom/wait.dart';
 import 'package:dating/ui/profile/item_photo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 
-import '../../theme/theme_notifier.dart';
 import '../../tool_widget_custom/list_tile_check_circle.dart';
 import 'model_list_purpose.dart';
 
@@ -53,7 +50,7 @@ class EditProfileController {
   TextEditingController workController = TextEditingController();
   TextEditingController aboutController = TextEditingController();
 
-  void popupName(SuccessApiHomeState state) {
+  void popupName(HomeState state) {
     nameController.text = '${state.info?.info?.name}';
     PopupCustom.showPopup(context,
       title: 'Name',
@@ -67,12 +64,10 @@ class EditProfileController {
           ),
           contentRow('Birthday', Text('${state.info?.info?.birthday}')),
           contentRow('Location', BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
-            if(state is LoadApiHomeState) {
+            if(state.isLoading!) {
               return Wait(size: 15.w,strokeWidth: 2.w);
-            } else if (state is SuccessApiHomeState) {
-              return Text(_city(state));
             } else {
-              return const Text('Error');
+              return Text(_city(state));
             }
           })),
         ],
@@ -88,7 +83,7 @@ class EditProfileController {
     );
   }
 
-  String _city(SuccessApiHomeState state) {
+  String _city(HomeState state) {
     if(state.location?[0].state != null) {
       return RemoveProvince.cancel('${state.location?[0].state}');
     } else if(state.location?[0].city != null) {
@@ -98,7 +93,7 @@ class EditProfileController {
     }
   }
 
-  void popupWork(SuccessApiHomeState state) {
+  void popupWork(HomeState state) {
     if(state.info?.info?.word != null) {
       workController.text = '${state.info?.info?.word}';
     } else {
@@ -123,7 +118,7 @@ class EditProfileController {
     );
   }
 
-  void popupAbout(SuccessApiHomeState state) {
+  void popupAbout(HomeState state) {
     if(state.info?.info?.describeYourself != null) {
       aboutController.text = '${state.info?.info?.describeYourself}';
     } else {
@@ -175,30 +170,26 @@ class EditProfileController {
                     ),
                     BlocBuilder<HomeBloc, HomeState>(
                       builder: (context, state) {
-                        if(state is SuccessApiHomeState) {
-                          String purposeValue = '${state.info?.info?.desiredState}';
-                          return ListView.builder(
+                        String purposeValue = '${state.info?.info?.desiredState}';
+                        return ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: 3,
                             itemBuilder: (context, index) {
                               int indexCurrent = listPurpose[index].title.indexOf(purposeValue);
                               return Padding(
-                                padding: EdgeInsets.symmetric(vertical: 10.w),
-                                child: ListTileCustom(
-                                  color: indexCurrent != 0 ? ThemeColor.whiteColor.withOpacity(0.3) : ThemeColor.pinkColor.withOpacity(0.3),
-                                  title: listPurpose[index].title,
-                                  iconLeading: listPurpose[index].iconLeading,
-                                  iconTrailing: indexCurrent != 0 ? Icons.circle_outlined : Icons.check_circle,
-                                  subtitle: listPurpose[index].subtitle,
-                                  onTap: () => activatedPurpose(index, state)
-                                )
+                                  padding: EdgeInsets.symmetric(vertical: 10.w),
+                                  child: ListTileCustom(
+                                      color: indexCurrent != 0 ? ThemeColor.whiteColor.withOpacity(0.3) : ThemeColor.pinkColor.withOpacity(0.3),
+                                      title: listPurpose[index].title,
+                                      iconLeading: listPurpose[index].iconLeading,
+                                      iconTrailing: indexCurrent != 0 ? Icons.circle_outlined : Icons.check_circle,
+                                      subtitle: listPurpose[index].subtitle,
+                                      onTap: () => activatedPurpose(index, state)
+                                  )
                               );
                             }
-                          );
-                        } else {
-                          return const SizedBox();
-                        }
+                        );
                       }
                     ),
                   ]),
@@ -247,30 +238,26 @@ class EditProfileController {
           Text('Academic level', style: TextStyles.defaultStyle.setTextSize(22.sp).bold,),
           Expanded(
             child: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
-              if(state is SuccessApiHomeState) {
-                String academicLevelValue = '${state.info?.info?.academicLevel}';
-                int indexCurrent = listAcademicLevel.indexOf(academicLevelValue);
-                return SingleChildScrollView(
-                  child: Column(
-                    children: List.generate(listAcademicLevel.length, (index) {
-                      bool isSelect = indexCurrent != index;
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.w),
-                        child: ListTileCheckCircle(
+              String academicLevelValue = '${state.info?.info?.academicLevel}';
+              int indexCurrent = listAcademicLevel.indexOf(academicLevelValue);
+              return SingleChildScrollView(
+                child: Column(
+                  children: List.generate(listAcademicLevel.length, (index) {
+                    bool isSelect = indexCurrent != index;
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.w),
+                      child: ListTileCheckCircle(
                           color: isSelect ? ThemeColor.whiteColor.withOpacity(0.3) : ThemeColor.pinkColor.withOpacity(0.5),
                           titleColor: isSelect ? ThemeColor.blackColor : ThemeColor.whiteColor,
                           iconColor: isSelect ? ThemeColor.blackColor : ThemeColor.whiteColor,
                           title: listAcademicLevel[index],
                           iconData: isSelect ? CupertinoIcons.circle : Icons.check_circle,
                           onTap: () => activatedAcademicLevel(index, state)
-                        ),
-                      );
-                    }),
-                  ),
-                );
-              } else {
-                return const SizedBox();
-              }
+                      ),
+                    );
+                  }),
+                ),
+              );
             })
           )
         ],
@@ -278,47 +265,47 @@ class EditProfileController {
     );
   }
 
-  void activatedAcademicLevel(int index, SuccessApiHomeState state) {
+  void activatedAcademicLevel(int index, HomeState state) {
     UpdateModel.updateModelInfo(
       state.info!,
       academicLevel: listAcademicLevel[index]
     );
-    context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
+    context.read<HomeBloc>().add(HomeEvent(info: UpdateModel.modelInfoUser));
   }
 
-  void activatedName(SuccessApiHomeState state, String nameValue) {
+  void activatedName(HomeState state, String nameValue) {
     UpdateModel.updateModelInfo(
       state.info!,
       name: nameValue
     );
-    context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
+    context.read<HomeBloc>().add(HomeEvent(info: UpdateModel.modelInfoUser));
     Navigator.pop(context);
   }
 
-  void activatedWork(SuccessApiHomeState state, String workValue) {
+  void activatedWork(HomeState state, String workValue) {
     UpdateModel.updateModelInfo(
       state.info!,
       work: workValue
     );
-    context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
+    context.read<HomeBloc>().add(HomeEvent(info: UpdateModel.modelInfoUser));
     Navigator.pop(context);
   }
 
-  void activatedAbout(SuccessApiHomeState state, String aboutValue) {
+  void activatedAbout(HomeState state, String aboutValue) {
     UpdateModel.updateModelInfo(
       state.info!,
       describeYourself: aboutValue,
     );
-    context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
+    context.read<HomeBloc>().add(HomeEvent(info: UpdateModel.modelInfoUser));
     Navigator.pop(context);
   }
 
-  void activatedPurpose(int index, SuccessApiHomeState state) {
+  void activatedPurpose(int index, HomeState state) {
     UpdateModel.updateModelInfo(
       state.info!,
       desiredState: listPurpose[index].title
     );
-    context.read<HomeBloc>().add(SuccessApiHomeEvent(info: UpdateModel.modelInfoUser));
+    context.read<HomeBloc>().add(HomeEvent(info: UpdateModel.modelInfoUser));
   }
 
   void getInfo() async {

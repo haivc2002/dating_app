@@ -1,15 +1,18 @@
 import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/model/model_list_nomination.dart';
+import 'package:dating/model/model_req_match.dart';
+import 'package:dating/model/model_update_location.dart';
 import 'package:dating/service/service_list_nomination.dart';
+import 'package:dating/service/service_match.dart';
+import 'package:dating/service/service_update.dart';
+import 'package:dating/tool_widget_custom/popup_custom.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/intl.dart';
 import 'package:rive/rive.dart';
 
-import '../../bloc/bloc_auth/register_bloc.dart';
 import '../../common/global.dart';
 import '../../model/location_model/location_current_model.dart';
 import '../../model/model_info_user.dart';
@@ -17,6 +20,8 @@ import '../../service/location/api_location_current.dart';
 import '../../service/service_info_user.dart';
 import '../common/scale_screen.dart';
 import '../common/textstyles.dart';
+import '../model/model_res_update_location.dart';
+import '../model/model_response_match.dart';
 import '../theme/theme_color.dart';
 import '../theme/theme_rive.dart';
 import '../tool_widget_custom/button_widget_custom.dart';
@@ -29,98 +34,116 @@ class HomeController {
   ServiceListNomination service = ServiceListNomination();
   ApiLocationCurrent apiLocation = ApiLocationCurrent();
   ServiceInfoUser serviceInfoUser = ServiceInfoUser();
+  ServiceUpdate serviceUpdate = ServiceUpdate();
+  ServiceMatch addMatch = ServiceMatch();
 
-  void getData() async {
-    onLoad();
-
+  Future<void> getData(int rangeValue) async {
+    onLoad(true);
     try {
       await getLocation();
     } catch (e) {
       onError('Failed to load location data');
       return;
     }
-
     try {
-      await getInfo();
-    } catch (e) {
-      onError('Failed to load user info');
-      return;
-    }
-
-    try {
-      await getListNomination();
+      await getListNomination(rangeValue);
     } catch (e) {
       onError('Failed to load nomination list');
-    }
-  }
-
-  Future<void> getListNomination() async {
-    try {
-      ModelListNomination response = await service.listNomination(
-        context,
-        idUser: Global.getInt('idUser'),
-        gender: 'female',
-        radius: 100,
-      );
-      if (response.result == 'Success') {
-        onSuccess(listNomination: response);
-      } else {
-        throw Exception('Failed to load nominations');
-      }
-    } catch (e) {
-      throw Exception('Failed to load nominations');
     }
   }
 
   Future<void> getLocation() async {
     try {
       Position? position = await apiLocation.getCurrentPosition(context, LocationAccuracy.high);
-      if (context.mounted) {
-        context.read<RegisterBloc>().add(RegisterEvent(lat: position?.latitude, lon: position?.longitude));
-      }
-      if (position != null) {
-        LocationCurrentModel response = await apiLocation.locationCurrent(position.latitude, position.longitude);
-        if (response.results!.isNotEmpty && context.mounted) {
-          List<Results> dataCity = response.results ?? [];
-          onSuccess(dataCity: dataCity);
-        } else {
-          throw Exception('Failed to load location data');
-        }
-      } else {
+      if (position == null) {
+        onLoad(false);
         throw Exception('Failed to get position');
       }
+
+      LocationCurrentModel response = await apiLocation.locationCurrent(position.latitude, position.longitude);
+      if (response.results?.isEmpty ?? true) {
+        onLoad(false);
+        throw Exception('Failed to load location data');
+      }
+      List<Results> dataCity = response.results ?? [];
+      onSuccess(dataCity: dataCity);
+      await setLocation(position.latitude, position.longitude);
     } catch (e) {
+      onLoad(false);
       throw Exception('Failed to load location data');
+    }
+  }
+
+  Future<void> setLocation(double latValue, double lonValue) async {
+    try {
+      ModelUpdateLocation requestLocation = ModelUpdateLocation(
+        idUser: Global.getInt("idUser"),
+        lat: latValue,
+        lon: lonValue,
+      );
+      ModelResUpdateLocation response = await serviceUpdate.updateLocation(requestLocation);
+
+      if (response.result != 'Success') {
+        onLoad(false);
+        throw Exception('Failed to update location');
+      }
+      await getInfo();
+    } catch (e) {
+      onLoad(false);
+      throw Exception('Failed to update location');
     }
   }
 
   Future<void> getInfo() async {
     try {
       ModelInfoUser infoModel = await serviceInfoUser.info(Global.getInt('idUser'), context);
-      if (infoModel.result == 'Success') {
-        onSuccess(info: infoModel);
-      } else {
+
+      if (infoModel.result != 'Success') {
+        onLoad(false);
         throw Exception('Failed to load user info');
       }
+      onSuccess(info: infoModel);
     } catch (e) {
+      onLoad(false);
       throw Exception('Failed to load user info');
     }
   }
 
+  Future<void> getListNomination(int rangeValue) async {
+    try {
+      ModelListNomination response = await service.listNomination(
+        context,
+        idUser: Global.getInt('idUser'),
+        gender: 'female',
+        radius: rangeValue,
+      );
+      if (response.result != 'Success') {
+        onLoad(false);
+        throw Exception('Failed to load nominations');
+      }
+      onSuccess(listNomination: response);
+    } catch (e) {
+      onLoad(false);
+      throw Exception('Failed to load nominations');
+    }
+  }
+
   void onSuccess({ModelListNomination? listNomination, List<Results>? dataCity, ModelInfoUser? info}) {
-    context.read<HomeBloc>().add(SuccessApiHomeEvent(
+    context.read<HomeBloc>().add(HomeEvent(
       listNomination: listNomination,
       location: dataCity,
       info: info,
     ));
+    onLoad(false);
   }
 
-  void onLoad() {
-    context.read<HomeBloc>().add(LoadApiHomeEvent());
+  void onLoad(bool isLoading) {
+    context.read<HomeBloc>().add(HomeEvent(isLoading: isLoading));
   }
 
   void onError(String message) {
-    context.read<HomeBloc>().add(ErrorApiHomeEvent(message));
+    onLoad(false);
+    context.read<HomeBloc>().add(HomeEvent(message: message));
   }
 
   void backImage(PageController pageController) {
@@ -137,15 +160,11 @@ class HomeController {
     );
   }
 
-  String calculateDistance(SuccessApiHomeState state, int itemIndex) {
-    double latYou = state.info?.info?.lat ?? 0;
-    double lonYou = state.info?.info?.lon ?? 0;
-    double latObject = state.listNomination?.nominations?[itemIndex].info?.lat ?? 0;
-    double lonObject = state.listNomination?.nominations?[itemIndex].info?.lon ?? 0;
-    if (latYou == 0 || lonYou == 0 || latObject == 0 || lonObject == 0) {
+  String calculateDistance({required double latYou,required double lonYou,required double latOj,required double lonOj}) {
+    if (latYou == 0 || lonYou == 0 || latOj == 0 || lonOj == 0) {
       return 'Unknown distance';
     }
-    double distanceInMeters = Geolocator.distanceBetween(latYou, lonYou, latObject, lonObject);
+    double distanceInMeters = Geolocator.distanceBetween(latYou, lonYou, latOj, lonOj);
     double distanceInKilometers = distanceInMeters / 1000;
 
     return '${distanceInKilometers.toStringAsFixed(2)}km';
@@ -233,6 +252,25 @@ class HomeController {
           );
         },
       );
+    }
+  }
+
+  void match(int keyMatch) async {
+    ModelReqMatch requestMatch = ModelReqMatch(
+      idUser: Global.getInt('idUser'),
+      keyMatch: keyMatch
+    );
+    ModelResponseMatch response = await addMatch.match(requestMatch);
+    if(response.result == 'Success' && context.mounted) {
+      context.read<HomeBloc>().add(HomeEvent(match: response));
+    } else {
+      if(context.mounted) {
+        PopupCustom.showPopup(context, 
+            content: const Text('The server is busy!'),
+            listOnPress: [()=> Navigator.pop(context)],
+            listAction: [Text('Ok', style: TextStyles.defaultStyle.bold.setColor(ThemeColor.blueColor))]
+        );
+      }
     }
   }
 

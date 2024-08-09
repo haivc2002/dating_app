@@ -1,3 +1,4 @@
+import 'package:dating/common/extension/gradient.dart';
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_notifier.dart';
@@ -8,7 +9,9 @@ import 'package:provider/provider.dart';
 
 class ItemParallax extends StatelessWidget {
   final int? index;
-  const ItemParallax({Key? key, this.index}) : super(key: key);
+  final String? title, subTitle;
+  final String? image;
+  const ItemParallax({Key? key, this.index, this.image, this.title, this.subTitle}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +23,7 @@ class ItemParallax extends StatelessWidget {
         child: Container(
           height: 130.w,
           color: themeNotifier.systemThemeFade,
-          child: Row(
+          child: Stack(
             children: [
               _itemImage(context),
               _itemInfo(context, themeNotifier),
@@ -32,80 +35,74 @@ class ItemParallax extends StatelessWidget {
   }
 
   Widget _itemImage(BuildContext context) {
-    return Expanded(
-      child: Hero(
-        tag: '$index',
-        child: SizedBox(
-          height: 130.w,
-          child: Flow(
-            delegate: ParallaxFlowDelegate(
-              scrollable: Scrollable.of(context),
-              itemContext: context,
-            ),
-            children: [
-              Image.network(
-                'https://i.pinimg.com/736x/a1/ae/8a/a1ae8ad5d7f52510172f9384260105fd.jpg',
-                fit: BoxFit.cover,
-              ),
-            ],
-          ),
+    return Hero(
+      tag: '$index',
+      child: Flow(
+        delegate: ParallaxFlowDelegate(
+          scrollable: Scrollable.of(context),
+          itemContext: context,
         ),
+        children: [
+          Image.network(
+            image ?? 'https://i.pinimg.com/736x/a1/ae/8a/a1ae8ad5d7f52510172f9384260105fd.jpg',
+            fit: BoxFit.cover,
+          ),
+        ],
       ),
     );
   }
 
   Widget _itemInfo(BuildContext context, ThemeNotifier themeNotifier) {
-    return Expanded(
-      child: Padding(
-        padding: EdgeInsets.all(10.w),
-        child: SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'dataName, 20',
-                style: TextStyles.defaultStyle
-                    .bold
-                    .setTextSize(15.sp)
-                    .setColor(ThemeColor.pinkColor),
-              ),
-              SizedBox(height: 10.w),
-              Row(
-                children: [
-                  Icon(Icons.location_on_outlined,
-                      color: themeNotifier.systemText.withOpacity(0.5)),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: Text(
-                      'dataName 20',
-                      style: TextStyles.defaultStyle.setColor(
-                          themeNotifier.systemText.withOpacity(0.5)
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Icon(CupertinoIcons.square_stack_3d_up,
-                      color: themeNotifier.systemText.withOpacity(0.5)),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: Text(
-                      'Dating',
-                      style: TextStyles.defaultStyle.setColor(
-                          themeNotifier.systemText.withOpacity(0.5)
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-            ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Spacer(),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: GradientColor.gradientBlackFade
           ),
-        ),
-      ),
+          child: SizedBox(
+            height: 50.w,
+            width: double.infinity,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.w),
+              child: Row(
+                children: [
+                  Text(
+                    title??'',
+                    style: TextStyles.defaultStyle
+                        .bold
+                        .setTextSize(15.sp)
+                        .setColor(ThemeColor.whiteColor),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100.w),
+                        border: Border.all(color: ThemeColor.whiteColor, width: 1.5),
+                        color: ThemeColor.whiteColor.withOpacity(0.7)
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.w),
+                        child: Text(
+                          subTitle??'',
+                          style: TextStyles
+                              .defaultStyle
+                              .setColor(ThemeColor.pinkColor)
+                              .setTextSize(9.sp),
+                          maxLines: 1,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        )
+      ],
     );
   }
 }
@@ -136,7 +133,7 @@ class ParallaxFlowDelegate extends FlowDelegate {
     final viewportDimension = scrollable!.position.viewportDimension;
     final scrollFraction =
     (itemOffset.dy / viewportDimension).clamp(0, 1);
-    final verticalAlignment = Alignment(0, scrollFraction * 2 - 1);
+    final verticalAlignment = Alignment(0, scrollFraction * 3 - 1);
     final imageBox = context.getChildSize(0)!;
     final childRect =
     verticalAlignment.inscribe(imageBox, Offset.zero & context.size);

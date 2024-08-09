@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:dating/bloc/bloc_all_tap/api_all_tap_bloc.dart';
 import 'package:dating/bloc/bloc_auth/register_bloc.dart';
 import 'package:dating/bloc/bloc_profile/edit_bloc.dart';
 import 'package:dating/common/scale_screen.dart';
@@ -9,7 +10,6 @@ import 'package:dating/controller/register_more_controller.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_image.dart';
 import 'package:dating/theme/theme_notifier.dart';
-import 'package:dating/tool_widget_custom/button_widget_custom.dart';
 import 'package:dating/tool_widget_custom/input_custom.dart';
 import 'package:dating/tool_widget_custom/item_card.dart';
 import 'package:dating/tool_widget_custom/select_gender.dart';
@@ -23,7 +23,6 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
-import '../../bloc/bloc_all_tap/api_all_tap_bloc.dart';
 import '../../service/access_photo_gallery.dart';
 import '../../tool_widget_custom/box_photo.dart';
 
@@ -219,14 +218,16 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
   Widget _boxDate(String title) {
     return GestureDetector(
       onTap: ()=> controller.selectDate(),
-      child: Container(
+      child: SizedBox(
         height: 50.w,
-        decoration: BoxDecoration(
-          color: ThemeColor.themeLightSystem,
-          borderRadius: BorderRadius.circular(10.w)
-        ),
-        child: Center(
-          child: Text(title, style: TextStyles.defaultStyle.setColor(ThemeColor.blackColor.withOpacity(0.5))),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: ThemeColor.themeLightSystem,
+            borderRadius: BorderRadius.circular(10.w)
+          ),
+          child: Center(
+            child: Text(title, style: TextStyles.defaultStyle.setColor(ThemeColor.blackColor.withOpacity(0.5))),
+          ),
         ),
       ),
     );

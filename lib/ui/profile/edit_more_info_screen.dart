@@ -49,54 +49,53 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
       backgroundColor: themeNotifier.systemTheme,
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
-          if(state is SuccessApiHomeState) {
-            final infoMore = state.info?.infoMore;
-            return AppBarCustom(
-              title: 'Edit more information',
-              textStyle: TextStyles.defaultStyle.appbarTitle.bold,
-              bodyListWidget: [
-                SizedBox(height: 50.w),
-                PressPopupCustom(
+          final infoMore = state.info?.infoMore;
+          return AppBarCustom(
+            title: 'Edit more information',
+            textStyle: TextStyles.defaultStyle.appbarTitle.bold,
+            bodyListWidget: [
+              SizedBox(height: 50.w),
+              PressPopupCustom(
                   content: ListView.builder(
                     shrinkWrap: true,
                     itemCount: 101,
                     itemBuilder: (context, index) {
                       return Container(
                         decoration: BoxDecoration(
-                          color: infoMore?.height == (index+100) ? themeNotifier.systemTheme : Colors.transparent,
-                          borderRadius: BorderRadius.circular(5.w)
+                            color: infoMore?.height == (index+100) ? themeNotifier.systemTheme : Colors.transparent,
+                            borderRadius: BorderRadius.circular(5.w)
                         ),
                         child: InkWell(
-                          onTap: () => controller.onChange(state.info!, heightValue: index+100),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10.w),
-                            child: controller.listHeight(index)
-                          )
+                            onTap: () => controller.onChange(state.info!, heightValue: index+100),
+                            child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 10.w),
+                                child: controller.listHeight(index)
+                            )
                         ),
                       );
                     },
                   ),
                   child: itemComponentInfoMore(Icons.height, 'Height', controller.returnHeight(infoMore?.height??0), const SizedBox())
-                ),
-                SizedBox(height: 20.w),
-                itemComponentInfoMore(
-                    Icons.wine_bar, 'wine', '${infoMore?.wine}',
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 20.w, 0, 0),
-                      child: Wrap(
-                        runSpacing: 10.w,
-                        spacing: 10.w,
-                        children: List.generate(controller.wineAndSmoking.length, (index) {
-                          return GestureDetector(
-                            onTap: ()=>controller.onChange(state.info!, wine: controller.wineAndSmoking[index]),
-                            child: options(controller.wineAndSmoking[index], controller.wineAndSmoking[index] == infoMore?.wine),
-                          );
-                        }),
-                      ),
-                    )
-                ),
-                SizedBox(height: 20.w),
-                itemComponentInfoMore(
+              ),
+              SizedBox(height: 20.w),
+              itemComponentInfoMore(
+                  Icons.wine_bar, 'wine', '${infoMore?.wine}',
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 20.w, 0, 0),
+                    child: Wrap(
+                      runSpacing: 10.w,
+                      spacing: 10.w,
+                      children: List.generate(controller.wineAndSmoking.length, (index) {
+                        return GestureDetector(
+                          onTap: ()=>controller.onChange(state.info!, wine: controller.wineAndSmoking[index]),
+                          child: options(controller.wineAndSmoking[index], controller.wineAndSmoking[index] == infoMore?.wine),
+                        );
+                      }),
+                    ),
+                  )
+              ),
+              SizedBox(height: 20.w),
+              itemComponentInfoMore(
                   Icons.smoking_rooms, 'smoking', '${infoMore?.smoking}',
                   Padding(
                     padding: EdgeInsets.fromLTRB(0, 20.w, 0, 0),
@@ -105,20 +104,20 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
                       spacing: 10.w,
                       children: List.generate(controller.wineAndSmoking.length, (index) {
                         return GestureDetector(
-                          onTap: ()=> controller.onChange(state.info!, smoking: controller.wineAndSmoking[index]),
-                          child: options(controller.wineAndSmoking[index], controller.wineAndSmoking[index] == infoMore?.smoking)
+                            onTap: ()=> controller.onChange(state.info!, smoking: controller.wineAndSmoking[index]),
+                            child: options(controller.wineAndSmoking[index], controller.wineAndSmoking[index] == infoMore?.smoking)
                         );
                       }),
                     ),
                   )
-                ),
-                SizedBox(height: 20.w),
-                itemComponentInfoMore(
+              ),
+              SizedBox(height: 20.w),
+              itemComponentInfoMore(
                   Icons.ac_unit_sharp, 'Zodiac', '${infoMore?.zodiac}',
                   const SizedBox()
-                ),
-                SizedBox(height: 20.w),
-                itemComponentInfoMore(
+              ),
+              SizedBox(height: 20.w),
+              itemComponentInfoMore(
                   Icons.account_balance, 'Religion', '${infoMore?.religion}',
                   Padding(
                     padding: EdgeInsets.fromLTRB(0, 20.w, 0, 0),
@@ -133,44 +132,41 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
                       }),
                     ),
                   )
-                ),
-                SizedBox(height: 20.w),
-                PressPopupCustom(
-                  content: NotificationListener<ScrollNotification>(
-                    onNotification: (scrollNotification) {
-                      if (scrollNotification is ScrollStartNotification) {
-                        FocusScope.of(context).unfocus();
-                      }
-                      return false;
-                    },
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Find', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10.w),
-                            child: InputCustom(
-                              controller: inputControl,
-                              colorInput: themeNotifier.systemTheme,
-                              onChanged: (location) {
-                                context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(textEditingState: inputControl.text));
-                                searchAutocomplete.getData(location);
-                              },
-                            ),
+              ),
+              SizedBox(height: 20.w),
+              PressPopupCustom(
+                content: NotificationListener<ScrollNotification>(
+                  onNotification: (scrollNotification) {
+                    if (scrollNotification is ScrollStartNotification) {
+                      FocusScope.of(context).unfocus();
+                    }
+                    return false;
+                  },
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Find', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10.w),
+                          child: InputCustom(
+                            controller: inputControl,
+                            colorInput: themeNotifier.systemTheme,
+                            onChanged: (location) {
+                              context.read<StoreEditMoreBloc>().add(StoreEditMoreEvent(textEditingState: inputControl.text));
+                              searchAutocomplete.getData(location);
+                            },
                           ),
-                          returnResult(),
-                        ],
-                      ),
+                        ),
+                        returnResult(),
+                      ],
                     ),
                   ),
-                  child: itemComponentInfoMore(Icons.home, 'Hometown', '${infoMore?.hometown}', const SizedBox()),
                 ),
-              ],
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
+                child: itemComponentInfoMore(Icons.home, 'Hometown', '${infoMore?.hometown}', const SizedBox()),
+              ),
+            ],
+          );
         }
       ),
     );

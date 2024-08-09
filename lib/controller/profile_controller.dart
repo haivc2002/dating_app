@@ -15,7 +15,7 @@ class ProfileController {
 
   ProfileController(this.context);
 
-  Widget checkNull(SuccessApiHomeState state, String keyValue) {
+  Widget checkNull(HomeState state, String keyValue) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     TextStyle style = TextStyles.defaultStyle.setColor(themeNotifier.systemText);
     Widget defaultState = Row(

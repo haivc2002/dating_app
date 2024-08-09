@@ -1,6 +1,7 @@
 import 'package:dating/argument_model/arguments_detail_model.dart';
 import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/extension/gradient.dart';
+import 'package:dating/common/global.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_image.dart';
@@ -8,7 +9,6 @@ import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:dating/tool_widget_custom/button_widget_custom.dart';
 import 'package:dating/tool_widget_custom/press_hold.dart';
 import 'package:dating/ui/detail/detail_screen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
@@ -43,12 +43,12 @@ class _HomeScreenState extends State<HomeScreen> {
   late final SwipableStackController _controller;
   late HomeController controller;
   PageController pageController = PageController();
-  int currentPage = 0;
 
   @override
   void initState() {
     super.initState();
-    _controller = SwipableStackController()..addListener(_listenController);
+    int currentIndex = context.read<HomeBloc>().state.currentIndex!;
+    _controller = SwipableStackController(initialIndex: currentIndex)..addListener(_listenController);
     controller = HomeController(context);
     controller.popupSwipe();
   }
@@ -80,9 +80,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 widget.animationController.forward();
               });
             },
-            child: Container(
+            child: const ColoredBox(
               color: ThemeColor.whiteColor,
-              child: const Center(
+              child: Center(
                 child: Icon(Icons.menu),
               ),
             ),
@@ -91,12 +91,10 @@ class _HomeScreenState extends State<HomeScreen> {
           textStyle: TextStyles.defaultStyle.bold.setColor(ThemeColor.pinkColor).setTextSize(18.sp),
           bodyListWidget: [
             BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
-              if (state is LoadApiHomeState) {
+              if (state.isLoading!) {
                 return _load();
-              } else if (state is SuccessApiHomeState) {
-                return _swiperStack(state);
               } else {
-                return _error(state);
+                return _swiperStack(state);
               }
             })
           ],
@@ -105,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _swiperStack(SuccessApiHomeState state) {
+  Widget _swiperStack(HomeState state) {
     final nominations = state.listNomination?.nominations ?? [];
     final length = nominations.length;
     return SizedBox(
@@ -128,10 +126,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   controller: _controller,
                   stackClipBehaviour: Clip.none,
                   onSwipeCompleted: (index, direction) {
-                    if (kDebugMode) {
-                      print('$index, $direction');
+                    if(direction == SwipeDirection.right) {
+                      int? keyMatch = state.listNomination?.nominations?[index].idUser;
+                      controller.match(keyMatch!);
                     }
-                    setState(()=> currentPage = 0);
+                    context.read<HomeBloc>().add(HomeEvent(currentIndex: index+1, currentPage: 0));
                   },
                   horizontalSwipeThreshold: 0.8,
                   verticalSwipeThreshold: 0.8,
@@ -144,9 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     final data = nominations[itemIndex].listImage ?? [];
                     final pageController = PageController();
                     pageController.addListener(() {
-                      setState(() {
-                        currentPage = pageController.page!.round();
-                      });
+                      context.read<HomeBloc>().add(HomeEvent(currentPage: pageController.page!.round()));
                     });
                     return Center(
                       child: ClipRRect(
@@ -161,9 +158,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return PressHold(
                                     function: () =>
                                         Navigator.pushNamed(
-                                            context,
-                                            DetailScreen.routeName,
-                                            arguments: ArgumentsDetailModel(keyHero: 0, controller: _controller, idUser: itemIndex)
+                                          context,
+                                          DetailScreen.routeName,
+                                          arguments: ArgumentsDetailModel(
+                                              keyHero: 0,
+                                              controller: _controller,
+                                              idUser: state.listNomination?.nominations?[itemIndex].idUser
+                                          )
                                         ),
                                     child: _boxCard(nominations, itemIndex, index, pageController)
                                 );
@@ -199,16 +200,18 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(height: 20.w),
           Text('${state.message}', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
           SizedBox(height: 20.w),
-          SizedBox(
-            width: widthScreen(context)/4,
-            child: ButtonWidgetCustom(
-              textButton: 'Retry',
-              styleText: TextStyles.defaultStyle.bold.whiteText,
-              color: ThemeColor.pinkColor,
-              radius: 5.w,
-              onTap: ()=> controller.getData(),
-            ),
-          ),
+          BlocBuilder<HomeBloc, HomeState>(builder: (context, store) {
+            return SizedBox(
+              width: widthScreen(context)/4,
+              child: ButtonWidgetCustom(
+                textButton: 'Retry',
+                styleText: TextStyles.defaultStyle.bold.whiteText,
+                color: ThemeColor.pinkColor,
+                radius: 5.w,
+                onTap: ()=> controller.getData(store.currentDistance!),
+              ),
+            );
+          })
         ],
       ),
     );
@@ -225,9 +228,10 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Shimmer.fromColors(
             baseColor: themeNotifier.systemThemeFade,
             highlightColor: themeNotifier.systemTheme,
-            child: Container(
+            child: SizedBox(
               height: heightScreen(context) * 0.8,
-              color: ThemeColor.whiteColor,
+              width: widthScreen(context),
+              child: const ColoredBox(color: ThemeColor.whiteColor)
             ),
           ),
         ),
@@ -239,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Stack(
       children: [
-        Container(
+        ColoredBox(
           color: themeNotifier.systemThemeFade,
           child: BlurHash(
             hash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
@@ -266,17 +270,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _contentInfoBottomCard(int itemIndex, SuccessApiHomeState state) {
+  Widget _contentInfoBottomCard(int itemIndex, HomeState state) {
     final data = state.listNomination?.nominations;
     return Column(
       children: [
-        NumberOfPhotos(count: data?[itemIndex].listImage?.length, currentPage: currentPage),
+        BlocBuilder<HomeBloc, HomeState>(builder: (context, store) {
+          return NumberOfPhotos(count: data?[itemIndex].listImage?.length, currentPage: store.currentPage);
+        }),
         const Spacer(),
-        Container(
+        SizedBox(
           height: 80.w,
-          decoration: BoxDecoration(
-              gradient: GradientColor.gradientBlackFade
-          ),
+          width: widthScreen(context),
+          child: DecoratedBox(decoration: BoxDecoration(
+            gradient: GradientColor.gradientBlackFade,
+          )),
         ),
         SizedBox(
           height: 80.w,
@@ -303,7 +310,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     children: [
                       const Icon(Icons.location_on, color: ThemeColor.whiteColor),
-                      Text(controller.calculateDistance(state, itemIndex), style: TextStyles.defaultStyle.whiteText)
+                      Text(controller.calculateDistance(
+                        latYou: state.info!.info!.lat!,
+                        lonYou: state.info!.info!.lon!,
+                        latOj: state.listNomination!.nominations![itemIndex].info!.lat!,
+                        lonOj: state.listNomination!.nominations![itemIndex].info!.lon!
+                      ), style: TextStyles.defaultStyle.whiteText)
                     ],
                   )
                 ],
@@ -319,30 +331,49 @@ class _HomeScreenState extends State<HomeScreen> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return SizedBox(
       height: heightScreen(context)*0.8,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 200.w,
-            width: widthScreen(context)*0.6,
-            child: Image.asset(ThemeImage.error),
-          ),
-          SizedBox(height: 20.w),
-          Text('Not found within', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
-          SizedBox(height: 20.w),
-          SizedBox(
-            width: widthScreen(context)/4,
-            child: ButtonWidgetCustom(
-              textButton: 'Retry',
-              styleText: TextStyles.defaultStyle.bold.whiteText,
-              color: ThemeColor.pinkColor,
-              radius: 5.w,
-              onTap: () {
-                controller.getData();
-              }
-            ),
-          ),
-        ],
+      child: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, store) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 200.w,
+                width: widthScreen(context)*0.6,
+                child: Image.asset(ThemeImage.error),
+              ),
+              SizedBox(height: 20.w),
+              Text('Not found within', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 10.w, horizontal: 20.w),
+                child: Slider(
+                  min: 1,
+                  max: 20,
+                  activeColor: ThemeColor.pinkColor,
+                  onChanged: (value) {
+                    context.read<HomeBloc>().add(HomeEvent(currentDistance: value.toInt()));
+                    Global.setInt('currentDistance', value.toInt());
+                  },
+                  value: store.currentDistance!.toDouble(),
+                ),
+              ),
+              Text('${store.currentDistance}km', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
+              SizedBox(
+                width: widthScreen(context)/4,
+                child: ButtonWidgetCustom(
+                  textButton: 'Retry',
+                  styleText: TextStyles.defaultStyle.bold.whiteText,
+                  color: ThemeColor.pinkColor,
+                  radius: 5.w,
+                  onTap: () {
+                    controller.getData(store.currentDistance!);
+                    context.read<HomeBloc>().add(HomeEvent(currentIndex: 0));
+                    _controller.currentIndex = 0;
+                  }
+                ),
+              ),
+            ],
+          );
+        }
       ),
     );
   }

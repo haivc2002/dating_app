@@ -38,7 +38,6 @@ class AllTapController {
   }
 
   void getData() async {
-    HomeController homeController = HomeController(context);
     onLoad();
     Position? position = await apiLocation.getCurrentPosition(context, LocationAccuracy.high);
     if(context.mounted) {
@@ -52,7 +51,6 @@ class AllTapController {
         ModelInfoUser infoModel = await serviceInfoUser.info(Global.getInt('idUser'), context);
         if(infoModel.result == 'Success') {
           onSuccess(info: infoModel);
-          homeController.getListNomination();
         } else {
           onError();
         }
@@ -63,7 +61,6 @@ class AllTapController {
       onError();
     }
   }
-
 
   void onLoad() {
     context.read<ApiAllTapBloc>().add(LoadApiAllTapEvent());
