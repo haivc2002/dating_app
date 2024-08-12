@@ -6,12 +6,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ItemParallax extends StatelessWidget {
   final int? index;
   final String? title, subTitle;
   final String? image;
-  const ItemParallax({Key? key, this.index, this.image, this.title, this.subTitle}) : super(key: key);
+  final double? height, width;
+  final bool? itemNew;
+  const ItemParallax({Key? key, this.index, this.image, this.title, this.subTitle, this.height, this.width, this.itemNew}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +27,21 @@ class ItemParallax extends StatelessWidget {
           height: 130.w,
           color: themeNotifier.systemThemeFade,
           child: Stack(
+            alignment: Alignment.topRight,
             children: [
               _itemImage(context),
               _itemInfo(context, themeNotifier),
+              itemNew == true ? DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.w)),
+                  color: ThemeColor.whiteColor.withOpacity(0.9)
+                ),
+                child: Shimmer.fromColors(
+                  highlightColor: ThemeColor.blackColor,
+                  baseColor: ThemeColor.pinkColor,
+                  child: Text('  New  ', style: TextStyles.defaultStyle.setColor(ThemeColor.pinkColor).bold)
+                ),
+              ) : const SizedBox()
             ],
           ),
         ),
@@ -43,9 +58,13 @@ class ItemParallax extends StatelessWidget {
           itemContext: context,
         ),
         children: [
-          Image.network(
-            image ?? 'https://i.pinimg.com/736x/a1/ae/8a/a1ae8ad5d7f52510172f9384260105fd.jpg',
-            fit: BoxFit.cover,
+          SizedBox(
+            width: width,
+            height: height,
+            child: Image.network(
+              image ?? 'https://i.pinimg.com/736x/a1/ae/8a/a1ae8ad5d7f52510172f9384260105fd.jpg',
+              fit: BoxFit.cover,
+            ),
           ),
         ],
       ),
@@ -133,7 +152,7 @@ class ParallaxFlowDelegate extends FlowDelegate {
     final viewportDimension = scrollable!.position.viewportDimension;
     final scrollFraction =
     (itemOffset.dy / viewportDimension).clamp(0, 1);
-    final verticalAlignment = Alignment(0, scrollFraction * 3 - 1);
+    final verticalAlignment = Alignment(0, scrollFraction * 6 - 1);
     final imageBox = context.getChildSize(0)!;
     final childRect =
     verticalAlignment.inscribe(imageBox, Offset.zero & context.size);

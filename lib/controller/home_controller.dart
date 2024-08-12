@@ -12,12 +12,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rive/rive.dart';
+import 'package:swipable_stack/swipable_stack.dart';
 
 import '../../common/global.dart';
 import '../../model/location_model/location_current_model.dart';
-import '../../model/model_info_user.dart';
+import '../../model/model_info_user.dart' as user_info;
 import '../../service/location/api_location_current.dart';
 import '../../service/service_info_user.dart';
+import '../argument_model/arguments_detail_model.dart';
 import '../common/scale_screen.dart';
 import '../common/textstyles.dart';
 import '../model/model_res_update_location.dart';
@@ -25,6 +27,7 @@ import '../model/model_response_match.dart';
 import '../theme/theme_color.dart';
 import '../theme/theme_rive.dart';
 import '../tool_widget_custom/button_widget_custom.dart';
+import '../ui/detail/detail_screen.dart';
 
 class HomeController {
   BuildContext context;
@@ -96,7 +99,7 @@ class HomeController {
 
   Future<void> getInfo() async {
     try {
-      ModelInfoUser infoModel = await serviceInfoUser.info(Global.getInt('idUser'), context);
+      user_info.ModelInfoUser infoModel = await serviceInfoUser.info(Global.getInt('idUser'), context);
 
       if (infoModel.result != 'Success') {
         onLoad(false);
@@ -128,7 +131,7 @@ class HomeController {
     }
   }
 
-  void onSuccess({ModelListNomination? listNomination, List<Results>? dataCity, ModelInfoUser? info}) {
+  void onSuccess({ModelListNomination? listNomination, List<Results>? dataCity, user_info.ModelInfoUser? info}) {
     context.read<HomeBloc>().add(HomeEvent(
       listNomination: listNomination,
       location: dataCity,
@@ -272,6 +275,52 @@ class HomeController {
         );
       }
     }
+  }
+
+  void gotoDetail(SwipableStackController controller, HomeState state, int index) {
+    final dataInfo = state.listNomination?.nominations?[index].info;
+    final list = state.listNomination?.nominations?[index].listImage;
+    final dataInfoMore = state.listNomination?.nominations?[index].infoMore;
+    user_info.Info info = user_info.Info(
+      lon: dataInfo?.lon,
+      lat: dataInfo?.lat,
+      name: dataInfo?.name,
+      word: dataInfo?.word,
+      describeYourself: dataInfo?.describeYourself,
+      birthday: dataInfo?.birthday,
+      academicLevel: dataInfo?.academicLevel,
+      desiredState: dataInfo?.desiredState,
+    );
+
+    List<user_info.ListImage> listImage = [];
+    for(int i=0; i< list!.length; i++) {
+      listImage.add(user_info.ListImage(
+        image: list[i].image,
+      ));
+    }
+
+    user_info.InfoMore infoMore = user_info.InfoMore(
+      hometown: dataInfoMore?.hometown,
+      height: dataInfoMore?.height,
+      zodiac: dataInfoMore?.zodiac,
+      smoking: dataInfoMore?.smoking,
+      wine: dataInfoMore?.wine,
+      religion: dataInfoMore?.religion
+    );
+
+    Navigator.pushNamed(
+        context,
+        DetailScreen.routeName,
+        arguments: ArgumentsDetailModel(
+          keyHero: 0,
+          controller: controller,
+          idUser: state.listNomination?.nominations?[index].idUser,
+          info: info,
+          listImage: listImage,
+          infoMore: infoMore,
+          notFeedback: null
+        )
+    );
   }
 
 }

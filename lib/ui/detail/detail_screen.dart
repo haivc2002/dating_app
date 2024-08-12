@@ -1,5 +1,3 @@
-
-import 'package:dating/bloc/bloc_detail/detail_bloc.dart';
 import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
@@ -40,9 +38,9 @@ class _DetailScreenState extends State<DetailScreen> {
 
   @override
   void initState() {
+    super.initState();
     homeController = HomeController(context);
     controller = DetailController(context);
-    super.initState();
     pageController.addListener(() {
       setState(() {
         page = pageController.page!.round();
@@ -53,115 +51,108 @@ class _DetailScreenState extends State<DetailScreen> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     args = ModalRoute.of(context)!.settings.arguments as ArgumentsDetailModel;
-    controller.getData(args.idUser!);
     return Scaffold(
       backgroundColor: themeNotifier.systemTheme,
       body: Stack(
         children: [
-          BlocBuilder<DetailBloc, DetailState>(builder: (context, state) {
-            if(state is SuccessDetailState) {
-              final data = state.response;
-              return AppBarCustom(
-                title: '${data.info?.name}, ${yearOld('${data.info?.birthday}')}',
-                textStyle: TextStyles.defaultStyle.appbarTitle.bold,
-                bodyListWidget: [
-                  Stack(
-                    children: [
-                      Hero(
-                        tag: '${args.keyHero}',
-                        child: SizedBox(
-                          height: heightScreen(context)*0.6,
-                          width: widthScreen(context),
-                          child: PageView.builder(
-                              controller: pageController,
-                              itemCount: data.listImage?.length,
-                              itemBuilder: (context, index) {
-                                return Image.network(
-                                  '${data.listImage?[index].image}',
-                                  fit: BoxFit.cover,
-                                );
-                              }
-                          ),
-                        ),
+          AppBarCustom(
+            title: '${args.info?.name}, ${yearOld('${args.info?.birthday}')}',
+            textStyle: TextStyles.defaultStyle.appbarTitle.bold,
+            bodyListWidget: [
+              Stack(
+                children: [
+                  Hero(
+                    tag: '${args.keyHero}',
+                    child: SizedBox(
+                      height: heightScreen(context)*0.6,
+                      width: widthScreen(context),
+                      child: PageView.builder(
+                          controller: pageController,
+                          itemCount: args.listImage?.length,
+                          itemBuilder: (context, index) {
+                            return Image.network(
+                              '${args.listImage?[index].image}',
+                              fit: BoxFit.cover,
+                            );
+                          }
                       ),
-                      NumberOfPhotos(count: data.listImage?.length, currentPage: page),
-                    ],
+                    ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 30.w),
-                    child: Column(
-                      children: [
-                        ItemCard(
-                          titleCard: 'introduce yourself',
-                          iconTitle: Icon(Icons.format_quote, color: themeNotifier.systemText),
-                          fontSize: 20.sp,
-                          listWidget: [
-                            SizedBox(
-                              width: 240.w,
-                              child: Text('${data.info?.describeYourself}',
-                                  style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)
-                              ),
-                            )
-                          ],
-                        ),
-                        ItemCard(
-                          fontSize: 20.sp,
-                          titleCard: 'Information base',
-                          iconTitle: Icon(CupertinoIcons.person_alt_circle_fill, color: themeNotifier.systemText),
-                          listWidget: [
-                            BlocBuilder<HomeBloc, HomeState>(
-                              builder: (context, homeState) {
-                                return _infoBase(Icons.location_on_outlined,
-                                ' ${homeController.calculateDistance(
-                                  latYou: homeState.info!.info!.lat!,
-                                  lonYou: homeState.info!.info!.lon!,
-                                  latOj: data.info!.lat!,
-                                  lonOj: data.info!.lon!,
-                                )} away');
-                              }
-                            ),
-                            _infoBase(Icons.school_outlined, ' ${data.info?.academicLevel}'),
-                            _infoBase(Icons.work_outline, ' ${data.info?.word}'),
-                          ],
-                        ),
-                        // ItemCard(
-                        //   fontSize: 20.sp,
-                        //   titleCard: '${data.info?.desiredState}',
-                        //   titleColor: ThemeColor.pinkColor,
-                        //   iconTitle: Icon(CupertinoIcons.square_stack_3d_up, color: ThemeColor.pinkColor.withOpacity(0.5)),
-                        // ),
-                        // ItemCard(
-                        //   fontSize: 20.sp,
-                        //   titleCard: 'Information more',
-                        //   iconTitle: Icon(Icons.contacts_outlined, color: themeNotifier.systemText),
-                        //   listWidget: [
-                        //     SizedBox(height: 20.w),
-                        //     SizedBox(
-                        //       width: widthScreen(context)*0.77,
-                        //       child: Wrap(
-                        //           direction: Axis.horizontal,
-                        //           runSpacing: 7.w,
-                        //           spacing: 7.w,
-                        //           children: controller.items(data).isEmpty
-                        //               ? [Text('No information available', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))]
-                        //               : controller.items(data)
-                        //       ),
-                        //     )
-                        //   ],
-                        // ),
+                  NumberOfPhotos(count: args.listImage?.length, currentPage: page),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 30.w),
+                child: Column(
+                  children: [
+                    ItemCard(
+                      titleCard: 'introduce yourself',
+                      iconTitle: Icon(Icons.format_quote, color: themeNotifier.systemText),
+                      fontSize: 20.sp,
+                      listWidget: [
+                        SizedBox(
+                          width: 240.w,
+                          child: Text('${args.info?.describeYourself}',
+                              style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)
+                          ),
+                        )
                       ],
                     ),
-                  )
-                ],
-              );
-            } else {
-              return Text('data');
-            }
-          }),
-          Positioned(
+                    ItemCard(
+                      fontSize: 20.sp,
+                      titleCard: 'Information base',
+                      iconTitle: Icon(CupertinoIcons.person_alt_circle_fill, color: themeNotifier.systemText),
+                      listWidget: [
+                        BlocBuilder<HomeBloc, HomeState>(
+                            builder: (context, homeState) {
+                              return _infoBase(Icons.location_on_outlined,
+                              ' ${homeController.calculateDistance(
+                                latYou: homeState.info!.info!.lat!,
+                                lonYou: homeState.info!.info!.lon!,
+                                latOj: args.info!.lat!,
+                                lonOj: args.info!.lon!,
+                              )} away');
+                            }
+                        ),
+                        _infoBase(Icons.school_outlined, ' ${args.info?.academicLevel}'),
+                        _infoBase(Icons.work_outline, ' ${args.info?.word}'),
+                      ],
+                    ),
+                    ItemCard(
+                      fontSize: 20.sp,
+                      titleCard: '${args.info?.desiredState}',
+                      titleColor: ThemeColor.pinkColor,
+                      iconTitle: Icon(CupertinoIcons.square_stack_3d_up, color: ThemeColor.pinkColor.withOpacity(0.5)),
+                    ),
+                    ItemCard(
+                      fontSize: 20.sp,
+                      titleCard: 'Information more',
+                      iconTitle: Icon(Icons.contacts_outlined, color: themeNotifier.systemText),
+                      listWidget: [
+                        SizedBox(height: 20.w),
+                        SizedBox(
+                          width: widthScreen(context)*0.77,
+                          child: Wrap(
+                              direction: Axis.horizontal,
+                              runSpacing: 7.w,
+                              spacing: 7.w,
+                              children: controller.items(args).isEmpty
+                                  ? [Text('No information available', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))]
+                                  : controller.items(args)
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+          (args.notFeedback == null || args.notFeedback == true)
+          ? Positioned(
             bottom: 0,
             child: _btnBefore(args)
-          )
+          ) : const SizedBox()
         ],
       ),
     );

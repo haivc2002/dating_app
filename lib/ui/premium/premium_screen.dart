@@ -1,4 +1,3 @@
-import 'package:dating/argument_model/arguments_detail_model.dart';
 import 'package:dating/bloc/bloc_premium/premium_bloc.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
@@ -10,7 +9,6 @@ import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:dating/tool_widget_custom/build/extension_build.dart';
 import 'package:dating/tool_widget_custom/item_parallax.dart';
 import 'package:dating/tool_widget_custom/press_hold.dart';
-import 'package:dating/ui/detail/detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -135,7 +133,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 10.w,
-            childAspectRatio: 0.7,
+            childAspectRatio: 0.76,
             mainAxisSpacing: 6.w,
           ),
           itemBuilder: (context, index) {
@@ -202,35 +200,41 @@ class _PremiumScreenState extends State<PremiumScreen> {
   Widget _cardInfo(SuccessPremiumState state) {
     return SizedBox(
         height: heightScreen(context)*0.8,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15.w),
-          child: GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10.w,
-                  childAspectRatio: 0.7
-              ),
-              itemCount: state.response.length%2==0 ? state.response.length+1 : state.response.length+2,
-              itemBuilder: (context, index) {
-                if(index == state.response.length - 1) {
-                  return PressHold(
-                    function: ()=> Navigator.pushNamed(context, DetailScreen.routeName, arguments: ArgumentsDetailModel(
-                      keyHero: index,
-                      idUser: state.response[index].idUser
-                    )),
-                    child: ItemParallax(
-                      index: index,
-                      subTitle: state.response[index].info?.desiredState,
-                      title: state.response[index].info?.name,
-                      image: state.response[index].listImage?[0].image,
-                    )
-                  );
-                } else {
-                  return const SizedBox();
-                }
-              }
+        child: GridView.builder(
+          shrinkWrap: true,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10.w,
+            childAspectRatio: 0.8
           ),
+          itemCount: state.response.length%2==0 ? state.response.length+1 : state.response.length+2,
+          itemBuilder: (context, index) {
+              if(index == state.response.length - 1) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      double itemWidth = constraints.maxWidth;
+                      double itemHeight = constraints.maxHeight;
+                      return PressHold(
+                        function: ()=> controller.gotoDetail(state, index),
+                        child: ItemParallax(
+                          index: index,
+                          height: itemHeight,
+                          width: itemWidth,
+                          subTitle: state.response[index].info?.desiredState,
+                          title: state.response[index].info?.name,
+                          image: state.response[index].listImage?[0].image,
+                          itemNew: state.response[index].newState == 1 ? true : false,
+                        )
+                      );
+                    }
+                  ),
+                );
+              } else {
+                return const SizedBox();
+              }
+            }
         ),
     );
   }

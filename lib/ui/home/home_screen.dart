@@ -137,7 +137,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: state.listNomination?.nominations?.length,
                   builder: (context, properties) {
                     if (length == 0) {
-                      return _listNominationNull();
+                      // return _listNominationNull();
+                      return const SizedBox();
                     }
                     final itemIndex = properties.index % length;
                     final data = nominations[itemIndex].listImage ?? [];
@@ -156,16 +157,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemCount: data.length,
                               itemBuilder: (context, index) {
                                 return PressHold(
-                                    function: () =>
-                                        Navigator.pushNamed(
-                                          context,
-                                          DetailScreen.routeName,
-                                          arguments: ArgumentsDetailModel(
-                                              keyHero: 0,
-                                              controller: _controller,
-                                              idUser: state.listNomination?.nominations?[itemIndex].idUser
-                                          )
-                                        ),
+                                    function: () => controller.gotoDetail(
+                                      _controller, state, itemIndex
+                                    ),
                                     child: _boxCard(nominations, itemIndex, index, pageController)
                                 );
                               },
