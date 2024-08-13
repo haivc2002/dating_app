@@ -76,6 +76,7 @@ dependencies:
   flutter_image_compress: ^2.3.0
   exif: ^3.3.0
   flutter_exif_rotation: ^0.5.1
+  web_socket_channel: ^3.0.1
 
 
 dev_dependencies:

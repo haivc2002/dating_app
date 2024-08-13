@@ -209,9 +209,12 @@ class _PremiumScreenState extends State<PremiumScreen> {
           ),
           itemCount: state.response.length%2==0 ? state.response.length+1 : state.response.length+2,
           itemBuilder: (context, index) {
-              if(index == state.response.length - 1) {
+              if(index <= state.response.length - 1) {
                 return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  padding: EdgeInsets.only(
+                    left: index % 2 != 0 ? 0 : 15.w,
+                    right: index % 2 == 0 ? 0 : 15.w,
+                  ),
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       double itemWidth = constraints.maxWidth;

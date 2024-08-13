@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:dating/bloc/bloc_all_tap/api_all_tap_bloc.dart';
 import 'package:dating/bloc/bloc_auth/register_bloc.dart';
 import 'package:dating/model/model_info_user.dart';
@@ -9,10 +12,13 @@ import 'package:dating/ui/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../bloc/bloc_all_tap/all_tap_bloc.dart';
 import '../common/global.dart';
 import '../model/location_model/location_current_model.dart';
+import '../service/url/api.dart';
 import '../ui/auth/login_screen.dart';
 import '../ui/premium/premium_screen.dart';
 
@@ -24,6 +30,13 @@ class AllTapController {
   ApiLocationCurrent apiLocation = ApiLocationCurrent();
   int selectedIndex = 0;
   ServiceInfoUser serviceInfoUser = ServiceInfoUser();
+
+  WebSocketChannel? channel;
+  int matchCount = 0;
+  final String urlConnect = Api.notification;
+  Timer? timer;
+  int retryCount = 0;
+  final int maxRetries = 3;
 
   void onItemTapped(int index) {
     selectedIndex = index;
@@ -91,4 +104,48 @@ class AllTapController {
     }
   }
 
+  void continuous(String idUser) {
+    timer?.cancel();
+    timer = Timer.periodic(const Duration(seconds: 3), (_) {
+      connect(idUser);
+    });
+  }
+
+  void connect(String idUser) {
+    channel?.sink.close();
+    channel = IOWebSocketChannel.connect(Uri.parse(urlConnect));
+
+    channel?.stream.listen((message) {
+      final data = jsonDecode(message);
+      matchCount = data['matchCount'] ?? matchCount;
+      context.read<AllTapBloc>().add(AllTapEvent(matchCount: matchCount));
+      retryCount = 0;
+    }, onError: (error) {
+      handleConnectionError(idUser);
+    }, onDone: () {
+      handleConnectionError(idUser);
+    });
+    channel?.sink.add(jsonEncode({'idUser': idUser}));
+  }
+
+  void handleConnectionError(String idUser) {
+    retryCount++;
+    if (retryCount <= maxRetries) {
+      reconnect(idUser);
+    } else {
+      stopReconnecting();
+    }
+  }
+
+  void reconnect(String idUser) {
+    channel?.sink.close();
+    Future.delayed(const Duration(seconds: 5), () {
+      connect(idUser);
+    });
+  }
+
+  void stopReconnecting() {
+    channel?.sink.close();
+    timer?.cancel();
+  }
 }

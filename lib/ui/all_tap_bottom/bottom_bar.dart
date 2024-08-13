@@ -1,3 +1,4 @@
+import 'package:dating/common/textstyles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,72 +36,10 @@ class BottomBar extends StatelessWidget {
             builder: (context, state) {
               return Row(
                 children: [
-                  buttonBottom(state, DecoratedBox(
-                    decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                              color: state.selectedIndex != 0 ? Colors.transparent : Colors.red,
-                              blurRadius: 25.w
-                          )
-                        ]
-                    ),
-                    child: Icon(
-                      state.selectedIndex == 0 ? Icons.favorite : Icons.favorite_border_outlined,
-                      color: state.selectedIndex == 0 ? ThemeColor.redColor: ThemeColor.whiteColor,
-                    ),
-                  ),
-                          () => controller.onItemTapped(0)
-                  ),
-                  buttonBottom(state, DecoratedBox(
-                    decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                              color: state.selectedIndex != 1 ? Colors.transparent : Colors.yellow,
-                              blurRadius: 25.w
-                          )
-                        ]
-                    ),
-                    child: Image.asset(
-                      state.selectedIndex == 1 ? ThemeIcon.starBoldIcon : ThemeIcon.starLineIcon,
-                      height: 22.w,
-                      color: state.selectedIndex == 1 ? null : Colors.white,
-                    ),
-                  ),
-                          () => controller.onItemTapped(1)
-                  ),
-                  buttonBottom(state, DecoratedBox(
-                    decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                              color: state.selectedIndex != 2 ? Colors.transparent : Colors.blue,
-                              blurRadius: 25.w
-                          )
-                        ]
-                    ),
-                    child: Image.asset(
-                      state.selectedIndex == 2 ? ThemeIcon.messageBoldIcon : ThemeIcon.messageLineIcon,
-                      height: 15.w,
-                      color: state.selectedIndex == 2 ? null : Colors.white,
-                    ),
-                  ),
-                          () => controller.onItemTapped(2)
-                  ),
-                  buttonBottom(state, DecoratedBox(
-                    decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                              color: state.selectedIndex != 3 ? Colors.transparent : ThemeColor.pinkColor,
-                              blurRadius: 25.w
-                          )
-                        ]
-                    ),
-                    child: Icon(
-                      state.selectedIndex == 3 ? Icons.person : Icons.person_outline,
-                      color: state.selectedIndex == 3 ? ThemeColor.pinkColor : ThemeColor.whiteColor,
-                    ),
-                  ),
-                          () => controller.onItemTapped(3)
-                  ),
+                  buttonBottom(_home(state), ()=> controller.onItemTapped(0), count: 0),
+                  buttonBottom(_match(state), ()=> controller.onItemTapped(1), count: state.matchCount),
+                  buttonBottom(_message(state), ()=> controller.onItemTapped(2)),
+                  buttonBottom(_profile(state), ()=> controller.onItemTapped(3)),
                 ],
               );
             }
@@ -109,7 +48,7 @@ class BottomBar extends StatelessWidget {
     );
   }
 
-  Widget buttonBottom(AllTapState state, Widget child, Function() onTap) {
+  Widget buttonBottom(Widget child, Function() onTap, {int? count}) {
     return Expanded(
         child: InkWell(
           borderRadius: BorderRadius.circular(10.w),
@@ -118,12 +57,109 @@ class BottomBar extends StatelessWidget {
               height: 55.w,
               child: ColoredBox(
                 color: Colors.transparent,
-                child: Center(
-                  child: child,
+                child: Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    Center(child: child),
+                    (count != 0 && count != null) ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        DecoratedBox(
+                          decoration: const BoxDecoration(
+                            color: ThemeColor.redColor,
+                            shape: BoxShape.circle
+                          ),
+                          child: SizedBox(
+                            height: 12.w,
+                            width: 12.w,
+                            child: Center(
+                              child: Text('$count', style: TextStyles
+                                  .defaultStyle
+                                  .bold
+                                  .setColor(ThemeColor.whiteColor)
+                                  .setTextSize(8.sp)
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 15.w, height: 30.w)
+                      ],
+                    ) : const SizedBox.shrink()
+                  ],
                 ),
               )
           ),
         )
+    );
+  }
+
+  Widget _home(AllTapState state) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+                color: state.selectedIndex != 0 ? Colors.transparent : Colors.red,
+                blurRadius: 25.w
+            )
+          ]
+      ),
+      child: Icon(
+        state.selectedIndex == 0 ? Icons.favorite : Icons.favorite_border_outlined,
+        color: state.selectedIndex == 0 ? ThemeColor.redColor: ThemeColor.whiteColor,
+      ),
+    );
+  }
+
+  Widget _match(AllTapState state) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+                color: state.selectedIndex != 1 ? Colors.transparent : Colors.yellow,
+                blurRadius: 25.w
+            )
+          ]
+      ),
+      child: Image.asset(
+        state.selectedIndex == 1 ? ThemeIcon.starBoldIcon : ThemeIcon.starLineIcon,
+        height: 22.w,
+        color: state.selectedIndex == 1 ? null : Colors.white,
+      ),
+    );
+  }
+
+  Widget _message(AllTapState state) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+                color: state.selectedIndex != 2 ? Colors.transparent : Colors.blue,
+                blurRadius: 25.w
+            )
+          ]
+      ),
+      child: Image.asset(
+        state.selectedIndex == 2 ? ThemeIcon.messageBoldIcon : ThemeIcon.messageLineIcon,
+        height: 15.w,
+        color: state.selectedIndex == 2 ? null : Colors.white,
+      ),
+    );
+  }
+
+  Widget _profile(AllTapState state) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+                color: state.selectedIndex != 3 ? Colors.transparent : ThemeColor.pinkColor,
+                blurRadius: 25.w
+            )
+          ]
+      ),
+      child: Icon(
+        state.selectedIndex == 3 ? Icons.person : Icons.person_outline,
+        color: state.selectedIndex == 3 ? ThemeColor.pinkColor : ThemeColor.whiteColor,
+      ),
     );
   }
 }

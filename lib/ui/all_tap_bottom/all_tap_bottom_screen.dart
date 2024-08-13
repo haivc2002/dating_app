@@ -1,5 +1,6 @@
 
 import 'package:dating/bloc/bloc_home/home_bloc.dart';
+import 'package:dating/common/global.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/controller/home_controller.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +58,7 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
   @override
   void dispose() {
     animationController.dispose();
+    controller.stopReconnecting();
     super.dispose();
   }
 
@@ -73,6 +75,7 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+    controller.continuous(Global.getInt('idUser').toString());
     return Scaffold(
       drawerEnableOpenDragGesture: false,
       backgroundColor: themeNotifier.systemTheme,
@@ -92,7 +95,7 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
                     BlocBuilder<AllTapBloc, AllTapState>(builder: (context, state) {
                       return controller.screenChange(state ,animationController, context);
                     }),
-                    bottom()
+                    bottom(),
                   ],
                 ),
               ),
