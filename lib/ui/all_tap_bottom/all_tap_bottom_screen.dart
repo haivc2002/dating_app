@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:swipable_stack/swipable_stack.dart';
 
 import '../../../theme/theme_notifier.dart';
 import '../../bloc/bloc_all_tap/all_tap_bloc.dart';
@@ -23,13 +24,14 @@ class AllTapBottomScreen extends StatefulWidget {
   State<AllTapBottomScreen> createState() => _AllTapBottomScreenState();
 }
 
-class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProviderStateMixin {
+class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProviderStateMixin, RouteAware {
 
   late AnimationController animationController;
   late Animation<double> animation;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   late AllTapController controller = AllTapController(context);
   bool drawerStatus = false;
+  late final SwipableStackController _controller;
 
   late HomeController homeController;
 
@@ -53,12 +55,21 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
     homeController = HomeController(context);
     final rangeValue = context.read<HomeBloc>().state.currentDistance;
     homeController.getData(rangeValue!);
+
+    int currentIndex = context.read<HomeBloc>().state.currentIndex!;
+    _controller = SwipableStackController(initialIndex: currentIndex)..addListener(_listenController);
   }
+
+  void _listenController() => setState(() {});
 
   @override
   void dispose() {
     animationController.dispose();
-    controller.stopReconnecting();
+    controller.channel?.sink.close();
+    controller.timer?.cancel();
+    _controller
+      ..removeListener(_listenController)
+      ..dispose();
     super.dispose();
   }
 
@@ -79,39 +90,47 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
     return Scaffold(
       drawerEnableOpenDragGesture: false,
       backgroundColor: themeNotifier.systemTheme,
-      drawer: DrawerWidget(updateDrawerStatus: updateDrawerStatus, animationController: animationController),
+      drawer: DrawerWidget(
+        updateDrawerStatus: updateDrawerStatus,
+        animationController: animationController,
+        swiController: _controller,
+        onRefresh: () {
+          final rangeValue = context.read<HomeBloc>().state.currentDistance;
+          homeController.getData(rangeValue!);
+        },
+      ),
       body: AnimatedBuilder(
           animation: animation,
           builder: (context, child) {
-          return Transform.scale(
-            alignment: Alignment.centerRight,
-            scale: animation.value,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10.w),
-              child: SizedBox(
-                height: heightScreen(context),
-                child: Stack(
-                  children: [
-                    BlocBuilder<AllTapBloc, AllTapState>(builder: (context, state) {
-                      return controller.screenChange(state ,animationController, context);
-                    }),
-                    bottom(),
-                  ],
+            return Transform.scale(
+              alignment: Alignment.centerRight,
+              scale: animation.value,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.w),
+                child: SizedBox(
+                  height: heightScreen(context),
+                  child: Stack(
+                    children: [
+                      BlocBuilder<AllTapBloc, AllTapState>(builder: (context, state) {
+                        return controller.screenChange(state ,animationController, context, _controller);
+                      }),
+                      bottom(),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        }
+            );
+          }
       ),
     );
   }
 
   Widget bottom() {
     return Positioned(
-      left: 40.w,
-      right: 40.w,
-      bottom: 30.w,
-      child: BottomBar(controller: controller)
+        left: 40.w,
+        right: 40.w,
+        bottom: 30.w,
+        child: BottomBar(controller: controller)
     );
   }
 

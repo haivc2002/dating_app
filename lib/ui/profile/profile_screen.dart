@@ -104,8 +104,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: IconButton(
                         icon: const Icon(Icons.edit, color: ThemeColor.whiteColor),
-                        onPressed: () {
-                          Navigator.pushNamed(context, EditProfileScreen.routeName);
+                        onPressed: () async {
+                          await Navigator.pushNamed(context, EditProfileScreen.routeName);
+                          controller.getInfo();
                         },
                       ),
                     )
@@ -161,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   listWidget: [
                     SizedBox(
                         width: widthScreen(context)*0.77,
-                        child: homeState.info?.info?.describeYourself != null
+                        child: homeState.info?.info?.describeYourself != null && homeState.info?.info?.describeYourself != ''
                             ? Text('${homeState.info?.info?.describeYourself}', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText.withOpacity(0.6)))
                             : ButtonWidgetCustom(
                           textButton: 'Add',

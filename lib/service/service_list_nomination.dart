@@ -16,8 +16,9 @@ class ServiceListNomination {
     dio.interceptors.add(PrettyDioLogger());
   }
   
-  Future<ModelListNomination> listNomination(BuildContext context, {int? idUser, String? gender, int? radius}) async {
-    final response = await dio.get('$url?idUser=$idUser&gender=$gender&radius=$radius');
+  Future<ModelListNomination> listNomination(BuildContext context,
+      {int? idUser, String? gender, int? radius, int? limit, int? page}) async {
+    final response = await dio.get('$url?idUser=$idUser&gender=$gender&radius=$radius&limit=$limit&page=$page');
     if(response.statusCode == 200) {
       return ModelListNomination.fromJson(response.data);
     } else {

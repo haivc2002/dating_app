@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/controller/profile_controller/update_model.dart';
+import 'package:dating/service/service_update.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/popup_custom.dart';
 import 'package:flutter/foundation.dart';
@@ -17,12 +18,14 @@ import 'package:permission_handler/permission_handler.dart';
 import '../bloc/bloc_profile/edit_bloc.dart';
 import '../common/global.dart';
 import '../model/model_info_user.dart';
+import 'exception.dart';
 
 class AccessPhotoGallery {
   BuildContext context;
   final ImagePicker picker = ImagePicker();
   List<File> imageUpload = [];
   AccessPhotoGallery(this.context);
+  ServiceUpdate serviceUpdate = ServiceUpdate();
 
   Future<void> selectImage(int? index) async {
     if (await _requestPermission(Permission.storage)) {
@@ -123,20 +126,37 @@ class AccessPhotoGallery {
     }
   }
 
-  Future<void> deleteImage(int index) async {
+  Future<void> deleteImage(int index, int idImage) async {
     final state = context.read<HomeBloc>().state;
     List<ListImage> imageUpload = List.from(state.info?.listImage ?? []);
-    if (index < imageUpload.length) {
+
+    if (imageUpload.length <= 1) {
+      Navigator.pop(context);
+      PopupCustom.showPopup(
+          context,
+          content: const Text('Need at least 1 photo'),
+          listOnPress: [()=>Navigator.pop(context)], 
+          listAction: [const Text('Ok', style: TextStyle(color: ThemeColor.blueColor))]
+      );
+    } else if (index < imageUpload.length) {
       imageUpload.removeAt(index);
       UpdateModel.updateModelInfo(
         state.info!,
         listImage: imageUpload,
       );
+      _deleteImage(idImage);
 
       if (context.mounted) {
         context.read<HomeBloc>().add(HomeEvent(info: UpdateModel.modelInfoUser));
         Navigator.pop(context);
       }
+    }
+  }
+
+  void _deleteImage(int id) async {
+    var request = await serviceUpdate.deleteImage(id);
+    if(request is Failure<void, Exception>) {
+      if (kDebugMode) print(request.exception);
     }
   }
 

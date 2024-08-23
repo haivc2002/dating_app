@@ -66,7 +66,10 @@ class _EditMoreInfoScreenState extends State<EditMoreInfoScreen> {
                             borderRadius: BorderRadius.circular(5.w)
                         ),
                         child: InkWell(
-                            onTap: () => controller.onChange(state.info!, heightValue: index+100),
+                            onTap: () {
+                              controller.onChange(state.info!, heightValue: index+100);
+                              Navigator.pop(context);
+                            },
                             child: Padding(
                                 padding: EdgeInsets.symmetric(vertical: 10.w),
                                 child: controller.listHeight(index)

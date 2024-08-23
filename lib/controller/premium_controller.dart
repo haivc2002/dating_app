@@ -1,9 +1,14 @@
 import 'package:dating/argument_model/arguments_detail_model.dart';
 import 'package:dating/bloc/bloc_premium/premium_bloc.dart';
 import 'package:dating/common/global.dart';
+import 'package:dating/model/model_is_check_new_state.dart';
 import 'package:dating/model/model_response_list_pairing.dart';
+import 'package:dating/model/model_unmatched_users.dart';
+import 'package:dating/service/exception.dart';
 import 'package:dating/service/service_match.dart';
+import 'package:dating/service/service_update.dart';
 import 'package:dating/ui/detail/detail_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dating/model/model_info_user.dart' as info_user;
@@ -13,14 +18,28 @@ class PremiumController {
   PremiumController(this.context);
 
   ServiceMatch service = ServiceMatch();
+  ServiceUpdate serviceUpdate = ServiceUpdate();
+  int idUser = Global.getInt('idUser');
 
-  void getData() async {
+  void getMatches() async {
+    context.read<PremiumBloc>().add(SuccessPremiumEvent(resMatches: []));
     onLoad();
-    int idUser = Global.getInt('idUser');
     ModelResponseListPairing response = await service.listPairing(idUser);
     if(response.result == 'Success') {
       List<Matches> matches = response.matches ?? [];
-      onSuccess(matches);
+      onSuccess(matches: matches);
+    } else {
+      onError();
+    }
+  }
+
+  void getEnigmatic() async {
+    context.read<PremiumBloc>().add(SuccessPremiumEvent(resEnigmatic: []));
+    onLoad();
+    ModelUnmatchedUsers response =  await service.listUnmatchedUsers(idUser);
+    if(response.result == 'Success') {
+      List<UnmatchedUsers> enigmatic = response.unmatchedUsers ?? [];
+      onSuccess(enigmatic: enigmatic);
     } else {
       onError();
     }
@@ -30,16 +49,19 @@ class PremiumController {
     context.read<PremiumBloc>().add(LoadPremiumEvent());
   }
 
-  void onSuccess(List<Matches> response) {
-    context.read<PremiumBloc>().add(SuccessPremiumEvent(response));
+  void onSuccess({List<Matches>? matches, List<UnmatchedUsers>? enigmatic}) {
+    context
+        .read<PremiumBloc>()
+        .add(SuccessPremiumEvent(resMatches: matches, resEnigmatic: enigmatic)
+    );
   }
 
   void onError() {}
 
   void gotoDetail(SuccessPremiumState state, int index) {
-    final dataInfo = state.response[index].info;
-    final dataListImage = state.response[index].listImage;
-    final dataInfoMore = state.response[index].infoMore;
+    final dataInfo = state.resMatches?[index].info;
+    final dataListImage = state.resMatches?[index].listImage;
+    final dataInfoMore = state.resMatches?[index].infoMore;
 
     info_user.Info info = info_user.Info(
       lon: dataInfo?.lon,
@@ -68,9 +90,11 @@ class PremiumController {
         religion: dataInfoMore?.religion
     );
 
+    isCheckNewState(state.resMatches?[index].idUser ?? 0, state, index);
+
     Navigator.pushNamed(context, DetailScreen.routeName,
       arguments: ArgumentsDetailModel(
-        idUser: state.response[index].idUser,
+        idUser: state.resMatches?[index].idUser,
         info: info,
         infoMore: infoMore,
         listImage: listImage,
@@ -78,6 +102,18 @@ class PremiumController {
         notFeedback: false
       )
     );
+  }
+
+  void isCheckNewState(int keyMatchValue, SuccessPremiumState state, int index) async {
+    ModelIsCheckNewState req = ModelIsCheckNewState(keyMatch: keyMatchValue, idUser: idUser);
+    final response = await serviceUpdate.checkNewState(req);
+    if(response is Success<void, Exception>) {
+      getMatches();
+      getEnigmatic();
+    } else if (response is Failure<void, Exception>){
+      final error = response.exception;
+      if (kDebugMode) print(error);
+    }
   }
 
 }

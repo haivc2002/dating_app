@@ -385,6 +385,4 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
     );
   }
 
-
-
 }

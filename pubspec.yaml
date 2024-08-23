@@ -62,7 +62,7 @@ dependencies:
   latlong2: ^0.9.1
   hugeicons: ^0.0.5
   huge_icons_flutter: ^0.0.2
-  intl: ^0.19.0
+  intl: ^0.17.0
   shimmer: ^3.0.0
   flutter_blurhash: ^0.8.2
   cached_network_image: ^3.4.0
@@ -77,7 +77,13 @@ dependencies:
   exif: ^3.3.0
   flutter_exif_rotation: ^0.5.1
   web_socket_channel: ^3.0.1
+  flutter_launcher_icons: ^0.11.0
+  vnpay_flutter: ^1.0.2
 
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icon_app.png"
 
 dev_dependencies:
   flutter_test:
@@ -114,6 +120,9 @@ flutter:
     - assets/image/boy.png
     - assets/image/error.png
     - assets/icon/icon_gender.png
+    - assets/image/girl_horizontal.png
+    - assets/image/boy_horizontal.png
+    - assets/image/card_premium.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

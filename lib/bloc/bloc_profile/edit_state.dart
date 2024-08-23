@@ -1,5 +1,3 @@
-
-
 part of 'edit_bloc.dart';
 
 class EditState {
@@ -8,6 +6,14 @@ class EditState {
   String? purposeValue;
   int? indexLevel;
   ModelInfoUser? modelInfoUser;
+  bool? isLoading;
 
-  EditState({this.imageUpload, this.indexPurpose, this.purposeValue, this.indexLevel, this.modelInfoUser});
+  EditState({
+    this.imageUpload,
+    this.indexPurpose,
+    this.purposeValue,
+    this.indexLevel,
+    this.modelInfoUser,
+    this.isLoading
+  });
 }

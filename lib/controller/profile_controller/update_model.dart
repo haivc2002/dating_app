@@ -39,7 +39,6 @@ class UpdateModel {
       listImage: listImage ?? state.listImage,
       infoMore: InfoMore(
         idUser: state.infoMore?.idUser,
-
         height: height ?? state.infoMore?.height,
         hometown: hometown ?? state.infoMore?.hometown,
         religion: religion ?? state.infoMore?.religion,

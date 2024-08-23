@@ -18,6 +18,7 @@ class EditBloc extends Bloc<EditEvent, EditState> {
         purposeValue: event.purposeValue ?? state.purposeValue,
         indexLevel: event.indexLevel ?? state.indexLevel,
         modelInfoUser: event.modelInfoUser ?? state.modelInfoUser,
+        isLoading: event.isLoading ?? state.isLoading,
       ));
     });
   }

@@ -26,8 +26,8 @@ class LoginController {
   ServiceLogin serviceLogin = ServiceLogin();
   ModelRequestAuth req = ModelRequestAuth();
 
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passController = TextEditingController();
+  final TextEditingController emailController = TextEditingController(text: 'thanhhaivc2002');
+  final TextEditingController passController = TextEditingController(text: '123456');
   final firebaseAuth = FirebaseAuth.instance;
 
   void popupLogin() {
@@ -130,20 +130,23 @@ class LoginController {
   }
 
   void onSuccess(ModelInfoUser response) async {
+    if (!context.mounted) return;
+
     Navigator.pop(context);
     Global.setInt('idUser', response.idUser!);
+
     await Future.delayed(const Duration(milliseconds: 250));
-    if(context.mounted) {
-      if(response.info?.name != null) {
+
+    if (context.mounted) {
+      if (response.info?.name != null) {
         Navigator.pushNamedAndRemoveUntil(context, AllTapBottomScreen.routeName, (route) => false);
       } else {
         Navigator.pushNamed(
           context,
           RegisterInfoScreen.routeName,
-          arguments: ArgumentRegisterInfo(email: emailController.text, password: passController.text)
+          arguments: ArgumentRegisterInfo(email: emailController.text, password: passController.text),
         );
       }
-
     }
   }
 

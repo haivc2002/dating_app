@@ -55,4 +55,12 @@ class SettingController {
     );
   }
 
+  int initPage() {
+    if(Global.getString('gender') == 'male') {
+      return 0;
+    } else {
+      return 1;
+    }
+  }
+
 }

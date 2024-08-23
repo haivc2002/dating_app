@@ -5,6 +5,7 @@ class AllTapState {
   int? selectedIndex;
   bool? drawerStatus;
   int? matchCount;
+  int? messageCount;
 
-  AllTapState({this.selectedIndex, this.drawerStatus, this.matchCount});
+  AllTapState({this.selectedIndex, this.drawerStatus, this.matchCount, this.messageCount});
 }

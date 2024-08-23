@@ -1,7 +1,6 @@
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/model/model_base.dart';
 import 'package:dating/model/model_request_auth.dart';
-import 'package:dating/model/model_request_image.dart';
 import 'package:dating/service/url/api.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/popup_custom.dart';

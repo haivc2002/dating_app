@@ -38,7 +38,7 @@ class BottomBar extends StatelessWidget {
                 children: [
                   buttonBottom(_home(state), ()=> controller.onItemTapped(0), count: 0),
                   buttonBottom(_match(state), ()=> controller.onItemTapped(1), count: state.matchCount),
-                  buttonBottom(_message(state), ()=> controller.onItemTapped(2)),
+                  buttonBottom(_message(state), ()=> controller.onItemTapped(2), count: state.messageCount),
                   buttonBottom(_profile(state), ()=> controller.onItemTapped(3)),
                 ],
               );

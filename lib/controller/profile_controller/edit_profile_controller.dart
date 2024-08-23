@@ -1,15 +1,20 @@
 
+import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/bloc/bloc_profile/edit_bloc.dart';
+import 'package:dating/common/global.dart';
 import 'package:dating/common/remove_province.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
-import 'package:dating/controller/home_controller.dart';
 import 'package:dating/controller/profile_controller/update_model.dart';
 import 'package:dating/model/model_info_user.dart';
 import 'package:dating/service/access_photo_gallery.dart';
+import 'package:dating/service/exception.dart';
+import 'package:dating/service/service_add_image.dart';
+import 'package:dating/service/service_update.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/tool_widget_custom/bottom_sheet_custom.dart';
 import 'package:dating/tool_widget_custom/button_widget_custom.dart';
@@ -19,10 +24,12 @@ import 'package:dating/tool_widget_custom/popup_custom.dart';
 import 'package:dating/tool_widget_custom/wait.dart';
 import 'package:dating/ui/profile/item_photo.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../model/model_request_image.dart';
 import '../../tool_widget_custom/list_tile_check_circle.dart';
 import 'model_list_purpose.dart';
 
@@ -49,6 +56,11 @@ class EditProfileController {
   TextEditingController nameController = TextEditingController();
   TextEditingController workController = TextEditingController();
   TextEditingController aboutController = TextEditingController();
+  ServiceUpdate serviceUpdate = ServiceUpdate();
+  ServiceAddImage serviceAddImage = ServiceAddImage();
+  bool isLoading = false;
+  int valueLoading = 0;
+  Timer? timer;
 
   void popupName(HomeState state) {
     nameController.text = '${state.info?.info?.name}';
@@ -308,12 +320,7 @@ class EditProfileController {
     context.read<HomeBloc>().add(HomeEvent(info: UpdateModel.modelInfoUser));
   }
 
-  void getInfo() async {
-    HomeController homeController = HomeController(context);
-    await homeController.getInfo();
-  }
-
-  void onOption(ListImage imageView, int index) {
+  void onOption(ListImage imageView, int index, int idImage) {
     AccessPhotoGallery gallery = AccessPhotoGallery(context);
     double size = 150.w;
     BottomSheetCustom.showCustomBottomSheet(
@@ -389,7 +396,7 @@ class EditProfileController {
               child: ListTile(
                 title: const Text('Delete', style: TextStyle(color: ThemeColor.redColor)),
                 leading: const Icon(Icons.delete_forever_rounded, color: ThemeColor.redColor),
-                onTap: ()=> gallery.deleteImage(index),
+                onTap: ()=> gallery.deleteImage(index, idImage),
               ),
             )
           ],
@@ -398,9 +405,41 @@ class EditProfileController {
     );
   }
 
-  void backAndUpdate() {
-    getInfo();
-    Navigator.pop(context);
-    print(UpdateModel.modelInfoUser.toJson());
+  void backAndUpdate(void Function(void Function()) setState) async {
+    if(UpdateModel.modelInfoUser.idUser == null) {
+      Navigator.pop(context);
+    } else {
+      Stopwatch stopwatch = Stopwatch()..start();
+      timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
+        setState(() {
+          isLoading = true;
+          valueLoading = stopwatch.elapsedMilliseconds;
+        });
+      });
+      await serviceUpdate.updateInfo(UpdateModel.modelInfoUser);
+      _updateImage();
+      await Future.delayed(const Duration(seconds: 1));
+      stopwatch.stop();
+      timer?.cancel();
+      setState(() => isLoading = false);
+      if (context.mounted) Navigator.pop(context);
+    }
+  }
+
+  void _updateImage() async {
+    var listImage = UpdateModel.modelInfoUser.listImage ?? [];
+    for (var image in listImage) {
+      if (image.image != null && !image.image!.startsWith('http')) {
+        if(image.id != null) {
+          await serviceUpdate.updateImage(image.id, image.image ?? '');
+        } else {
+          ModelRequestImage reqImage = ModelRequestImage(
+              idUser: Global.getInt('idUser'),
+              image: File(image.image??'')
+          );
+          if (context.mounted) await serviceAddImage.addImage(reqImage, context);
+        }
+      }
+    }
   }
 }

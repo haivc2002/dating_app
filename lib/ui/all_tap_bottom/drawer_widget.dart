@@ -4,12 +4,14 @@ import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/common/time_now.dart';
 import 'package:dating/controller/all_tap_controller.dart';
+import 'package:dating/controller/home_controller.dart';
 import 'package:dating/theme/theme_notifier.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:swipable_stack/swipable_stack.dart';
 
 import '../../../theme/theme_color.dart';
 import '../setting/setting_screen.dart';
@@ -18,10 +20,14 @@ import '../profile/edit_profile_screen.dart';
 class DrawerWidget extends StatefulWidget {
   final Function(bool) updateDrawerStatus;
   final AnimationController? animationController;
+  final SwipableStackController swiController;
+  final Function() onRefresh;
   const DrawerWidget({
     Key? key,
     this.animationController,
-    required this.updateDrawerStatus
+    required this.updateDrawerStatus,
+    required this.swiController,
+    required this.onRefresh,
   }) : super(key: key);
 
   @override
@@ -61,12 +67,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           child: Stack(
             children: [
               BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-                child: Container(),
+                filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
+                child: const SizedBox(),
               ),
-              Container(
+              DecoratedBox(
                 decoration: BoxDecoration(
-                    color: themeNotifier.systemTheme.withOpacity(0.3),
+                    color: themeNotifier.systemTheme.withOpacity(0.1),
                     border: Border(
                       right: BorderSide(
                         color: ThemeColor.greyColor.withOpacity(0.1)
@@ -76,7 +82,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
-                    Container(
+                    SizedBox(
                       height: 100.w,
                     ),
                     BlocBuilder<HomeBloc, HomeState>(
@@ -104,7 +110,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       }
                     ),
                     itemDrawer(CupertinoIcons.profile_circled, 'Edit Personal information', () {Navigator.pushNamed(context, EditProfileScreen.routeName);}),
-                    itemDrawer(Icons.settings,'Setting', () {Navigator.pushNamed(context, SettingScreen.routeName);}),
+                    itemDrawer(Icons.settings,'Setting', () async {
+                      await Navigator.pushNamed(context, SettingScreen.routeName);
+                      widget.onRefresh();
+                      widget.swiController.currentIndex = 0;
+                    }),
                     itemDrawer(Icons.logout,'Sign Out', ()=> controller.onSignOut()),
                   ],
                 ),

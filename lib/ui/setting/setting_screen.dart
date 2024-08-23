@@ -3,6 +3,7 @@ import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/controller/setting_controller.dart';
 import 'package:dating/theme/theme_color.dart';
+import 'package:dating/ui/setting/select_find_gender.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,18 +52,20 @@ class _SettingScreenState extends State<SettingScreen> {
         backgroundColor: Colors.transparent,
         body: Column(
           children: [
-            Container(
+            SizedBox(
               height: 120.w,
-              margin: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(CupertinoIcons.back, color: themeNotifier.systemText),
-                  ),
-                  SizedBox(width: 10.w),
-                  Text('Setting', style: TextStyles.defaultStyle.bold.appbarTitle),
-                ],
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: ()=> Navigator.pop(context),
+                      icon: Icon(CupertinoIcons.back, color: themeNotifier.systemText),
+                    ),
+                    SizedBox(width: 10.w),
+                    Text('Setting', style: TextStyles.defaultStyle.bold.appbarTitle),
+                  ],
+                ),
               ),
             ),
             Expanded(child: item())
@@ -168,11 +171,7 @@ class _SettingScreenState extends State<SettingScreen> {
               Icon(Icons.arrow_forward_ios, size: 15.sp, color: themeNotifier.systemText),
                   () => Navigator.pushNamed(context, AboutAppScreen.routeName),
             ),
-            cartAnimate(
-              const Text('I need to find'),
-              Text('woman', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
-                  () {},
-            ),
+            SelectFindGender(controller: controller)
           ],
         ),
       ),
@@ -262,5 +261,4 @@ class _SettingScreenState extends State<SettingScreen> {
       child: tileWidget,
     );
   }
-
 }

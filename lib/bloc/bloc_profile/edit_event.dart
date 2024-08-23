@@ -1,5 +1,3 @@
-
-
 part of 'edit_bloc.dart';
 
 class EditEvent {
@@ -8,6 +6,14 @@ class EditEvent {
   String? purposeValue;
   int? indexLevel;
   ModelInfoUser? modelInfoUser;
+  bool? isLoading;
 
-  EditEvent({this.imageUpload, this.indexPurpose, this.purposeValue, this.indexLevel, this.modelInfoUser});
+  EditEvent({
+    this.imageUpload,
+    this.indexPurpose,
+    this.purposeValue,
+    this.indexLevel,
+    this.modelInfoUser,
+    this.isLoading,
+  });
 }

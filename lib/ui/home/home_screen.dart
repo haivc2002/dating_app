@@ -1,4 +1,4 @@
-import 'package:dating/argument_model/arguments_detail_model.dart';
+
 import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/extension/gradient.dart';
 import 'package:dating/common/global.dart';
@@ -8,7 +8,6 @@ import 'package:dating/theme/theme_image.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
 import 'package:dating/tool_widget_custom/button_widget_custom.dart';
 import 'package:dating/tool_widget_custom/press_hold.dart';
-import 'package:dating/ui/detail/detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
@@ -28,41 +27,35 @@ class HomeScreen extends StatefulWidget {
   final void Function(BuildContext) openDrawer;
   final BuildContext buildContext;
   final AnimationController animationController;
+  final SwipableStackController swiController;
   const HomeScreen({
     Key? key,
     required this.openDrawer,
     required this.buildContext,
-    required this.animationController
+    required this.animationController,
+    required this.swiController
   }) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  late final SwipableStackController _controller;
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late HomeController controller;
   PageController pageController = PageController();
 
   @override
   void initState() {
     super.initState();
-    int currentIndex = context.read<HomeBloc>().state.currentIndex!;
-    _controller = SwipableStackController(initialIndex: currentIndex)..addListener(_listenController);
     controller = HomeController(context);
     controller.popupSwipe();
   }
 
   @override
   void dispose() {
-    _controller
-      ..removeListener(_listenController)
-      ..dispose();
     pageController.dispose();
     super.dispose();
   }
-
-  void _listenController() => setState(() {});
 
   @override
   Widget build(BuildContext context) {
@@ -123,15 +116,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     SwipeDirection.right,
                     SwipeDirection.left,
                   },
-                  controller: _controller,
+                  controller: widget.swiController,
                   stackClipBehaviour: Clip.none,
-                  onSwipeCompleted: (index, direction) {
-                    if(direction == SwipeDirection.right) {
-                      int? keyMatch = state.listNomination?.nominations?[index].idUser;
-                      controller.match(keyMatch!);
-                    }
-                    context.read<HomeBloc>().add(HomeEvent(currentIndex: index+1, currentPage: 0));
-                  },
+                  onSwipeCompleted: (index, direction) => controller.onSwipeCompleted(index, direction, state, widget.swiController),
                   horizontalSwipeThreshold: 0.8,
                   verticalSwipeThreshold: 0.8,
                   itemCount: state.listNomination?.nominations?.length,
@@ -158,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemBuilder: (context, index) {
                                 return PressHold(
                                     function: () => controller.gotoDetail(
-                                      _controller, state, itemIndex
+                                      widget.swiController, state, itemIndex
                                     ),
                                     child: _boxCard(nominations, itemIndex, index, pageController)
                                 );
@@ -223,9 +210,9 @@ class _HomeScreenState extends State<HomeScreen> {
             baseColor: themeNotifier.systemThemeFade,
             highlightColor: themeNotifier.systemTheme,
             child: SizedBox(
-              height: heightScreen(context) * 0.8,
-              width: widthScreen(context),
-              child: const ColoredBox(color: ThemeColor.whiteColor)
+                height: heightScreen(context) * 0.8,
+                width: widthScreen(context),
+                child: const ColoredBox(color: ThemeColor.whiteColor)
             ),
           ),
         ),
@@ -246,19 +233,19 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         SizedBox(
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () => controller.backImage(pageController),
-                child: Container(width: 100.w,color: Colors.transparent)
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () => controller.nextImage(pageController),
-                child: Container(width: 100.w,color: Colors.transparent)
-              ),
-            ],
-          )
+            child: Row(
+              children: [
+                GestureDetector(
+                    onTap: () => controller.backImage(pageController),
+                    child: Container(width: 100.w,color: Colors.transparent)
+                ),
+                const Spacer(),
+                GestureDetector(
+                    onTap: () => controller.nextImage(pageController),
+                    child: Container(width: 100.w,color: Colors.transparent)
+                ),
+              ],
+            )
         )
       ],
     );
@@ -296,8 +283,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text('•', style: TextStyles.defaultStyle.bold.whiteText.setTextSize(16.sp)),
                       ),
                       Text(
-                        '${yearOld('${data?[itemIndex].info?.birthday}')} Age',
-                        style: TextStyles.defaultStyle.bold.whiteText.setTextSize(16.sp)
+                          '${yearOld('${data?[itemIndex].info?.birthday}')} Age',
+                          style: TextStyles.defaultStyle.bold.whiteText.setTextSize(16.sp)
                       )
                     ],
                   ),
@@ -305,10 +292,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       const Icon(Icons.location_on, color: ThemeColor.whiteColor),
                       Text(controller.calculateDistance(
-                        latYou: state.info!.info!.lat!,
-                        lonYou: state.info!.info!.lon!,
-                        latOj: state.listNomination!.nominations![itemIndex].info!.lat!,
-                        lonOj: state.listNomination!.nominations![itemIndex].info!.lon!
+                          latYou: state.info!.info!.lat!,
+                          lonYou: state.info!.info!.lon!,
+                          latOj: state.listNomination!.nominations![itemIndex].info!.lat!,
+                          lonOj: state.listNomination!.nominations![itemIndex].info!.lon!
                       ), style: TextStyles.defaultStyle.whiteText)
                     ],
                   )
@@ -326,50 +313,50 @@ class _HomeScreenState extends State<HomeScreen> {
     return SizedBox(
       height: heightScreen(context)*0.8,
       child: BlocBuilder<HomeBloc, HomeState>(
-        builder: (context, store) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 200.w,
-                width: widthScreen(context)*0.6,
-                child: Image.asset(ThemeImage.error),
-              ),
-              SizedBox(height: 20.w),
-              Text('Not found within', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 10.w, horizontal: 20.w),
-                child: Slider(
-                  min: 1,
-                  max: 20,
-                  activeColor: ThemeColor.pinkColor,
-                  onChanged: (value) {
-                    context.read<HomeBloc>().add(HomeEvent(currentDistance: value.toInt()));
-                    Global.setInt('currentDistance', value.toInt());
-                  },
-                  value: store.currentDistance!.toDouble(),
+          builder: (context, store) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 200.w,
+                  width: widthScreen(context)*0.6,
+                  child: Image.asset(ThemeImage.error),
                 ),
-              ),
-              Text('${store.currentDistance}km', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
-              SizedBox(
-                width: widthScreen(context)/4,
-                child: ButtonWidgetCustom(
-                  textButton: 'Retry',
-                  styleText: TextStyles.defaultStyle.bold.whiteText,
-                  color: ThemeColor.pinkColor,
-                  radius: 5.w,
-                  onTap: () {
-                    controller.getData(store.currentDistance!);
-                    context.read<HomeBloc>().add(HomeEvent(currentIndex: 0));
-                    _controller.currentIndex = 0;
-                  }
+                SizedBox(height: 20.w),
+                Text('Not found within', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10.w, horizontal: 20.w),
+                  child: Slider(
+                    min: 1,
+                    max: 20,
+                    activeColor: ThemeColor.pinkColor,
+                    onChanged: (value) {
+                      context.read<HomeBloc>().add(HomeEvent(currentDistance: value.toInt()));
+                      Global.setInt('currentDistance', value.toInt());
+                    },
+                    value: store.currentDistance!.toDouble(),
+                  ),
                 ),
-              ),
-            ],
-          );
-        }
+                Text('${store.currentDistance}km', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
+                SizedBox(
+                  width: widthScreen(context)/4,
+                  child: ButtonWidgetCustom(
+                      textButton: 'Retry',
+                      styleText: TextStyles.defaultStyle.bold.whiteText,
+                      color: ThemeColor.pinkColor,
+                      radius: 5.w,
+                      onTap: () {
+                        controller.getData(store.currentDistance!);
+                        context.read<HomeBloc>().add(HomeEvent(currentIndex: 0));
+                        widget.swiController.currentIndex = 0;
+                        controller.page = 0;
+                      }
+                  ),
+                ),
+              ],
+            );
+          }
       ),
     );
   }
 }
-

@@ -6,7 +6,8 @@ class PremiumState {}
 class LoadPremiumState extends PremiumState {}
 
 class SuccessPremiumState extends PremiumState {
-  List<Matches> response;
+  List<Matches>? resMatches;
+  List<UnmatchedUsers>? resEnigmatic;
 
-  SuccessPremiumState({required this.response});
+  SuccessPremiumState({this.resMatches, this.resEnigmatic});
 }

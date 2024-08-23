@@ -12,6 +12,7 @@ import 'package:dating/ui/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:swipable_stack/swipable_stack.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -32,11 +33,13 @@ class AllTapController {
   ServiceInfoUser serviceInfoUser = ServiceInfoUser();
 
   WebSocketChannel? channel;
-  int matchCount = 0;
   final String urlConnect = Api.notification;
   Timer? timer;
   int retryCount = 0;
   final int maxRetries = 3;
+
+  int matchCount = 0;
+  int messageCount = 0;
 
   void onItemTapped(int index) {
     selectedIndex = index;
@@ -89,10 +92,10 @@ class AllTapController {
     Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false);
   }
 
-  Widget screenChange(AllTapState state, AnimationController animationController, BuildContext context) {
+  Widget screenChange(AllTapState state, AnimationController animationController, BuildContext context, SwipableStackController swiController) {
     switch (state.selectedIndex) {
       case 0:
-        return HomeScreen(openDrawer: openDrawer, buildContext: context, animationController: animationController);
+        return HomeScreen(openDrawer: openDrawer, buildContext: context, animationController: animationController, swiController: swiController,);
       case 1:
         return const PremiumScreen();
       case 2:
@@ -100,14 +103,16 @@ class AllTapController {
       case 3:
         return const ProfileScreen();
       default:
-        return HomeScreen(openDrawer: openDrawer, buildContext: context, animationController: animationController);
+        return HomeScreen(openDrawer: openDrawer, buildContext: context, animationController: animationController, swiController: swiController,);
     }
   }
 
   void continuous(String idUser) {
     timer?.cancel();
     timer = Timer.periodic(const Duration(seconds: 3), (_) {
-      connect(idUser);
+      if (context.mounted) {
+        connect(idUser);
+      }
     });
   }
 
@@ -115,17 +120,21 @@ class AllTapController {
     channel?.sink.close();
     channel = IOWebSocketChannel.connect(Uri.parse(urlConnect));
 
-    channel?.stream.listen((message) {
-      final data = jsonDecode(message);
-      matchCount = data['matchCount'] ?? matchCount;
-      context.read<AllTapBloc>().add(AllTapEvent(matchCount: matchCount));
-      retryCount = 0;
-    }, onError: (error) {
-      handleConnectionError(idUser);
-    }, onDone: () {
-      handleConnectionError(idUser);
-    });
-    channel?.sink.add(jsonEncode({'idUser': idUser}));
+    channel?.stream.listen(
+          (message) {
+        if (context.mounted) {
+          final data = jsonDecode(message);
+          matchCount = data['matchCount'] ?? matchCount;
+          messageCount = data['newMessages'] ?? messageCount;
+
+          context.read<AllTapBloc>().add(AllTapEvent(matchCount: matchCount, messageCount: messageCount));
+          retryCount = 0;
+        }
+      },
+      onError: (error) {if (context.mounted) handleConnectionError(idUser);},
+      onDone: () {if (context.mounted) handleConnectionError(idUser);},
+    );
+    channel?.sink.add(jsonEncode({'idUser': idUser, "type": "match",}));
   }
 
   void handleConnectionError(String idUser) {

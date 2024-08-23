@@ -39,6 +39,8 @@ class HomeController {
   ServiceInfoUser serviceInfoUser = ServiceInfoUser();
   ServiceUpdate serviceUpdate = ServiceUpdate();
   ServiceMatch addMatch = ServiceMatch();
+  int page = 0;
+  int limit = 10;
 
   Future<void> getData(int rangeValue) async {
     onLoad(true);
@@ -112,13 +114,15 @@ class HomeController {
     }
   }
 
-  Future<void> getListNomination(int rangeValue) async {
+  Future<void> getListNomination(int rangeValue, {int? page}) async {
     try {
       ModelListNomination response = await service.listNomination(
         context,
         idUser: Global.getInt('idUser'),
-        gender: 'female',
+        gender: Global.getString('gender'),
         radius: rangeValue,
+        limit: limit,
+        page: page??0
       );
       if (response.result != 'Success') {
         onLoad(false);
@@ -321,6 +325,20 @@ class HomeController {
           notFeedback: null
         )
     );
+  }
+
+  void onSwipeCompleted(int index, SwipeDirection direction, HomeState state, SwipableStackController swiController) {
+    if(direction == SwipeDirection.right) {
+      int? keyMatch = state.listNomination?.nominations?[index].idUser;
+      match(keyMatch!);
+    }
+    final rangeValue = context.read<HomeBloc>().state.currentDistance;
+    if (index == (state.listNomination?.nominations?.length ?? 0) - 1) {
+      page++;
+      swiController.currentIndex = 0;
+      getListNomination(rangeValue!, page: page);
+    }
+    context.read<HomeBloc>().add(HomeEvent(currentIndex: index+1, currentPage: 0));
   }
 
 }

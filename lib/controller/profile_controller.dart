@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../model/model_info_user.dart';
 import '../theme/theme_color.dart';
+import 'home_controller.dart';
 
 class ProfileController {
   BuildContext context;
@@ -34,12 +35,11 @@ class ProfileController {
         ),
       ],
     );
-    if(state.info?.info?.word != null && keyValue == 'work') {
+    if((state.info?.info?.word != null && state.info?.info?.word != '') && keyValue == 'work') {
       return Text('${state.info?.info?.word}', style: style);
-    } else if(state.info?.info?.academicLevel != null && keyValue == 'academicLevel') {
+    } else if((state.info?.info?.academicLevel != null && state.info?.info?.academicLevel != '') && keyValue == 'academicLevel') {
       return Text('${state.info?.info?.academicLevel}', style: style);
     }
-
     else {
       return defaultState;
     }
@@ -88,5 +88,10 @@ class ProfileController {
         ),
       ),
     );
+  }
+
+  void getInfo() async {
+    HomeController homeController = HomeController(context);
+    await homeController.getInfo();
   }
 }

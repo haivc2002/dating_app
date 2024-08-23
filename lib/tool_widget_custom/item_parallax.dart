@@ -14,7 +14,16 @@ class ItemParallax extends StatelessWidget {
   final String? image;
   final double? height, width;
   final bool? itemNew;
-  const ItemParallax({Key? key, this.index, this.image, this.title, this.subTitle, this.height, this.width, this.itemNew}) : super(key: key);
+  const ItemParallax({
+    Key? key,
+    this.index,
+    this.image,
+    this.title,
+    this.subTitle,
+    this.height,
+    this.width,
+    this.itemNew
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +47,10 @@ class ItemParallax extends StatelessWidget {
                 ),
                 child: Shimmer.fromColors(
                   highlightColor: ThemeColor.blackColor,
-                  baseColor: ThemeColor.pinkColor,
-                  child: Text('  New  ', style: TextStyles.defaultStyle.setColor(ThemeColor.pinkColor).bold)
+                  baseColor: ThemeColor.redColor,
+                  child: Text('  New  ', style: TextStyles.defaultStyle.setColor(ThemeColor.redColor).bold)
                 ),
-              ) : const SizedBox()
+              ) : const SizedBox.shrink()
             ],
           ),
         ),
@@ -87,12 +96,16 @@ class ItemParallax extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 8.w),
               child: Row(
                 children: [
-                  Text(
-                    title??'',
-                    style: TextStyles.defaultStyle
-                        .bold
-                        .setTextSize(15.sp)
-                        .setColor(ThemeColor.whiteColor),
+                  Expanded(
+                    child: Text(
+                      title??'',
+                      style: TextStyles.defaultStyle
+                          .bold
+                          .setTextSize(13.sp)
+                          .setColor(ThemeColor.whiteColor),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   SizedBox(width: 10.w),
                   Expanded(
@@ -109,7 +122,7 @@ class ItemParallax extends StatelessWidget {
                           style: TextStyles
                               .defaultStyle
                               .setColor(ThemeColor.pinkColor)
-                              .setTextSize(9.sp),
+                              .setTextSize(9.sp).bold,
                           maxLines: 1,
                           textAlign: TextAlign.center,
                         ),

@@ -1,4 +1,6 @@
 
+import 'dart:ui';
+
 import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/city_cover.dart';
 import 'package:dating/common/scale_screen.dart';
@@ -9,11 +11,9 @@ import 'package:dating/service/access_photo_gallery.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_image.dart';
 import 'package:dating/tool_widget_custom/appbar_custom.dart';
-import 'package:dating/tool_widget_custom/button_widget_custom.dart';
 import 'package:dating/tool_widget_custom/item_card.dart';
 import 'package:dating/tool_widget_custom/press_hold.dart';
 import 'package:dating/tool_widget_custom/press_hold_menu.dart';
-import 'package:dating/tool_widget_custom/press_popup_custom.dart';
 import 'package:dating/ui/profile/item_photo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +44,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     accessPhotoGallery = AccessPhotoGallery(context);
     controller = EditProfileController(context);
+    UpdateModel.modelInfoUser = ModelInfoUser();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.timer?.cancel();
   }
 
   @override
@@ -51,23 +58,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
       backgroundColor: themeNotifier.systemTheme,
-      body: AppBarCustom(
-        title: 'Edit profile',
-        textStyle: TextStyles.defaultStyle.bold.appbarTitle,
-        leadingIcon: IconButton(
-          onPressed: () => controller.backAndUpdate(),
-          icon: Icon(CupertinoIcons.back, color: themeNotifier.systemText),
-        ),
-        bodyListWidget: [
-          BlocBuilder<HomeBloc, HomeState>(builder: (context, homeState) {
-            return Column(
-              children: [
-                _boxImage(homeState.info!.listImage!),
-                itemInfo(homeState),
-                itemInfoMore(themeNotifier, homeState),
-              ],
-            );
-          })
+      body: Stack(
+        children: [
+          AppBarCustom(
+            title: 'Edit profile',
+            textStyle: TextStyles.defaultStyle.bold.appbarTitle,
+            leadingIcon: IconButton(
+              onPressed: () => controller.backAndUpdate(setState),
+              icon: Icon(CupertinoIcons.back, color: themeNotifier.systemText),
+            ),
+            bodyListWidget: [
+              BlocBuilder<HomeBloc, HomeState>(builder: (context, homeState) {
+                if(homeState.info?.info?.name == null || homeState.info?.info?.name == '') {
+                  return _error();
+                } else {
+                  return Column(
+                    children: [
+                      _boxImage(homeState.info!.listImage!),
+                      itemInfo(homeState),
+                      itemInfoMore(themeNotifier, homeState),
+                    ],
+                  );
+                }
+              })
+            ],
+          ),
+          _loadUpdate(themeNotifier)
         ],
       ),
     );
@@ -221,7 +237,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 backgroundUpload: preparedListImage[0].image,
                                 onTap: ()=> preparedListImage[0].image == null
                                     ? accessPhotoGallery.updateImage(0)
-                                    : controller.onOption(preparedListImage[0], 0)
+                                    : controller.onOption(preparedListImage[0], 0, preparedListImage[0].id!)
                               ),
                             ),
                           );
@@ -263,7 +279,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               backgroundUpload: preparedListImage[index].image,
               onTap: ()=> preparedListImage[index].image == null
                 ? accessPhotoGallery.updateImage(index)
-                : controller.onOption(preparedListImage[index], index)
+                : controller.onOption(preparedListImage[index], index, preparedListImage[index].id!)
             ),
           );
         },
@@ -271,4 +287,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  Widget _loadUpdate(ThemeNotifier themeNotifier) {
+    return Visibility(
+      visible: controller.isLoading,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaY: 10, sigmaX: 10),
+        child: Center(
+          child: SizedBox(
+            height: 6.w,
+            width: 160.w,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100.w),
+                  border: Border.all(color: themeNotifier.systemText)
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 3.w),
+                child: SingleChildScrollView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(100.w),
+                        child: SizedBox(
+                          height: 3.w, width: controller.valueLoading/5.w,
+                          child: ColoredBox(
+                            color: themeNotifier.systemText,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

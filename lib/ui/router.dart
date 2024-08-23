@@ -1,5 +1,6 @@
 import 'package:dating/ui/auth/register_screen.dart';
 import 'package:dating/ui/detail/detail_screen.dart';
+import 'package:dating/ui/message/view_chat_screen.dart';
 import 'package:dating/ui/setting/setting_screen.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -62,6 +63,25 @@ class AppRouter {
         return CupertinoPageRoute(
           settings: settings,
           builder: (_) => const RegisterInfoScreen()
+        );
+
+      case ViewChatScreen.routeName:
+        return PageRouteBuilder(
+          settings: settings,
+          pageBuilder: (context, animation, secondaryAnimation) => const ViewChatScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(0.0, 1.0);
+            const end = Offset.zero;
+            const curve = Curves.fastEaseInToSlowEaseOut;
+
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
         );
 
       default:

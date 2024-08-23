@@ -6,7 +6,8 @@ class PremiumEvent {}
 class LoadPremiumEvent extends PremiumEvent {}
 
 class SuccessPremiumEvent extends PremiumEvent {
-  List<Matches> response;
+  List<Matches>? resMatches;
+  List<UnmatchedUsers>? resEnigmatic;
 
-  SuccessPremiumEvent(this.response);
+  SuccessPremiumEvent({this.resMatches, this.resEnigmatic});
 }
