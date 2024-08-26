@@ -6,7 +6,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:rive/rive.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../theme/theme_rive.dart';
 
 class ItemParallax extends StatelessWidget {
   final int? index;
@@ -40,17 +43,9 @@ class ItemParallax extends StatelessWidget {
             children: [
               _itemImage(context),
               _itemInfo(context, themeNotifier),
-              itemNew == true ? DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.w)),
-                  color: ThemeColor.whiteColor.withOpacity(0.9)
-                ),
-                child: Shimmer.fromColors(
-                  highlightColor: ThemeColor.blackColor,
-                  baseColor: ThemeColor.redColor,
-                  child: Text('  New  ', style: TextStyles.defaultStyle.setColor(ThemeColor.redColor).bold)
-                ),
-              ) : const SizedBox.shrink()
+              itemNew == true
+                ? const RiveAnimation.asset(ThemeRive.newItem, fit: BoxFit.cover)
+                : const SizedBox.shrink()
             ],
           ),
         ),

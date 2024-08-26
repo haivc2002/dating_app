@@ -31,20 +31,18 @@ class ExtensionBuild extends StatefulWidget {
   State<ExtensionBuild> createState() => _ExtensionBuildState();
 }
 
-class _ExtensionBuildState extends State<ExtensionBuild> with SingleTickerProviderStateMixin {
+class _ExtensionBuildState extends State<ExtensionBuild> with TickerProviderStateMixin {
   late BuildContext bottomSheetContext;
   late AnimationController _controller;
   late Animation<double> _animation;
   final GlobalKey _key = GlobalKey();
 
+  double initHeight = 0;
+
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300)
-    );
-    _animation = Tween<double>(begin: 1, end: 0.9).animate(_controller);
+    _openExtend();
   }
 
   void openPopup(double height, ThemeNotifier theme) {
@@ -70,13 +68,13 @@ class _ExtensionBuildState extends State<ExtensionBuild> with SingleTickerProvid
                     width: 50.w,
                     decoration: BoxDecoration(
                       color: theme.systemText.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(100.w)
+                      borderRadius: BorderRadius.circular(100.w),
                     ),
                     margin: EdgeInsets.symmetric(vertical: 10.w),
                   ),
                   Expanded(child: widget.extension),
                 ],
-              )
+              ),
             ),
           ),
         );
@@ -84,26 +82,22 @@ class _ExtensionBuildState extends State<ExtensionBuild> with SingleTickerProvid
     ).then((_) => _controller.reverse());
   }
 
-  void closePopup() {
-    Navigator.pop(bottomSheetContext);
-  }
-
-  double initHeight = 0;
+  void closePopup() => Navigator.pop(bottomSheetContext);
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final RenderBox renderBox = _key.currentContext?.findRenderObject() as RenderBox;
       final size = renderBox.size;
       initHeight = size.height;
     });
 
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-
     final controller = PopupController(
-      open: ()=> openPopup(initHeight*0.9, themeNotifier),
+      open: () => openPopup(initHeight * 0.9, themeNotifier),
       close: closePopup,
     );
+
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
@@ -112,10 +106,18 @@ class _ExtensionBuildState extends State<ExtensionBuild> with SingleTickerProvid
           alignment: Alignment.topCenter,
           child: Container(
             key: _key,
-            child: widget.builder(controller)
+            child: widget.builder(controller),
           ),
         );
-      }
+      },
     );
+  }
+
+  _openExtend() {
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _animation = Tween<double>(begin: 1, end: 0.9).animate(_controller);
   }
 }

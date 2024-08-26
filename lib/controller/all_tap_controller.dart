@@ -6,6 +6,7 @@ import 'package:dating/bloc/bloc_auth/register_bloc.dart';
 import 'package:dating/model/model_info_user.dart';
 import 'package:dating/service/location/api_location_current.dart';
 import 'package:dating/service/service_info_user.dart';
+import 'package:dating/theme/theme_config.dart';
 import 'package:dating/ui/home/home_screen.dart';
 import 'package:dating/ui/message/message_screen.dart';
 import 'package:dating/ui/profile/profile_screen.dart';
@@ -21,7 +22,7 @@ import '../common/global.dart';
 import '../model/location_model/location_current_model.dart';
 import '../service/url/api.dart';
 import '../ui/auth/login_screen.dart';
-import '../ui/premium/premium_screen.dart';
+import '../ui/premium/match_screen.dart';
 
 class AllTapController {
   BuildContext context;
@@ -61,7 +62,7 @@ class AllTapController {
       if (response.results!.isNotEmpty && context.mounted) {
         List<Results> dataCity = response.results ?? [];
         onSuccess(response: dataCity);
-        ModelInfoUser infoModel = await serviceInfoUser.info(Global.getInt('idUser'), context);
+        ModelInfoUser infoModel = await serviceInfoUser.info(Global.getInt(ThemeConfig.idUser), context);
         if(infoModel.result == 'Success') {
           onSuccess(info: infoModel);
         } else {
@@ -97,7 +98,7 @@ class AllTapController {
       case 0:
         return HomeScreen(openDrawer: openDrawer, buildContext: context, animationController: animationController, swiController: swiController,);
       case 1:
-        return const PremiumScreen();
+        return const MatchScreen();
       case 2:
         return const MessageScreen();
       case 3:

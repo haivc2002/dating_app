@@ -1,3 +1,4 @@
+import 'package:dating/theme/theme_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Global {
@@ -85,7 +86,7 @@ class Global {
   static void clear() {
     _prefs?.clear();
     Global.getInt('idUser');
-    Global.getInt('currentDistance');
+    Global.getInt(ThemeConfig.currentDistance);
     Global.getString('gender');
     Global.getBool('theme');
   }

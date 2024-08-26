@@ -7,11 +7,16 @@ import 'package:dating/model/model_unmatched_users.dart';
 import 'package:dating/service/exception.dart';
 import 'package:dating/service/service_match.dart';
 import 'package:dating/service/service_update.dart';
+import 'package:dating/theme/theme_config.dart';
 import 'package:dating/ui/detail/detail_screen.dart';
+import 'package:dating/ui/message/view_chat_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dating/model/model_info_user.dart' as info_user;
+
+import '../bloc/bloc_message/detail_message_bloc.dart';
+
 
 class PremiumController {
   BuildContext context;
@@ -19,11 +24,15 @@ class PremiumController {
 
   ServiceMatch service = ServiceMatch();
   ServiceUpdate serviceUpdate = ServiceUpdate();
-  int idUser = Global.getInt('idUser');
+  int idUser = Global.getInt(ThemeConfig.idUser);
+
+  void getData() {
+    onLoad();
+    getMatches();
+    getEnigmatic();
+  }
 
   void getMatches() async {
-    context.read<PremiumBloc>().add(SuccessPremiumEvent(resMatches: []));
-    onLoad();
     ModelResponseListPairing response = await service.listPairing(idUser);
     if(response.result == 'Success') {
       List<Matches> matches = response.matches ?? [];
@@ -34,8 +43,6 @@ class PremiumController {
   }
 
   void getEnigmatic() async {
-    context.read<PremiumBloc>().add(SuccessPremiumEvent(resEnigmatic: []));
-    onLoad();
     ModelUnmatchedUsers response =  await service.listUnmatchedUsers(idUser);
     if(response.result == 'Success') {
       List<UnmatchedUsers> enigmatic = response.unmatchedUsers ?? [];
@@ -58,7 +65,7 @@ class PremiumController {
 
   void onError() {}
 
-  void gotoDetail(SuccessPremiumState state, int index) {
+  void gotoDetail(SuccessPremiumState state, int index) async {
     final dataInfo = state.resMatches?[index].info;
     final dataListImage = state.resMatches?[index].listImage;
     final dataInfoMore = state.resMatches?[index].infoMore;
@@ -89,10 +96,7 @@ class PremiumController {
         wine: dataInfoMore?.wine,
         religion: dataInfoMore?.religion
     );
-
-    isCheckNewState(state.resMatches?[index].idUser ?? 0, state, index);
-
-    Navigator.pushNamed(context, DetailScreen.routeName,
+    await Navigator.pushNamed(context, DetailScreen.routeName,
       arguments: ArgumentsDetailModel(
         idUser: state.resMatches?[index].idUser,
         info: info,
@@ -102,9 +106,11 @@ class PremiumController {
         notFeedback: false
       )
     );
+    await Future.delayed(const Duration(milliseconds: 500));
+    isCheckNewState(state.resMatches?[index].idUser ?? 0, state, index);
   }
 
-  void isCheckNewState(int keyMatchValue, SuccessPremiumState state, int index) async {
+  Future<void> isCheckNewState(int keyMatchValue, SuccessPremiumState state, int index) async {
     ModelIsCheckNewState req = ModelIsCheckNewState(keyMatch: keyMatchValue, idUser: idUser);
     final response = await serviceUpdate.checkNewState(req);
     if(response is Success<void, Exception>) {
@@ -114,6 +120,50 @@ class PremiumController {
       final error = response.exception;
       if (kDebugMode) print(error);
     }
+  }
+
+  void getGotoViewChat(SuccessPremiumState state, int index) async {
+    final dataInfo = state.resMatches?[index].info;
+    final list = state.resMatches?[index].listImage;
+    final dataInfoMore = state.resMatches?[index].infoMore;
+    info_user.Info info = info_user.Info(
+      lon: dataInfo?.lon,
+      lat: dataInfo?.lat,
+      name: dataInfo?.name,
+      word: dataInfo?.word,
+      describeYourself: dataInfo?.describeYourself,
+      birthday: dataInfo?.birthday,
+      academicLevel: dataInfo?.academicLevel,
+      desiredState: dataInfo?.desiredState,
+    );
+
+    List<info_user.ListImage> listImage = [];
+    for(int i=0; i< list!.length; i++) {
+      listImage.add(info_user.ListImage(
+        image: list[i].image,
+      ));
+    }
+
+    info_user.InfoMore infoMore = info_user.InfoMore(
+        hometown: dataInfoMore?.hometown,
+        height: dataInfoMore?.height,
+        zodiac: dataInfoMore?.zodiac,
+        smoking: dataInfoMore?.smoking,
+        wine: dataInfoMore?.wine,
+        religion: dataInfoMore?.religion
+    );
+    if(context.mounted) context.read<DetailMessageBloc>().add(DetailMessageEvent(response: []));
+    // isCheckNewState(state.resMatches?[index].idUser ?? 0, state, index);
+    await Navigator.pushNamed(context, ViewChatScreen.routeName, arguments: ArgumentsDetailModel(
+        keyHero: 0,
+        idUser: state.resMatches?[index].idUser,
+        info: info,
+        listImage: listImage,
+        infoMore: infoMore,
+        notFeedback: false
+    ));
+    await Future.delayed(const Duration(milliseconds: 500));
+    isCheckNewState(state.resMatches?[index].idUser ?? 0, state, index);
   }
 
 }

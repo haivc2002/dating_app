@@ -6,6 +6,7 @@ import 'package:dating/common/textstyles.dart';
 import 'package:dating/controller/profile_controller/update_model.dart';
 import 'package:dating/service/service_update.dart';
 import 'package:dating/theme/theme_color.dart';
+import 'package:dating/theme/theme_config.dart';
 import 'package:dating/tool_widget_custom/popup_custom.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -169,7 +170,7 @@ class AccessPhotoGallery {
     if (index < imageUpload.length) {
       imageUpload[index] = ListImage(id: imageUpload[index].id, idUser: imageUpload[index].idUser, image: imagePath);
     } else {
-      imageUpload.add(ListImage(id: null, idUser: Global.getInt('idUser'), image: imagePath));
+      imageUpload.add(ListImage(id: null, idUser: Global.getInt(ThemeConfig.idUser), image: imagePath));
     }
     UpdateModel.updateModelInfo(
       state.info!,

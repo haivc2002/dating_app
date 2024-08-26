@@ -12,6 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../argument_model/arguments_detail_model.dart';
+import '../../theme/theme_config.dart';
 
 class ViewChatScreen extends StatefulWidget {
   static const String routeName = 'viewChatScreen';
@@ -25,7 +26,7 @@ class _ViewChatScreenState extends State<ViewChatScreen> {
 
   late ArgumentsDetailModel args;
   late MessageController controller;
-  String idUser = Global.getInt('idUser').toString();
+  String idUser = Global.getInt(ThemeConfig.idUser).toString();
 
   bool isSend = false;
   String sendText = '';
@@ -46,14 +47,16 @@ class _ViewChatScreenState extends State<ViewChatScreen> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     args = ModalRoute.of(context)!.settings.arguments as ArgumentsDetailModel;
-    controller.connect(idUser, args.idUser!);
-    controller.continuous(idUser, args.idUser!);
     return Scaffold(
       backgroundColor: themeNotifier.systemTheme,
       body: Stack(
         children: [
           BlocBuilder<DetailMessageBloc, DetailMessageState>(
             builder: (context, state) {
+              if((state.response??[]).isNotEmpty) {
+                controller.connect(idUser, args.idUser!, 30);
+                controller.continuous(idUser, args.idUser!, 30);
+              }
               return Column(
                 children: [
                   _contentMessage(state),
@@ -109,28 +112,26 @@ class _ViewChatScreenState extends State<ViewChatScreen> {
           child: Column(
             children: [
               const Spacer(),
-              SizedBox(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  child: Row(
-                    children: [
-                      IconButton(
-                          onPressed: ()=> Navigator.pop(context),
-                          icon: Icon(Icons.arrow_back_ios_new, color: themeNotifier.systemText)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5.w),
+                child: Row(
+                  children: [
+                    IconButton(
+                        onPressed: ()=> Navigator.pop(context),
+                        icon: Icon(Icons.arrow_back_ios_new, color: themeNotifier.systemText)
+                    ),
+                    SizedBox(width: 10.w),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(100.w),
+                      child: SizedBox(
+                        height: 35.w,
+                        width: 35.w,
+                        child: Image.network('${args.listImage?[0].image}', fit:  BoxFit.cover),
                       ),
-                      SizedBox(width: 10.w),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(100.w),
-                        child: SizedBox(
-                          height: 35.w,
-                          width: 35.w,
-                          child: Image.network('${args.listImage?[0].image}', fit:  BoxFit.cover),
-                        ),
-                      ),
-                      SizedBox(width: 20.w),
-                      Text('${args.info?.name}', style: TextStyles.defaultStyle.bold.setColor(themeNotifier.systemText).setTextSize(18.sp))
-                    ],
-                  ),
+                    ),
+                    SizedBox(width: 20.w),
+                    Text('${args.info?.name}', style: TextStyles.defaultStyle.bold.setColor(themeNotifier.systemText).setTextSize(18.sp))
+                  ],
                 ),
               ),
               SizedBox(height: 10.w)
@@ -142,7 +143,11 @@ class _ViewChatScreenState extends State<ViewChatScreen> {
   }
 
   Widget _contentMessage(DetailMessageState state) {
-    if((state.response??[]).isNotEmpty) controller.checkMessage(int.parse(idUser), state);
+    // if((state.response??[]).isNotEmpty) controller.checkMessage(int.parse(idUser), state);
+    // if((state.response??[]).isNotEmpty) {
+    //   controller.connect(idUser, args.idUser!, state.response![0].id!);
+    //   controller.continuous(idUser, args.idUser!, state.response![0].id!);
+    // }
     return Expanded(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 15.w),
@@ -150,11 +155,9 @@ class _ViewChatScreenState extends State<ViewChatScreen> {
           reverse: true,
           itemCount: (state.response ?? []).length + 1,
           itemBuilder: (context, index) {
-            if (index == (state.response ?? []).length) {
-              return SizedBox(height: 130.w);
-            }
+            if (index == (state.response ?? []).length) return SizedBox(height: 130.w);
             final actualIndex = index;
-            if (state.response?[actualIndex].idUser == Global.getInt('idUser')) {
+            if (state.response?[actualIndex].idUser == Global.getInt(ThemeConfig.idUser)) {
               return _sender(state, actualIndex);
             } else {
               return _receiver(state, actualIndex);

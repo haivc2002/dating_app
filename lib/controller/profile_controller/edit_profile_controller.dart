@@ -16,6 +16,7 @@ import 'package:dating/service/exception.dart';
 import 'package:dating/service/service_add_image.dart';
 import 'package:dating/service/service_update.dart';
 import 'package:dating/theme/theme_color.dart';
+import 'package:dating/theme/theme_config.dart';
 import 'package:dating/tool_widget_custom/bottom_sheet_custom.dart';
 import 'package:dating/tool_widget_custom/button_widget_custom.dart';
 import 'package:dating/tool_widget_custom/input_custom.dart';
@@ -434,7 +435,7 @@ class EditProfileController {
           await serviceUpdate.updateImage(image.id, image.image ?? '');
         } else {
           ModelRequestImage reqImage = ModelRequestImage(
-              idUser: Global.getInt('idUser'),
+              idUser: Global.getInt(ThemeConfig.idUser),
               image: File(image.image??'')
           );
           if (context.mounted) await serviceAddImage.addImage(reqImage, context);

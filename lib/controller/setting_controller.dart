@@ -1,3 +1,4 @@
+import 'package:dating/theme/theme_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,7 @@ class SettingController {
   BuildContext context;
   SettingController(this.context);
 
-  bool isDarkMode = Global.getBool('theme', def: false);
+  bool isDarkMode = Global.getBool(ThemeConfig.theme, def: false);
   RiveFile? fileRive;
 
   void toggleTheme(setState) {

@@ -12,6 +12,7 @@ import 'package:dating/service/exception.dart';
 import 'package:dating/service/service_message.dart';
 import 'package:dating/service/url/api.dart';
 import 'package:dating/theme/theme_color.dart';
+import 'package:dating/theme/theme_config.dart';
 import 'package:dating/theme/theme_notifier.dart';
 import 'package:dating/ui/message/view_chat_screen.dart';
 import 'package:flutter/foundation.dart';
@@ -43,7 +44,7 @@ class MessageController {
 
   void getData() {
     onLoad();
-    int idUser = Global.getInt('idUser');
+    int idUser = Global.getInt(ThemeConfig.idUser);
 
     realTimeMessage?.cancel();
     realTimeMessage = Timer.periodic(const Duration(seconds: 5), (_) async {
@@ -80,7 +81,7 @@ class MessageController {
 
   Widget returnContentMessage(SuccessMessageState state, int index, ThemeNotifier color) {
     bool newMessage = state.response[index].latestMessage?.newState == 1;
-    bool senderIsMe = state.response[index].latestMessage?.idUser == Global.getInt('idUser');
+    bool senderIsMe = state.response[index].latestMessage?.idUser == Global.getInt(ThemeConfig.idUser);
     if(newMessage && !senderIsMe) {
       if(senderIsMe) {
         return Text(
@@ -112,7 +113,7 @@ class MessageController {
     if(newState == 0) {
       return const SizedBox();
     } else {
-      if(state.response[index].latestMessage?.idUser != Global.getInt('idUser')) {
+      if(state.response[index].latestMessage?.idUser != Global.getInt(ThemeConfig.idUser)) {
         return Icon(Icons.circle, color: ThemeColor.pinkColor, size: 14.sp);
       } else {
         return const SizedBox();
@@ -222,20 +223,18 @@ class MessageController {
     }
   }
 
-  void continuous(String idUser, int receiver) {
+  void continuous(String idUser, int receiver, int id) {
     timer?.cancel();
-    timer = Timer.periodic(const Duration(seconds: 3), (_) {
-      if (context.mounted) connect(idUser, receiver);
+    timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (context.mounted) connect(idUser, receiver, id);
     });
   }
 
-  void connect(String idUser, int receiver) {
+  void connect(String idUser, int receiver, int id) {
     if (!context.mounted) return;
-
     channel?.sink.close();
     channel = IOWebSocketChannel.connect(Uri.parse(urlConnect));
     response = ModelResponseMessage(messages: List.from(context.read<DetailMessageBloc>().state.response ?? []));
-
     channel?.stream.listen(
           (message) {
         if (context.mounted) {
@@ -247,29 +246,30 @@ class MessageController {
           }
         }
       },
-      onError: (error) {if (context.mounted) handleConnectionError(idUser, receiver);},
-      onDone: () {if (context.mounted) handleConnectionError(idUser, receiver);},
+      onError: (error) {if (context.mounted) handleConnectionError(idUser, receiver, id);},
+      onDone: () {if (context.mounted) handleConnectionError(idUser, receiver, id);},
     );
     channel?.sink.add(jsonEncode({
       'idUser': idUser,
       'type': 'getMessages',
       'receiver': receiver,
+      'id': id,
     }));
   }
 
-  void handleConnectionError(String idUser, int receiver) {
+  void handleConnectionError(String idUser, int receiver, int id) {
     retryCount++;
     if (retryCount <= maxRetries) {
-      reconnect(idUser, receiver);
+      reconnect(idUser, receiver, id);
     } else {
       stopReconnecting();
     }
   }
 
-  void reconnect(String idUser, int receiver) {
+  void reconnect(String idUser, int receiver, int id) {
     channel?.sink.close();
     Future.delayed(const Duration(seconds: 5), () {
-      connect(idUser, receiver);
+      connect(idUser, receiver, id);
     });
   }
 
@@ -279,12 +279,10 @@ class MessageController {
   }
 
   void checkMessage(int idUser, DetailMessageState state) async {
-    if(idUser != state.response?[0].idUser) {
-      var response = await serviceMessage.checkMessage(idUser, state.response![0].id!);
-      if(response is Failure<void, Exception>) {
-        final error = response.exception;
-        if (kDebugMode) print(error);
-      }
+    var response = await serviceMessage.checkMessage(idUser, state.response![0].id!);
+    if(response is Failure<void, Exception>) {
+      final error = response.exception;
+      if (kDebugMode) print(error);
     }
   }
 }

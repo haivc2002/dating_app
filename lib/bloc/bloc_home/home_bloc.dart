@@ -13,7 +13,7 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeState(
     isLoading: false,
-    currentDistance: Global.getInt('currentDistance'),
+    currentDistance: Global.getInt('currentDistance', def: 1),
     currentPage: 0,
     currentIndex: 0
   )) {

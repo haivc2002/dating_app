@@ -1,6 +1,7 @@
 import 'package:dating/common/global.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
+import 'package:dating/theme/theme_config.dart';
 import 'package:dating/ui/all_tap_bottom/all_tap_bottom_screen.dart';
 import 'package:dating/ui/auth/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ class _AnimateToNextScreenState extends State<AnimateToNextScreen> with TickerPr
         });
       }
     });
-    idUser = Global.getInt('idUser'); 
+    idUser = Global.getInt(ThemeConfig.idUser);
   }
 
   @override

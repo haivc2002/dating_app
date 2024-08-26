@@ -1,10 +1,11 @@
 import 'package:dating/theme/theme_color.dart';
+import 'package:dating/theme/theme_config.dart';
 import 'package:flutter/material.dart';
 
 import '../common/global.dart';
 
 class ThemeNotifier with ChangeNotifier {
-  bool _isDarkMode = Global.getBool('theme');
+  bool _isDarkMode = Global.getBool(ThemeConfig.theme);
 
   bool get isDarkMode => _isDarkMode;
 

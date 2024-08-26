@@ -5,6 +5,7 @@ import 'package:dating/model/model_update_location.dart';
 import 'package:dating/service/service_list_nomination.dart';
 import 'package:dating/service/service_match.dart';
 import 'package:dating/service/service_update.dart';
+import 'package:dating/theme/theme_config.dart';
 import 'package:dating/tool_widget_custom/popup_custom.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +83,7 @@ class HomeController {
   Future<void> setLocation(double latValue, double lonValue) async {
     try {
       ModelUpdateLocation requestLocation = ModelUpdateLocation(
-        idUser: Global.getInt("idUser"),
+        idUser: Global.getInt(ThemeConfig.idUser),
         lat: latValue,
         lon: lonValue,
       );
@@ -101,7 +102,7 @@ class HomeController {
 
   Future<void> getInfo() async {
     try {
-      user_info.ModelInfoUser infoModel = await serviceInfoUser.info(Global.getInt('idUser'), context);
+      user_info.ModelInfoUser infoModel = await serviceInfoUser.info(Global.getInt(ThemeConfig.idUser), context);
 
       if (infoModel.result != 'Success') {
         onLoad(false);
@@ -118,8 +119,8 @@ class HomeController {
     try {
       ModelListNomination response = await service.listNomination(
         context,
-        idUser: Global.getInt('idUser'),
-        gender: Global.getString('gender'),
+        idUser: Global.getInt(ThemeConfig.idUser),
+        gender: Global.getString(ThemeConfig.gender),
         radius: rangeValue,
         limit: limit,
         page: page??0
@@ -144,9 +145,7 @@ class HomeController {
     onLoad(false);
   }
 
-  void onLoad(bool isLoading) {
-    context.read<HomeBloc>().add(HomeEvent(isLoading: isLoading));
-  }
+  void onLoad(bool isLoading)=> context.read<HomeBloc>().add(HomeEvent(isLoading: isLoading));
 
   void onError(String message) {
     onLoad(false);
@@ -264,7 +263,7 @@ class HomeController {
 
   void match(int keyMatch) async {
     ModelReqMatch requestMatch = ModelReqMatch(
-      idUser: Global.getInt('idUser'),
+      idUser: Global.getInt(ThemeConfig.idUser),
       keyMatch: keyMatch
     );
     ModelResponseMatch response = await addMatch.match(requestMatch);
