@@ -4,7 +4,6 @@ import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/textstyles.dart';
 import 'package:dating/common/time_now.dart';
 import 'package:dating/controller/all_tap_controller.dart';
-import 'package:dating/controller/home_controller.dart';
 import 'package:dating/theme/theme_notifier.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -67,12 +66,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           child: Stack(
             children: [
               BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
+                filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
                 child: const SizedBox(),
               ),
               DecoratedBox(
                 decoration: BoxDecoration(
-                    color: themeNotifier.systemTheme.withOpacity(0.1),
+                    color: themeNotifier.systemText.withOpacity(0.1),
                     border: Border(
                       right: BorderSide(
                         color: ThemeColor.greyColor.withOpacity(0.1)

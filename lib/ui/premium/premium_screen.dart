@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:dating/controller/premium_controller.dart';
 import 'package:dating/ui/premium/state_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +21,7 @@ class PremiumScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+    PremiumController controller = PremiumController(context);
     return BlocBuilder<PremiumBloc, PremiumState>(
       builder: (context, state) {
         if(state is LoadPremiumState) {
@@ -41,8 +43,9 @@ class PremiumScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                             onTap: () async {
-                              final _url = Uri.parse("https://sandbox.vnpayment.vn/tryitnow/Home/CreateOrder");
-                              await launchUrl(_url);
+                              // final _url = Uri.parse("https://sandbox.vnpayment.vn/tryitnow/Home/CreateOrder");
+                              // await launchUrl(_url).whenComplete(()=> print('sfjsfsf'));
+                              controller.popupPayment(themeNotifier);
                             },
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10.w),

@@ -13,6 +13,7 @@ import 'package:swipable_stack/swipable_stack.dart';
 import '../../../theme/theme_notifier.dart';
 import '../../bloc/bloc_all_tap/all_tap_bloc.dart';
 import '../../controller/all_tap_controller.dart';
+import '../home/home_component.dart';
 import 'bottom_bar.dart';
 import 'drawer_widget.dart';
 
@@ -100,28 +101,35 @@ class _AllTapBottomScreenState extends State<AllTapBottomScreen> with TickerProv
           homeController.getData(rangeValue!);
         },
       ),
-      body: AnimatedBuilder(
-          animation: animation,
-          builder: (context, child) {
-            return Transform.scale(
-              alignment: Alignment.centerRight,
-              scale: animation.value,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10.w),
-                child: SizedBox(
-                  height: heightScreen(context),
-                  child: Stack(
-                    children: [
-                      BlocBuilder<AllTapBloc, AllTapState>(builder: (context, state) {
-                        return controller.screenChange(state ,animationController, context, _controller);
-                      }),
-                      bottom(),
-                    ],
+      body: Stack(
+        children: [
+          BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+            return BackGroundBlur(context: context, state: state);
+          }),
+          AnimatedBuilder(
+              animation: animation,
+              builder: (context, child) {
+                return Transform.scale(
+                  alignment: Alignment.centerRight,
+                  scale: animation.value,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.w),
+                    child: SizedBox(
+                      height: heightScreen(context),
+                      child: Stack(
+                        children: [
+                          BlocBuilder<AllTapBloc, AllTapState>(builder: (context, state) {
+                            return controller.screenChange(state ,animationController, context, _controller);
+                          }),
+                          bottom(),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            );
-          }
+                );
+              }
+          ),
+        ],
       ),
     );
   }

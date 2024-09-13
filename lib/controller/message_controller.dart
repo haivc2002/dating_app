@@ -223,14 +223,14 @@ class MessageController {
     }
   }
 
-  void continuous(String idUser, int receiver, int id) {
+  void continuous(String idUser, int receiver) {
     timer?.cancel();
     timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (context.mounted) connect(idUser, receiver, id);
+      if (context.mounted) connect(idUser, receiver);
     });
   }
 
-  void connect(String idUser, int receiver, int id) {
+  void connect(String idUser, int receiver) {
     if (!context.mounted) return;
     channel?.sink.close();
     channel = IOWebSocketChannel.connect(Uri.parse(urlConnect));
@@ -246,30 +246,29 @@ class MessageController {
           }
         }
       },
-      onError: (error) {if (context.mounted) handleConnectionError(idUser, receiver, id);},
-      onDone: () {if (context.mounted) handleConnectionError(idUser, receiver, id);},
+      onError: (error) {if (context.mounted) handleConnectionError(idUser, receiver);},
+      onDone: () {if (context.mounted) handleConnectionError(idUser, receiver);},
     );
     channel?.sink.add(jsonEncode({
       'idUser': idUser,
       'type': 'getMessages',
       'receiver': receiver,
-      'id': id,
     }));
   }
 
-  void handleConnectionError(String idUser, int receiver, int id) {
+  void handleConnectionError(String idUser, int receiver) {
     retryCount++;
     if (retryCount <= maxRetries) {
-      reconnect(idUser, receiver, id);
+      reconnect(idUser, receiver);
     } else {
       stopReconnecting();
     }
   }
 
-  void reconnect(String idUser, int receiver, int id) {
+  void reconnect(String idUser, int receiver) {
     channel?.sink.close();
     Future.delayed(const Duration(seconds: 5), () {
-      connect(idUser, receiver, id);
+      connect(idUser, receiver);
     });
   }
 

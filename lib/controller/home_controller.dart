@@ -327,17 +327,24 @@ class HomeController {
   }
 
   void onSwipeCompleted(int index, SwipeDirection direction, HomeState state, SwipableStackController swiController) {
-    if(direction == SwipeDirection.right) {
+    if (direction == SwipeDirection.right) {
       int? keyMatch = state.listNomination?.nominations?[index].idUser;
-      match(keyMatch!);
+      if (keyMatch != null) {
+        match(keyMatch);
+      }
     }
     final rangeValue = context.read<HomeBloc>().state.currentDistance;
-    if (index == (state.listNomination?.nominations?.length ?? 0) - 1) {
+    final int nominationsLength = state.listNomination?.nominations?.length ?? 0;
+
+    if (index == nominationsLength - 1) {
       page++;
       swiController.currentIndex = 0;
       getListNomination(rangeValue!, page: page);
+      context.read<HomeBloc>().add(HomeEvent(currentIndex: 0, currentPage: page));
+    } else {
+      context.read<HomeBloc>().add(HomeEvent(currentIndex: index + 1, currentPage: 0));
     }
-    context.read<HomeBloc>().add(HomeEvent(currentIndex: index+1, currentPage: 0));
   }
+
 
 }

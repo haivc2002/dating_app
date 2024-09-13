@@ -8,6 +8,7 @@ class Api {
   static String addImage = 'http${ThemeConfig.baseUrlIp}auth/addImage';
   static String match = 'http${ThemeConfig.baseUrlIp}match/add';
   static String sendMessage = 'http${ThemeConfig.baseUrlIp}message/send';
+  static String createPayment = 'http${ThemeConfig.baseUrlIp}payment/create_payment_url';
 
   // TODO: GET
   static String getNomination = 'http${ThemeConfig.baseUrlIp}data/listNomination';

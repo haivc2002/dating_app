@@ -47,16 +47,14 @@ class _ViewChatScreenState extends State<ViewChatScreen> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     args = ModalRoute.of(context)!.settings.arguments as ArgumentsDetailModel;
+    controller.connect(idUser, args.idUser!);
+    controller.continuous(idUser, args.idUser!);
     return Scaffold(
       backgroundColor: themeNotifier.systemTheme,
       body: Stack(
         children: [
           BlocBuilder<DetailMessageBloc, DetailMessageState>(
             builder: (context, state) {
-              if((state.response??[]).isNotEmpty) {
-                controller.connect(idUser, args.idUser!, 30);
-                controller.continuous(idUser, args.idUser!, 30);
-              }
               return Column(
                 children: [
                   _contentMessage(state),
@@ -143,11 +141,6 @@ class _ViewChatScreenState extends State<ViewChatScreen> {
   }
 
   Widget _contentMessage(DetailMessageState state) {
-    // if((state.response??[]).isNotEmpty) controller.checkMessage(int.parse(idUser), state);
-    // if((state.response??[]).isNotEmpty) {
-    //   controller.connect(idUser, args.idUser!, state.response![0].id!);
-    //   controller.continuous(idUser, args.idUser!, state.response![0].id!);
-    // }
     return Expanded(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 15.w),

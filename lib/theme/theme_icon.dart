@@ -7,4 +7,6 @@ class ThemeIcon {
   static const String messageBoldIcon = 'assets/icon/message_bold.png';
   static const String iconGender = 'assets/icon/icon_gender.png';
   static const String iconGoogle = 'assets/icon/icon_google.png';
+  static const String iconApp = 'assets/icon/icon_app.png';
+  static const String iconVnpay = 'assets/icon/icon_vnpay.png';
 }

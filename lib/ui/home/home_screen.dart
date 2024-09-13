@@ -1,7 +1,6 @@
 
 import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/common/extension/gradient.dart';
-import 'package:dating/common/global.dart';
 import 'package:dating/common/scale_screen.dart';
 import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_image.dart';
@@ -13,7 +12,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:swipable_stack/swipable_stack.dart';
 
 import '../../../common/textstyles.dart';
@@ -22,6 +20,7 @@ import '../../common/year_old.dart';
 import '../../controller/home_controller.dart';
 import '../../model/model_list_nomination.dart';
 import '../../tool_widget_custom/number_of_photos.dart';
+import 'home_component.dart';
 
 class HomeScreen extends StatefulWidget {
   final void Function(BuildContext) openDrawer;
@@ -59,9 +58,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
-      backgroundColor: themeNotifier.systemTheme,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         top: false,
         child: AppBarCustom(
@@ -85,9 +83,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           bodyListWidget: [
             BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
               if (state.isLoading!) {
-                return _load();
+                return HomeComponent.load(context);
               } else {
-                return _swiperStack(state);
+                return Stack(
+                  children: [
+                    HomeComponent.listNominationNull(context, controller, widget.swiController.currentIndex),
+                    _swiperStack(state),
+                  ],
+                );
               }
             })
           ],
@@ -105,7 +108,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          _listNominationNull(),
           Positioned.fill(
             child: Padding(
               padding: const EdgeInsets.all(8),
@@ -123,10 +125,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   verticalSwipeThreshold: 0.8,
                   itemCount: state.listNomination?.nominations?.length,
                   builder: (context, properties) {
-                    if (length == 0) {
-                      // return _listNominationNull();
-                      return const SizedBox();
-                    }
+                    if (length == 0) return const SizedBox();
                     final itemIndex = properties.index % length;
                     final data = nominations[itemIndex].listImage ?? [];
                     final pageController = PageController();
@@ -194,28 +193,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             );
           })
         ],
-      ),
-    );
-  }
-
-  Widget _load() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    return Padding(
-      padding: EdgeInsets.all(10.w),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10.w),
-        child: SizedBox(
-          height: heightScreen(context) * 0.8,
-          child: Shimmer.fromColors(
-            baseColor: themeNotifier.systemThemeFade,
-            highlightColor: themeNotifier.systemTheme,
-            child: SizedBox(
-                height: heightScreen(context) * 0.8,
-                width: widthScreen(context),
-                child: const ColoredBox(color: ThemeColor.whiteColor)
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -305,58 +282,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         )
       ],
-    );
-  }
-
-  Widget _listNominationNull() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    return SizedBox(
-      height: heightScreen(context)*0.8,
-      child: BlocBuilder<HomeBloc, HomeState>(
-          builder: (context, store) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 200.w,
-                  width: widthScreen(context)*0.6,
-                  child: Image.asset(ThemeImage.error),
-                ),
-                SizedBox(height: 20.w),
-                Text('Not found within', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.w, horizontal: 20.w),
-                  child: Slider(
-                    min: 1,
-                    max: 20,
-                    activeColor: ThemeColor.pinkColor,
-                    onChanged: (value) {
-                      context.read<HomeBloc>().add(HomeEvent(currentDistance: value.toInt()));
-                      Global.setInt('currentDistance', value.toInt());
-                    },
-                    value: store.currentDistance!.toDouble(),
-                  ),
-                ),
-                Text('${store.currentDistance}km', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText)),
-                SizedBox(
-                  width: widthScreen(context)/4,
-                  child: ButtonWidgetCustom(
-                      textButton: 'Retry',
-                      styleText: TextStyles.defaultStyle.bold.whiteText,
-                      color: ThemeColor.pinkColor,
-                      radius: 5.w,
-                      onTap: () {
-                        controller.getData(store.currentDistance!);
-                        context.read<HomeBloc>().add(HomeEvent(currentIndex: 0));
-                        widget.swiController.currentIndex = 0;
-                        controller.page = 0;
-                      }
-                  ),
-                ),
-              ],
-            );
-          }
-      ),
     );
   }
 }
