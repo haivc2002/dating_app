@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 
 class AnimateToNextScreen extends StatefulWidget {
+  static const String routeName = "/AnimateToNextScreen";
   const AnimateToNextScreen({Key? key}) : super(key: key);
 
   @override

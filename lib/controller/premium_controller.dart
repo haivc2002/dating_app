@@ -1,14 +1,18 @@
 import 'package:dating/argument_model/arguments_detail_model.dart';
 import 'package:dating/bloc/bloc_premium/premium_bloc.dart';
+import 'package:dating/common/format_amount.dart';
 import 'package:dating/common/global.dart';
-import 'package:dating/common/scale_screen.dart';
 import 'package:dating/common/textstyles.dart';
+import 'package:dating/model/model_create_payment.dart';
+import 'package:dating/model/model_info_user.dart' as info_user;
 import 'package:dating/model/model_is_check_new_state.dart';
 import 'package:dating/model/model_response_list_pairing.dart';
 import 'package:dating/model/model_unmatched_users.dart';
 import 'package:dating/service/exception.dart';
 import 'package:dating/service/service_match.dart';
+import 'package:dating/service/service_payment.dart';
 import 'package:dating/service/service_update.dart';
+import 'package:dating/theme/theme_color.dart';
 import 'package:dating/theme/theme_config.dart';
 import 'package:dating/theme/theme_icon.dart';
 import 'package:dating/tool_widget_custom/bottom_sheet_custom.dart';
@@ -18,11 +22,10 @@ import 'package:dating/ui/message/view_chat_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dating/model/model_info_user.dart' as info_user;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../bloc/bloc_message/detail_message_bloc.dart';
-import '../theme/theme_notifier.dart';
 
 
 class PremiumController {
@@ -31,15 +34,20 @@ class PremiumController {
 
   ServiceMatch service = ServiceMatch();
   ServiceUpdate serviceUpdate = ServiceUpdate();
+  ServicePayment servicePayment = ServicePayment();
   int idUser = Global.getInt(ThemeConfig.idUser);
 
-  void getData() {
+  Future<void> getDataMatch() async {
     onLoad();
-    getMatches();
+    await getMatches();
+  }
+
+  void getDataEnigmatic() {
+    onLoad();
     getEnigmatic();
   }
 
-  void getMatches() async {
+  Future<void> getMatches() async {
     ModelResponseListPairing response = await service.listPairing(idUser);
     if(response.result == 'Success') {
       List<Matches> matches = response.matches ?? [];
@@ -63,11 +71,12 @@ class PremiumController {
     context.read<PremiumBloc>().add(LoadPremiumEvent());
   }
 
-  void onSuccess({List<Matches>? matches, List<UnmatchedUsers>? enigmatic}) {
-    context
-        .read<PremiumBloc>()
-        .add(SuccessPremiumEvent(resMatches: matches, resEnigmatic: enigmatic)
-    );
+  void onSuccess({List<Matches>? matches, List<UnmatchedUsers>? enigmatic, ModelCreatePayment? responsePayment}) {
+    context.read<PremiumBloc>().add(SuccessPremiumEvent(
+      resMatches: matches,
+      resEnigmatic: enigmatic,
+      responsePayment: responsePayment
+    ));
   }
 
   void onError() {}
@@ -160,7 +169,6 @@ class PremiumController {
         religion: dataInfoMore?.religion
     );
     if(context.mounted) context.read<DetailMessageBloc>().add(DetailMessageEvent(response: []));
-    // isCheckNewState(state.resMatches?[index].idUser ?? 0, state, index);
     await Navigator.pushNamed(context, ViewChatScreen.routeName, arguments: ArgumentsDetailModel(
         keyHero: 0,
         idUser: state.resMatches?[index].idUser,
@@ -173,16 +181,16 @@ class PremiumController {
     isCheckNewState(state.resMatches?[index].idUser ?? 0, state, index);
   }
 
-  void popupPayment(ThemeNotifier themeNotifier) {
+  void popupPayment(int amount, String url) {
     BottomSheetCustom.showCustomBottomSheet(context,
-      backgroundColor: themeNotifier.systemTheme,
+      backgroundColor: ThemeColor.blackColor,
       circular: 0,
       Padding(
         padding: EdgeInsets.symmetric(horizontal: 15.w),
         child: IntrinsicHeight(
           child: Column(
             children: [
-              Divider(color: themeNotifier.systemText.withOpacity(0.1)),
+              Divider(color: ThemeColor.blackColor.withOpacity(0.1)),
               SizedBox(height: 20.w),
               Row(
                 children: [
@@ -191,8 +199,8 @@ class PremiumController {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Date date premium', style: TextStyles.defaultStyle.bold.setColor(themeNotifier.systemText).setTextSize(17.sp)),
-                      Text('Date date - make friends and date', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))
+                      Text('Date date premium', style: TextStyles.defaultStyle.bold.setColor(ThemeColor.whiteColor).setTextSize(17.sp)),
+                      Text('Date date - make friends and date', style: TextStyles.defaultStyle.setColor(ThemeColor.whiteColor))
                     ],
                   )
                 ],
@@ -202,15 +210,15 @@ class PremiumController {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(child: Text(
-                    'Start date today', style: TextStyles.defaultStyle.bold.setColor(themeNotifier.systemText),
+                    'Start date today', style: TextStyles.defaultStyle.bold.setColor(ThemeColor.whiteColor),
                   )),
                   Expanded(child: Text(
-                    '100.000đ/month\n+vat', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText),
+                    '${formatAmount(amount)}VNĐ\n+vat', style: TextStyles.defaultStyle.setColor(ThemeColor.whiteColor),
                     textAlign: TextAlign.end,
                   ))
                 ],
               ),
-              Divider(color: themeNotifier.systemText.withOpacity(0.1)),
+              Divider(color: ThemeColor.whiteColor.withOpacity(0.3)),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 5.w),
                 child: Row(
@@ -220,17 +228,18 @@ class PremiumController {
                       child: Image.asset(ThemeIcon.iconVnpay, height: 40, width: 40, fit: BoxFit.cover)
                     ),
                     SizedBox(width: 20.w),
-                    Text('Vnpay e-wallet', style: TextStyles.defaultStyle.setColor(themeNotifier.systemText))
+                    Text('Vnpay e-wallet', style: TextStyles.defaultStyle.setColor(ThemeColor.whiteColor))
                   ],
                 ),
               ),
-              Divider(color: themeNotifier.systemText.withOpacity(0.1)),
+              Divider(color: ThemeColor.blackColor.withOpacity(0.3)),
               const Spacer(),
               ButtonWidgetCustom(
                 textButton: 'register',
-                color: themeNotifier.systemText,
+                color: ThemeColor.whiteColor,
                 radius: 100.w,
-                styleText: TextStyles.defaultStyle.bold.setColor(themeNotifier.systemTheme),
+                styleText: TextStyles.defaultStyle.bold.setColor(ThemeColor.blackColor),
+                onTap: () => _actionUrlToViewWeb(url)
               )
             ],
           ),
@@ -239,6 +248,21 @@ class PremiumController {
     );
   }
 
-  
+  void getUrlPayment() async {
+    final response = await servicePayment.create();
+    if(response is Success<ModelCreatePayment, Exception>) {
+      if(response.value.amount != null) {
+        ModelCreatePayment data = response.value;
+        onSuccess(responsePayment: data);
+        popupPayment(response.value.amount??0, response.value.source??'');
+      } else {
+        onError();
+      }
+    }
+  }
 
+  void _actionUrlToViewWeb(url) async {
+    final action = Uri.parse(url);
+    await launchUrl(action);
+  }
 }

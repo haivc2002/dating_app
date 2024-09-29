@@ -16,7 +16,8 @@ class ServicePayment {
   Future<Result<ModelCreatePayment, Exception>> create() async {
     final response = await dio.post(urlCreate);
     if(response.statusCode == 200) {
-      return Success(response.data);
+      final modelCreatePayment = ModelCreatePayment.fromJson(response.data);
+      return Success(modelCreatePayment);
     } else {
       return Failure(Exception('Fail to request ${response.statusCode}'));
     }

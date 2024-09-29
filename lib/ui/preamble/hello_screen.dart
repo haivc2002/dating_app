@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rive/rive.dart';
+import 'package:rive/rive.dart' as rive;
 
 import 'animate_to_next_screen.dart';
 
@@ -16,12 +16,14 @@ class _HelloScreenState extends State<HelloScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 2100), () async {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const AnimateToNextScreen(),
-          transitionDuration: const Duration(seconds: 0),
-        ),
-      );
+      // Navigator.of(context).pushReplacement(
+      //   PageRouteBuilder(
+      //     pageBuilder: (_, __, ___) => const AnimateToNextScreen(),
+      //     transitionDuration: const Duration(seconds: 0),
+      //   ),
+      // );
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, AnimateToNextScreen.routeName);
     });
   }
 
@@ -31,7 +33,7 @@ class _HelloScreenState extends State<HelloScreen> {
       body: SizedBox(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          child: const RiveAnimation.asset(
+          child: const rive.RiveAnimation.asset(
             'assets/n2.riv',
             fit: BoxFit.cover,
           )

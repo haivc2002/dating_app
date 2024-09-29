@@ -1,6 +1,9 @@
 import 'package:dating/ui/auth/register_screen.dart';
 import 'package:dating/ui/detail/detail_screen.dart';
+import 'package:dating/ui/home/match_popup_screen.dart';
 import 'package:dating/ui/message/view_chat_screen.dart';
+import 'package:dating/ui/preamble/animate_to_next_screen.dart';
+import 'package:dating/ui/premium/premium_screen.dart';
 import 'package:dating/ui/setting/setting_screen.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -17,6 +20,9 @@ class AppRouter {
 
       case LoginScreen.routeName:
         return CupertinoPageRoute(builder: (_) => const LoginScreen());
+
+      case AnimateToNextScreen.routeName:
+        return CupertinoPageRoute(builder: (_) => const AnimateToNextScreen());
 
       case RegisterScreen.routeName:
         return CupertinoPageRoute(
@@ -79,6 +85,24 @@ class AppRouter {
 
             return SlideTransition(
               position: offsetAnimation,
+              child: child,
+            );
+          },
+        );
+
+      case PremiumScreen.routeName:
+        return CupertinoPageRoute(
+          settings: settings,
+            builder: (_) => const PremiumScreen()
+        );
+
+      case MatchPopupScreen.routeName:
+        return PageRouteBuilder(
+          settings: settings,
+          pageBuilder: (context, animation, secondaryAnimation) => const MatchPopupScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
               child: child,
             );
           },

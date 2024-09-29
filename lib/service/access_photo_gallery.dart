@@ -11,7 +11,6 @@ import 'package:dating/tool_widget_custom/popup_custom.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -104,21 +103,52 @@ class AccessPhotoGallery {
     return imageData;
   }
 
+  // Future<void> updateImage(int index) async {
+  //   if (await _requestPermission(Permission.storage)) {
+  //     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  //     if (pickedFile != null) {
+  //       final rotatedImage = await FlutterExifRotation.rotateImage(path: pickedFile.path);
+  //       final compressedImage = compressImage(await rotatedImage.readAsBytes());
+  //       final compressedFile = File(pickedFile.path)..writeAsBytesSync(compressedImage);
+  //       onSuccess(compressedFile, index);
+  //     } else {
+  //       if(context.mounted) {
+  //         PopupCustom.showPopup(
+  //           context,
+  //           content: const Text('File null'),
+  //           listOnPress: [()=> Navigator.pop(context)],
+  //           listAction: [Text('Ok', style: TextStyles.defaultStyle.setColor(ThemeColor.blueColor)),]
+  //         );
+  //       }
+  //     }
+  //   } else {
+  //     onError();
+  //   }
+  // }
+
   Future<void> updateImage(int index) async {
     if (await _requestPermission(Permission.storage)) {
+      final picker = ImagePicker();
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
       if (pickedFile != null) {
-        final rotatedImage = await FlutterExifRotation.rotateImage(path: pickedFile.path);
-        final compressedImage = compressImage(await rotatedImage.readAsBytes());
+        final imageBytes = await pickedFile.readAsBytes();
+        final compressedImage = compressImage(imageBytes);
         final compressedFile = File(pickedFile.path)..writeAsBytesSync(compressedImage);
+
         onSuccess(compressedFile, index);
       } else {
-        if(context.mounted) {
+        if (context.mounted) {
           PopupCustom.showPopup(
             context,
             content: const Text('File null'),
-            listOnPress: [()=> Navigator.pop(context)],
-            listAction: [Text('Ok', style: TextStyles.defaultStyle.setColor(ThemeColor.blueColor)),]
+            listOnPress: [() => Navigator.pop(context)],
+            listAction: [
+              Text(
+                'Ok',
+                style: TextStyles.defaultStyle.setColor(ThemeColor.blueColor),
+              ),
+            ],
           );
         }
       }

@@ -9,4 +9,5 @@ class ThemeImage {
   static const String genderFeMaleHorizontal = 'assets/image/girl_horizontal.png';
   static const String error = 'assets/image/error.png';
   static const String cardPremium = 'assets/image/card_premium.png';
+  static const String matchText = 'assets/image/match_text.png';
 }

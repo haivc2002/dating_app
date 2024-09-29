@@ -8,6 +8,7 @@ class LoadPremiumState extends PremiumState {}
 class SuccessPremiumState extends PremiumState {
   List<Matches>? resMatches;
   List<UnmatchedUsers>? resEnigmatic;
+  ModelCreatePayment? responsePayment;
 
-  SuccessPremiumState({this.resMatches, this.resEnigmatic});
+  SuccessPremiumState({this.resMatches, this.resEnigmatic, this.responsePayment});
 }

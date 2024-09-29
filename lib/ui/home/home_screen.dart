@@ -207,6 +207,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             hash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
             image: '${data[itemIndex].listImage?[index].image}',
             imageFit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => Image.asset(ThemeImage.error),
           ),
         ),
         SizedBox(

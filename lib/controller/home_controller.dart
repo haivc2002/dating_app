@@ -1,3 +1,4 @@
+import 'package:dating/argument_model/argument_match.dart';
 import 'package:dating/bloc/bloc_home/home_bloc.dart';
 import 'package:dating/model/model_list_nomination.dart';
 import 'package:dating/model/model_req_match.dart';
@@ -7,12 +8,12 @@ import 'package:dating/service/service_match.dart';
 import 'package:dating/service/service_update.dart';
 import 'package:dating/theme/theme_config.dart';
 import 'package:dating/tool_widget_custom/popup_custom.dart';
+import 'package:dating/ui/home/match_popup_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:rive/rive.dart';
 import 'package:swipable_stack/swipable_stack.dart';
 
 import '../../common/global.dart';
@@ -29,6 +30,7 @@ import '../theme/theme_color.dart';
 import '../theme/theme_rive.dart';
 import '../tool_widget_custom/button_widget_custom.dart';
 import '../ui/detail/detail_screen.dart';
+import 'package:rive/rive.dart' as rive;
 
 class HomeController {
   BuildContext context;
@@ -191,7 +193,7 @@ class HomeController {
                   child: SizedBox(
                     width: widthScreen(context)*0.7,
                     height: heightScreen(context)*0.7,
-                    child: const RiveAnimation.asset(
+                    child: const rive.RiveAnimation.asset(
                       ThemeRive.swipeTutorial,
                       fit: BoxFit.cover,
                     ),
@@ -234,7 +236,7 @@ class HomeController {
                   child: SizedBox(
                     width: widthScreen(context)*0.7,
                     height: heightScreen(context)*0.7,
-                    child: const RiveAnimation.asset(
+                    child: const rive.RiveAnimation.asset(
                       ThemeRive.pressHoldTutorial,
                       fit: BoxFit.cover,
                     ),
@@ -268,6 +270,14 @@ class HomeController {
     );
     ModelResponseMatch response = await addMatch.match(requestMatch);
     if(response.result == 'Success' && context.mounted) {
+      if(response.newState == true) {
+        final state = context.read<HomeBloc>().state;
+        int index = state.listNomination?.nominations?.indexWhere((value)=> keyMatch == value.idUser) ?? 0;
+        String image = state.listNomination?.nominations?[index].listImage?[0].image ?? '';
+        Navigator.pushNamed(context, MatchPopupScreen.routeName,
+            arguments: ArgumentMatch(image: image, idUser: keyMatch)
+        );
+      }
       context.read<HomeBloc>().add(HomeEvent(match: response));
     } else {
       if(context.mounted) {
@@ -344,7 +354,13 @@ class HomeController {
     } else {
       context.read<HomeBloc>().add(HomeEvent(currentIndex: index + 1, currentPage: 0));
     }
+
+    // if(direction == SwipeDirection.left) {
+    //   String image = state.listNomination?.nominations?[index].listImage?[0].image ?? '';
+    //   int idUser = state.listNomination?.nominations?[index].idUser ?? 0;
+    //   Navigator.pushNamed(context, MatchPopupScreen.routeName,
+    //       arguments: ArgumentMatch(image: image, idUser: idUser)
+    //   );
+    // }
   }
-
-
 }

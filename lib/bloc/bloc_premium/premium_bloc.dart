@@ -1,4 +1,5 @@
 
+import 'package:dating/model/model_create_payment.dart';
 import 'package:dating/model/model_response_list_pairing.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,10 +18,15 @@ class PremiumBloc extends Bloc<PremiumEvent, PremiumState> {
       if(currentState is SuccessPremiumState) {
         emit(SuccessPremiumState(
           resMatches: event.resMatches ?? currentState.resMatches,
-          resEnigmatic: event.resEnigmatic ?? currentState.resEnigmatic
+          resEnigmatic: event.resEnigmatic ?? currentState.resEnigmatic,
+          responsePayment: event.responsePayment ?? currentState.responsePayment,
         ));
       } else {
-        emit(SuccessPremiumState(resMatches: event.resMatches, resEnigmatic: event.resEnigmatic));
+        emit(SuccessPremiumState(
+          resMatches: event.resMatches,
+          resEnigmatic: event.resEnigmatic,
+          responsePayment: event.responsePayment
+        ));
       }
     });
   }

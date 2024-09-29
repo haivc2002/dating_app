@@ -28,6 +28,4 @@ extension GradientColor on LinearGradient {
         end: Alignment.bottomCenter
     );
   }
-
-
 }
